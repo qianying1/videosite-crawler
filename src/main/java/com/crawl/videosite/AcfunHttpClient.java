@@ -146,7 +146,7 @@ public class AcfunHttpClient extends AbstractHttpClient implements IHttpClient {
         logger.info("初始化authoriztion中...");
         String content = null;
 
-        GeneralPageTask generalPageTask = new GeneralPageTask(Config.startURL, true);
+        GeneralPageTask generalPageTask = new GeneralPageTask(Config.acfunStartURL, true);
         generalPageTask.run();
         content = generalPageTask.getPage().getHtml();
 

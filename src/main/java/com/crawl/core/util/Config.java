@@ -32,9 +32,45 @@ public class Config {
      */
     public static String password;
     /**
-     * 爬虫入口
+     * b站爬虫入口
      */
-    public static String  startURL;
+    public static String  biliBiliStartURL;
+    /**
+     * a站爬虫入口
+     */
+    public static String  acfunStartURL;
+    /**
+     * 斗鱼爬虫入口
+     */
+    public static String  douyuStartURL;
+    /**
+     * 爱奇艺爬虫入口
+     */
+    public static String  iqiyiStartURL;
+    /**
+     * 乐视爬虫入口
+     */
+    public static String  letvStartURL;
+    /**
+     * 皮皮tv爬虫入口
+     */
+    public static String  pptvStartURL;
+    /**
+     * 搜狐爬虫入口
+     */
+    public static String  sohuStartURL;
+    /**
+     * 土豆爬虫入口
+     */
+    public static String  tudouStartURL;
+    /**
+     * 优酷爬虫入口
+     */
+    public static String  youkuStartURL;
+    /**
+     * Youtube爬虫入口
+     */
+    public static String  youtubeStartURL;
 
     public static String startUserToken;
     /**
@@ -86,7 +122,16 @@ public class Config {
         verificationCodePath = p.getProperty("verificationCodePath");
         emailOrPhoneNum = p.getProperty("zhiHu.emailOrPhoneNum");
         password = p.getProperty("zhiHu.password");
-        startURL = p.getProperty("startURL");
+        biliBiliStartURL = p.getProperty("biliBiliStartURL");
+        acfunStartURL = p.getProperty("acfunStartURL");
+        douyuStartURL = p.getProperty("douyuStartURL");
+        iqiyiStartURL = p.getProperty("iqiyiStartURL");
+        letvStartURL = p.getProperty("letvStartURL");
+        pptvStartURL = p.getProperty("pptvStartURL");
+        sohuStartURL = p.getProperty("sohuStartURL");
+        tudouStartURL = p.getProperty("tudouStartURL");
+        youkuStartURL = p.getProperty("youkuStartURL");
+        youtubeStartURL = p.getProperty("youtubeStartURL");
         startUserToken = p.getProperty("startUserToken");
         downloadPageCount = Integer.valueOf(p.getProperty("downloadPageCount"));
         downloadThreadSize = Integer.valueOf(p.getProperty("downloadThreadSize"));

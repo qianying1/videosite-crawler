@@ -143,7 +143,7 @@ public class VideoSiteHttpClient extends AbstractHttpClient implements IHttpClie
         logger.info("初始化authoriztion中...");
         String content = null;
 
-        GeneralPageTask generalPageTask = new GeneralPageTask(Config.startURL, true);
+        GeneralPageTask generalPageTask = new GeneralPageTask(Config.biliBiliStartURL, true);
         generalPageTask.run();
         content = generalPageTask.getPage().getHtml();
 

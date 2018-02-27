@@ -27,7 +27,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *
  * Created by qianhaibin on 2018/2/27.
  */
 public class BiliBiliHttpClient extends AbstractHttpClient implements IHttpClient {
@@ -93,22 +92,24 @@ public class BiliBiliHttpClient extends AbstractHttpClient implements IHttpClien
                 Config.downloadThreadSize,
                 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(),
-                "detailPageThreadPool");
+                "biliBiliDetailPageThreadPool");
 
         //列表页线程池
         listPageThreadPool = new SimpleThreadPoolExecutor(50, 80,
                 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(5000),
-                new ThreadPoolExecutor.DiscardPolicy(), "listPageThreadPool");
-        new Thread(new ThreadPoolMonitor(detailPageThreadPool, "DetailPageDownloadThreadPool")).start();
-        new Thread(new ThreadPoolMonitor(listPageThreadPool, "ListPageDownloadThreadPool")).start();
+                new ThreadPoolExecutor.DiscardPolicy(), "biliBiliListPageThreadPool");
+        new Thread(new ThreadPoolMonitor(detailPageThreadPool, "biliBiliDetailPageDownloadThreadPool")).start();
+        new Thread(new ThreadPoolMonitor(listPageThreadPool, "biliBiliListPageDownloadThreadPool")).start();
+
+        //详细列表线程池
         detailListPageThreadPool = new SimpleThreadPoolExecutor(Config.downloadThreadSize,
                 Config.downloadThreadSize,
                 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(2000),
                 new ThreadPoolExecutor.DiscardPolicy(),
-                "detailListPageThreadPool");
-        new Thread(new ThreadPoolMonitor(detailListPageThreadPool, "DetailListPageThreadPool")).start();
+                "biliBiliDetailListPageThreadPool");
+        new Thread(new ThreadPoolMonitor(detailListPageThreadPool, "biliBiliDetailListPageThreadPool")).start();
 
     }
 
@@ -123,7 +124,7 @@ public class BiliBiliHttpClient extends AbstractHttpClient implements IHttpClien
     }
 
     /**
-     * 开始对链接进行爬取（需要登录的爬取）
+     * 开始对种子链接进行爬取（需要登录的爬取）
      */
     @Override
     public void startCrawl() {
@@ -146,7 +147,7 @@ public class BiliBiliHttpClient extends AbstractHttpClient implements IHttpClien
         logger.info("初始化authoriztion中...");
         String content = null;
 
-        GeneralPageTask generalPageTask = new GeneralPageTask(Config.startURL, true);
+        GeneralPageTask generalPageTask = new GeneralPageTask(Config.biliBiliStartURL, true);
         generalPageTask.run();
         content = generalPageTask.getPage().getHtml();
 
