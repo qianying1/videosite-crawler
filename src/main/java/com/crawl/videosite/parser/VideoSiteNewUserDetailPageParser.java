@@ -2,7 +2,7 @@ package com.crawl.videosite.parser;
 
 import com.crawl.core.parser.DetailPageParser;
 import com.crawl.videosite.entity.Page;
-import com.crawl.videosite.VideoSiteHttpClient;
+import com.crawl.videosite.CommonHttpClient;
 import com.crawl.videosite.entity.User;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
@@ -21,7 +21,7 @@ public class VideoSiteNewUserDetailPageParser implements DetailPageParser {
     private volatile static VideoSiteNewUserDetailPageParser instance;
     public static VideoSiteNewUserDetailPageParser getInstance(){
         if (instance == null){
-            synchronized (VideoSiteHttpClient.class){
+            synchronized (CommonHttpClient.class){
                 if (instance == null){
                     instance = new VideoSiteNewUserDetailPageParser();
                 }

@@ -1,4 +1,4 @@
-package com.crawl.videosite.task;
+package com.crawl.videosite.task.bilibili;
 
 
 import com.crawl.videosite.entity.Page;
@@ -8,7 +8,7 @@ import com.crawl.videosite.entity.Page;
  * GeneralPageTask
  * 下载初始化authorization字段页面
  */
-public class GeneralPageTask extends AbstractPageTask {
+public class GeneralPageTask extends AbstractPageTask{
     private Page page = null;
 
     public GeneralPageTask(String url, boolean proxyFlag) {

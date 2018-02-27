@@ -3,7 +3,7 @@ package com.crawl.proxy.task;
 import com.crawl.core.util.Constants;
 import com.crawl.proxy.ProxyPool;
 import com.crawl.proxy.entity.Proxy;
-import com.crawl.videosite.VideoSiteHttpClient;
+import com.crawl.videosite.CommonHttpClient;
 import com.crawl.videosite.entity.Page;
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.CookieSpecs;
@@ -19,16 +19,16 @@ import java.io.IOException;
  * 通过访问知乎首页，能否正确响应
  * 将可用代理添加到DelayQueue延时队列中
  */
-public class ProxyTestTask implements Runnable{
-    private final static Logger logger = LoggerFactory.getLogger(ProxyTestTask.class);
+public class AcfunProxyTestTask implements Runnable{
+    private final static Logger logger = LoggerFactory.getLogger(AcfunProxyTestTask.class);
     private Proxy proxy;
-    public ProxyTestTask(Proxy proxy){
+    public AcfunProxyTestTask(Proxy proxy){
         this.proxy = proxy;
     }
     @Override
     public void run() {
         long startTime = System.currentTimeMillis();
-        HttpGet request = new HttpGet(Constants.INDEX_URL);
+        HttpGet request = new HttpGet(Constants.ACFUN_INDEX_URL);
         try {
             RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(Constants.TIMEOUT).
                     setConnectTimeout(Constants.TIMEOUT).
@@ -37,7 +37,7 @@ public class ProxyTestTask implements Runnable{
                     setCookieSpec(CookieSpecs.STANDARD).
                     build();
             request.setConfig(requestConfig);
-            Page page = VideoSiteHttpClient.getInstance().getWebPage(request);
+            Page page = CommonHttpClient.getInstance().getWebPage(request);
             long endTime = System.currentTimeMillis();
             String logStr = Thread.currentThread().getName() + " " + proxy.getProxyStr() +
                     "  executing request " + page.getUrl()  + " response statusCode:" + page.getStatusCode() +

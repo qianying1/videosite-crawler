@@ -9,8 +9,27 @@ public class Constants {
      * 单个ip请求间隔，单位ms
      */
     public final static long TIME_INTERVAL = 1000;
-    //知乎首页
-    public final static String INDEX_URL = "https://www.videosite.com";
+    //a站首页
+    public final static String ACFUN_INDEX_URL = "http://www.acfun.cn/";
+    //b站首页
+    public final static String BILIBILI_INDEX_URL = "http://www.bilibili.com/index.html";
+    //斗鱼首页
+    public final static String DOUYU_INDEX_URL = "https://www.douyu.com/";
+    //爱奇艺首页
+    public final static String IQIYI_INDEX_URL = "http://www.iqiyi.com/";
+    //乐视首页
+    public final static String LETV_INDEX_URL = "http://www.le.com/";
+    //皮皮电影首页
+    public final static String PPTV_INDEX_URL = "http://www.pptv.com/";
+    //搜狐首页
+    public final static String SOHU_INDEX_URL = "http://tv.sohu.com/";
+    //土豆首页
+    public final static String TUDOU_INDEX_URL = "http://www.tudou.com/";
+    //优酷首页
+    public final static String YOUKU_INDEX_URL = "http://www.youku.com/";
+    //youtube首页
+    public final static String YOUTUBE_INDEX_URL = "https://www.youtube.com/";
+
 
     public final static String USER_FOLLOWEES_URL = "https://www.videosite.com/api/v4/members/%s/followees?" +
             "include=data[*].educations,employments,answer_count,business,locations,articles_count,follower_count," +

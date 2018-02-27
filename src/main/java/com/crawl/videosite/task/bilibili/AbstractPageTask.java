@@ -1,4 +1,4 @@
-package com.crawl.videosite.task;
+package com.crawl.videosite.task.bilibili;
 
 import com.crawl.core.util.Constants;
 import com.crawl.core.util.HttpClientUtil;
@@ -7,10 +7,10 @@ import com.crawl.proxy.ProxyPool;
 import com.crawl.proxy.entity.Direct;
 import com.crawl.proxy.entity.Proxy;
 import com.crawl.proxy.util.ProxyUtil;
-import com.crawl.videosite.CommonHttpClient;
-import com.crawl.videosite.dao.VideoSiteDao1;
 import com.crawl.videosite.dao.impl.VideoSiteDao1Imp;
 import com.crawl.videosite.entity.Page;
+import com.crawl.videosite.dao.VideoSiteDao1;
+import com.crawl.videosite.CommonHttpClient;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;

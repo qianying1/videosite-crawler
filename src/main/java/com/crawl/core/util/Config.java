@@ -20,6 +20,10 @@ public class Config {
      */
     public static int downloadThreadSize;
     /**
+     * 需要开启的爬取网站线程数
+     */
+    public static int websitesThreadSize;
+    /**
      * 验证码路径
      */
     public static String verificationCodePath;
@@ -34,43 +38,43 @@ public class Config {
     /**
      * b站爬虫入口
      */
-    public static String  biliBiliStartURL;
+    public static String biliBiliStartURL;
     /**
      * a站爬虫入口
      */
-    public static String  acfunStartURL;
+    public static String acfunStartURL;
     /**
      * 斗鱼爬虫入口
      */
-    public static String  douyuStartURL;
+    public static String douyuStartURL;
     /**
      * 爱奇艺爬虫入口
      */
-    public static String  iqiyiStartURL;
+    public static String iqiyiStartURL;
     /**
      * 乐视爬虫入口
      */
-    public static String  letvStartURL;
+    public static String letvStartURL;
     /**
      * 皮皮tv爬虫入口
      */
-    public static String  pptvStartURL;
+    public static String pptvStartURL;
     /**
      * 搜狐爬虫入口
      */
-    public static String  sohuStartURL;
+    public static String sohuStartURL;
     /**
      * 土豆爬虫入口
      */
-    public static String  tudouStartURL;
+    public static String tudouStartURL;
     /**
      * 优酷爬虫入口
      */
-    public static String  youkuStartURL;
+    public static String youkuStartURL;
     /**
      * Youtube爬虫入口
      */
-    public static String  youtubeStartURL;
+    public static String youtubeStartURL;
 
     public static String startUserToken;
     /**
@@ -111,6 +115,7 @@ public class Config {
      * proxyPath
      */
     public static String proxyPath;
+
     static {
         Properties p = new Properties();
         try {
@@ -135,10 +140,11 @@ public class Config {
         startUserToken = p.getProperty("startUserToken");
         downloadPageCount = Integer.valueOf(p.getProperty("downloadPageCount"));
         downloadThreadSize = Integer.valueOf(p.getProperty("downloadThreadSize"));
+        websitesThreadSize = Integer.valueOf(p.getProperty("websitesThreadSize"));
         cookiePath = p.getProperty("cookiePath");
         proxyPath = p.getProperty("proxyPath");
         isProxy = Boolean.valueOf(p.getProperty("isProxy"));
-        if (dbEnable){
+        if (dbEnable) {
             dbName = p.getProperty("db.name");
             dbHost = p.getProperty("db.host");
             dbUsername = p.getProperty("db.username");

@@ -4,7 +4,7 @@ package com.crawl.core.util;
 import java.util.concurrent.*;
 
 /**
- * 简单的一个线程池
+ * 一个简单的线程池
  */
 public class SimpleThreadPoolExecutor extends ThreadPoolExecutor{
     private String threadPoolName;

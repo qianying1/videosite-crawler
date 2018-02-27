@@ -6,11 +6,11 @@ import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 使用代理进行数据爬取
+ * 代理工具
  */
-public class Proxy implements Delayed, Serializable{
+public class Proxy implements Delayed, Serializable {
     private static final long serialVersionUID = -7583883432417635332L;
-    private long timeInterval ;//任务间隔时间,单位ms
+    private long timeInterval;//任务间隔时间,单位ms
     private String ip;
     private int port;
     private boolean availableFlag;
@@ -20,12 +20,14 @@ public class Proxy implements Delayed, Serializable{
     private int failureTimes;//请求失败次数
     private int successfulTimes;//请求成功次数
     private double successfulAverageTime;//成功请求平均耗时
+
     public Proxy(String ip, int port, long timeInterval) {
         this.ip = ip;
         this.port = port;
         this.timeInterval = timeInterval;
         this.timeInterval = TimeUnit.NANOSECONDS.convert(timeInterval, TimeUnit.MILLISECONDS) + System.nanoTime();
     }
+
     public String getIp() {
         return ip;
     }
@@ -78,9 +80,10 @@ public class Proxy implements Delayed, Serializable{
         this.successfulTotalTime = successfulTotalTime;
     }
 
-    public void setTimeInterval(long timeInterval){
-        this.timeInterval=TimeUnit.NANOSECONDS.convert(timeInterval, TimeUnit.MILLISECONDS) + System.nanoTime();
+    public void setTimeInterval(long timeInterval) {
+        this.timeInterval = TimeUnit.NANOSECONDS.convert(timeInterval, TimeUnit.MILLISECONDS) + System.nanoTime();
     }
+
     @Override
     public long getDelay(TimeUnit unit) {
         return unit.convert(timeInterval - System.nanoTime(), TimeUnit.NANOSECONDS);
@@ -88,11 +91,11 @@ public class Proxy implements Delayed, Serializable{
 
     @Override
     public int compareTo(Delayed o) {
-        Proxy element = (Proxy)o;
-        if (successfulAverageTime == 0.0d ||element.successfulAverageTime == 0.0d){
+        Proxy element = (Proxy) o;
+        if (successfulAverageTime == 0.0d || element.successfulAverageTime == 0.0d) {
             return 0;
         }
-        return successfulAverageTime > element.successfulAverageTime ? 1:(successfulAverageTime < element.successfulAverageTime ? -1 : 0);
+        return successfulAverageTime > element.successfulAverageTime ? 1 : (successfulAverageTime < element.successfulAverageTime ? -1 : 0);
     }
 
     public int getFailureTimes() {
@@ -154,7 +157,7 @@ public class Proxy implements Delayed, Serializable{
         return result;
     }
 
-    public String getProxyStr(){
+    public String getProxyStr() {
         return ip + ":" + port;
     }
 }

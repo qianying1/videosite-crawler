@@ -1,7 +1,7 @@
 package com.crawl;
 
 
-import com.crawl.videosite.task.AbstractPageTask;
+import com.crawl.videosite.task.bilibili.AbstractPageTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

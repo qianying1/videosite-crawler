@@ -9,9 +9,9 @@ import com.crawl.core.util.SimpleThreadPoolExecutor;
 import com.crawl.core.util.ThreadPoolMonitor;
 import com.crawl.proxy.ProxyHttpClient;
 import com.crawl.videosite.dao.impl.VideoSiteDao1Imp;
-import com.crawl.videosite.task.DetailListPageTask;
-import com.crawl.videosite.task.DetailPageTask;
-import com.crawl.videosite.task.GeneralPageTask;
+import com.crawl.videosite.task.bilibili.DetailListPageTask;
+import com.crawl.videosite.task.bilibili.DetailPageTask;
+import com.crawl.videosite.task.bilibili.GeneralPageTask;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,9 +27,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class VideoSiteHttpClient extends AbstractHttpClient implements IHttpClient {
+public class CommonHttpClient extends AbstractHttpClient implements IHttpClient {
     private static Logger logger = LoggerFactory.getLogger(Main.class);
-    private volatile static VideoSiteHttpClient instance;
+    private volatile static CommonHttpClient instance;
     /**
      * 统计用户数量
      */
@@ -37,11 +37,11 @@ public class VideoSiteHttpClient extends AbstractHttpClient implements IHttpClie
     private static long startTime = System.currentTimeMillis();
     public static volatile boolean isStop = false;
 
-    public static VideoSiteHttpClient getInstance() {
+    public static CommonHttpClient getInstance() {
         if (instance == null) {
-            synchronized (VideoSiteHttpClient.class) {
+            synchronized (CommonHttpClient.class) {
                 if (instance == null) {
-                    instance = new VideoSiteHttpClient();
+                    instance = new CommonHttpClient();
                 }
             }
         }
@@ -66,7 +66,7 @@ public class VideoSiteHttpClient extends AbstractHttpClient implements IHttpClie
      */
     private static String authorization;
 
-    private VideoSiteHttpClient() {
+    private CommonHttpClient() {
         initHttpClient();
         intiThreadPool();
     }
@@ -129,7 +129,7 @@ public class VideoSiteHttpClient extends AbstractHttpClient implements IHttpClie
         String startToken = Config.startUserToken;
         String startUrl = String.format(Constants.USER_FOLLOWEES_URL, startToken, 0);
         HttpGet request = new HttpGet(startUrl);
-        request.setHeader("authorization", "oauth " + VideoSiteHttpClient.getAuthorization());
+        request.setHeader("authorization", "oauth " + CommonHttpClient.getAuthorization());
         detailListPageThreadPool.execute(new DetailListPageTask(request, Config.isProxy));
         manageHttpClient();
     }

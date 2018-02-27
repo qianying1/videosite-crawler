@@ -1,4 +1,4 @@
-package com.crawl.videosite.task;
+package com.crawl.videosite.task.bilibili;
 
 
 import com.crawl.core.dao.ConnectionManager;
@@ -6,10 +6,10 @@ import com.crawl.core.parser.ListPageParser;
 import com.crawl.core.util.Config;
 import com.crawl.core.util.Md5Util;
 import com.crawl.core.util.SimpleInvocationHandler;
-import com.crawl.videosite.CommonHttpClient;
 import com.crawl.videosite.entity.Page;
 import com.crawl.videosite.entity.User;
 import com.crawl.videosite.parser.VideoSiteUserListPageParser;
+import com.crawl.videosite.CommonHttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.slf4j.Logger;
@@ -28,7 +28,7 @@ import static com.crawl.videosite.CommonHttpClient.parseUserCount;
 /**
  * 知乎用户列表详情页task
  */
-public class DetailListPageTask extends AbstractPageTask {
+public class DetailListPageTask extends AbstractPageTask{
     private static Logger logger = LoggerFactory.getLogger(DetailListPageTask.class);
     private static ListPageParser proxyUserListPageParser;
     /**

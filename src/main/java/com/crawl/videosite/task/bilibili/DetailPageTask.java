@@ -1,4 +1,4 @@
-package com.crawl.videosite.task;
+package com.crawl.videosite.task.bilibili;
 
 
 import com.crawl.core.parser.DetailPageParser;

@@ -88,6 +88,7 @@ public class ProxyHttpClient extends AbstractHttpClient {
             logger.warn("反序列化proxy失败");
         }
     }
+
     /**
      * 抓取代理
      */

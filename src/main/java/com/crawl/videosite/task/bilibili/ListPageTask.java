@@ -1,4 +1,4 @@
-package com.crawl.videosite.task;
+package com.crawl.videosite.task.bilibili;
 
 
 import com.crawl.core.util.Config;
@@ -31,29 +31,30 @@ public class ListPageTask extends AbstractPageTask {
          * "我关注的人"列表页
          */
         List<String> urlTokenList = JsonPath.parse(page.getHtml()).read("$.data..url_token");
-        for (String s : urlTokenList){
-            if (s == null){
+        for (String s : urlTokenList) {
+            if (s == null) {
                 continue;
             }
             handleUserToken(s);
         }
     }
-    private void handleUserToken(String userToken){
-        String url = Constants.ACFUN_INDEX_URL + "/people/" + userToken + "/following";
-        if(!Config.dbEnable){
+
+    private void handleUserToken(String userToken) {
+        String url = Constants.BILIBILI_INDEX_URL + "/people/" + userToken + "/following";
+        if (!Config.dbEnable) {
             commonHttpClient.getDetailPageThreadPool().execute(new DetailPageTask(url, Config.isProxy));
-            return ;
+            return;
         }
 //        boolean existUserFlag = VideoSiteDAO.isExistUser(userToken);
         boolean existUserFlag = videoSiteDao1.isExistUser(userToken);
-        while (commonHttpClient.getDetailPageThreadPool().getQueue().size() > 1000){
+        while (commonHttpClient.getDetailPageThreadPool().getQueue().size() > 1000) {
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        if(!existUserFlag || commonHttpClient.getDetailPageThreadPool().getActiveCount() == 0){
+        if (!existUserFlag || commonHttpClient.getDetailPageThreadPool().getActiveCount() == 0) {
             /**
              * 防止互相等待，导致死锁
              */

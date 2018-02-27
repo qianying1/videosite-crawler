@@ -1,4 +1,4 @@
-package com.crawl.videosite.task;
+package com.crawl.videosite.task.acfun;
 
 import com.crawl.core.util.Constants;
 import com.crawl.core.util.HttpClientUtil;
