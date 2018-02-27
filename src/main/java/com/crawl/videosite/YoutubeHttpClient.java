@@ -8,7 +8,6 @@ import com.crawl.core.util.Constants;
 import com.crawl.core.util.SimpleThreadPoolExecutor;
 import com.crawl.core.util.ThreadPoolMonitor;
 import com.crawl.proxy.ProxyHttpClient;
-import com.crawl.videosite.dao.impl.VideoSiteDao1Imp;
 import com.crawl.videosite.task.bilibili.DetailListPageTask;
 import com.crawl.videosite.task.bilibili.DetailPageTask;
 import com.crawl.videosite.task.bilibili.GeneralPageTask;
@@ -79,9 +78,9 @@ public class YoutubeHttpClient extends AbstractHttpClient implements IHttpClient
      */
     @Override
     public void initHttpClient() {
-        if (Config.dbEnable) {
+        /*if (Config.dbEnable) {
             VideoSiteDao1Imp.DBTablesInit();
-        }
+        }*/
     }
 
     /**

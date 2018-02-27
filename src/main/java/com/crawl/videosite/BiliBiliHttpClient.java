@@ -78,9 +78,9 @@ public class BiliBiliHttpClient extends AbstractHttpClient implements IHttpClien
      */
     @Override
     public void initHttpClient() {
-        if (Config.dbEnable) {
+        /*if (Config.dbEnable) {
             VideoSiteDao1Imp.DBTablesInit();
-        }
+        }*/
     }
 
     /**

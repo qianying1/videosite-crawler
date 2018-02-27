@@ -79,9 +79,9 @@ public class YoukuHttpClient extends AbstractHttpClient implements IHttpClient {
      */
     @Override
     public void initHttpClient() {
-        if (Config.dbEnable) {
+        /*if (Config.dbEnable) {
             VideoSiteDao1Imp.DBTablesInit();
-        }
+        }*/
     }
 
     /**
