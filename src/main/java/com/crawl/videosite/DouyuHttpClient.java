@@ -26,10 +26,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
-public class VideoSiteHttpClient extends AbstractHttpClient implements IHttpClient {
+/**
+ *
+ * Created by qianhaibin on 2018/2/27.
+ */
+public class DouyuHttpClient extends AbstractHttpClient implements IHttpClient {
     private static Logger logger = LoggerFactory.getLogger(Main.class);
-    private volatile static VideoSiteHttpClient instance;
+    private volatile static DouyuHttpClient instance;
     /**
      * 统计用户数量
      */
@@ -37,11 +40,11 @@ public class VideoSiteHttpClient extends AbstractHttpClient implements IHttpClie
     private static long startTime = System.currentTimeMillis();
     public static volatile boolean isStop = false;
 
-    public static VideoSiteHttpClient getInstance() {
+    public static DouyuHttpClient getInstance() {
         if (instance == null) {
-            synchronized (VideoSiteHttpClient.class) {
+            synchronized (DouyuHttpClient.class) {
                 if (instance == null) {
-                    instance = new VideoSiteHttpClient();
+                    instance = new DouyuHttpClient();
                 }
             }
         }
@@ -66,7 +69,7 @@ public class VideoSiteHttpClient extends AbstractHttpClient implements IHttpClie
      */
     private static String authorization;
 
-    private VideoSiteHttpClient() {
+    private DouyuHttpClient() {
         initHttpClient();
         intiThreadPool();
     }
@@ -129,7 +132,7 @@ public class VideoSiteHttpClient extends AbstractHttpClient implements IHttpClie
         String startToken = Config.startUserToken;
         String startUrl = String.format(Constants.USER_FOLLOWEES_URL, startToken, 0);
         HttpGet request = new HttpGet(startUrl);
-        request.setHeader("authorization", "oauth " + VideoSiteHttpClient.getAuthorization());
+        request.setHeader("authorization", "oauth " + DouyuHttpClient.getAuthorization());
         detailListPageThreadPool.execute(new DetailListPageTask(request, Config.isProxy));
         manageHttpClient();
     }
@@ -232,5 +235,4 @@ public class VideoSiteHttpClient extends AbstractHttpClient implements IHttpClie
     public ThreadPoolExecutor getDetailListPageThreadPool() {
         return detailListPageThreadPool;
     }
-
 }

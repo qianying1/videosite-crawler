@@ -3,6 +3,9 @@ package com.crawl.videosite.entity;
 
 import com.crawl.proxy.entity.Proxy;
 
+/**
+ * 抓取到的页面
+ */
 public class Page {
     private String url;
     private int statusCode;//响应状态码

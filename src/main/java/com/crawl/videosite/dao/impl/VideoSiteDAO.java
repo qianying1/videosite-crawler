@@ -1,5 +1,4 @@
-package com.crawl.videosite.dao;
-
+package com.crawl.videosite.dao.impl;
 
 import com.crawl.core.dao.ConnectionManager;
 import com.crawl.videosite.entity.User;
@@ -10,15 +9,20 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.Properties;
 
-public class VideoSiteDao1Imp implements VideoSiteDao1 {
-    private static Logger logger = LoggerFactory.getLogger(VideoSiteDao1.class);
-    public static void DBTablesInit() {
+public class VideoSiteDAO {
+    private static Logger logger = LoggerFactory.getLogger(VideoSiteDAO.class);
+
+    /**
+     * 数据库表初始化，创建数据库表。
+     * 如果存在的话，则不创建
+     * @param cn
+     */
+    public static void DBTablesInit(Connection cn){
         ResultSet rs = null;
         Properties p = new Properties();
-        Connection cn = ConnectionManager.getConnection();
         try {
             //加载properties文件
-            p.load(VideoSiteDao1Imp.class.getResourceAsStream("/config.properties"));
+            p.load(VideoSiteDAO.class.getResourceAsStream("/config.properties"));
             rs = cn.getMetaData().getTables(null, null, "url", null);
             Statement st = cn.createStatement();
             //不存在url表
@@ -26,8 +30,6 @@ public class VideoSiteDao1Imp implements VideoSiteDao1 {
                 //创建url表
                 st.execute(p.getProperty("createUrlTable"));
                 logger.info("url表创建成功");
-//                st.execute(p.getProperty("createUrlIndex"));
-//                logger.info("url表索引创建成功");
             }
             else{
                 logger.info("url表已存在");
@@ -38,38 +40,34 @@ public class VideoSiteDao1Imp implements VideoSiteDao1 {
                 //创建user表
                 st.execute(p.getProperty("createUserTable"));
                 logger.info("user表创建成功");
-//                st.execute(p.getProperty("createUserIndex"));
-//                logger.info("user表索引创建成功");
             }
             else{
                 logger.info("user表已存在");
             }
             rs.close();
             st.close();
-            cn.close();
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-    @Override
-    public boolean isExistRecord(String sql) throws SQLException{
-        return isExistRecord(ConnectionManager.getConnection(), sql);
-    }
-
-    @Override
-    public boolean isExistRecord(Connection cn, String sql) throws SQLException {
+    /**
+     * 判断该数据库中是否存在该用户
+     * @param sql 判断该sql数据库中是否存在
+     * @return
+     */
+    private synchronized static boolean isExistRecord(String sql) throws SQLException {
         int num = 0;
         PreparedStatement pstmt;
-        pstmt = cn.prepareStatement(sql);
+        pstmt = ConnectionManager.getConnection().prepareStatement(sql);
         ResultSet rs = pstmt.executeQuery();
         while(rs.next()){
             num = rs.getInt("count(*)");
         }
         rs.close();
         pstmt.close();
+//        ConnectionManager.close();
         if(num == 0){
             return false;
         }else{
@@ -77,33 +75,14 @@ public class VideoSiteDao1Imp implements VideoSiteDao1 {
         }
     }
 
-    @Override
-    public boolean isExistUser(String userToken) {
-        return isExistUser(ConnectionManager.getConnection(), userToken);
-    }
-
-    @Override
-    public boolean isExistUser(Connection cn, String userToken) {
-        String isContainSql = "select count(*) from user WHERE user_token='" + userToken + "'";
+    /**
+     * user 插入数据库
+     * @param u
+     * @throws SQLException
+     */
+    public synchronized static boolean insertUser(User u){
         try {
-            if(isExistRecord(isContainSql)){
-                return true;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    @Override
-    public boolean insertUser(User u) {
-        return insertUser(ConnectionManager.getConnection(), u);
-    }
-
-    @Override
-    public boolean insertUser(Connection cn, User u) {
-        try {
-            if (isExistUser(cn, u.getUserToken())){
+            if (isExistUser(u.getUserToken())){
                 return false;
             }
             String column = "location,business,sex,employment,username,url,agrees,thanks,asks," +
@@ -111,7 +90,7 @@ public class VideoSiteDao1Imp implements VideoSiteDao1 {
             String values = "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
             String sql = "insert into user (" + column + ") values(" +values+")";
             PreparedStatement pstmt;
-            pstmt = cn.prepareStatement(sql);
+            pstmt = ConnectionManager.getConnection().prepareStatement(sql);
             pstmt.setString(1,u.getLocation());
             pstmt.setString(2,u.getBusiness());
             pstmt.setString(3,u.getSex());
@@ -139,17 +118,38 @@ public class VideoSiteDao1Imp implements VideoSiteDao1 {
         return true;
     }
 
-    @Override
-    public boolean insertUrl(Connection cn, String md5Url) {
+    /**
+     * 是否存在该用户
+     * @param userToken
+     * @return
+     */
+    public synchronized static boolean isExistUser(String userToken){
+        String isContainSql = "select count(*) from user WHERE user_token='" + userToken + "'";
+        try {
+            if(isExistRecord(isContainSql)){
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    /**
+     * 将访问过的url插入数据库
+     * @param md5Url 经过md5处理后的url
+     * @return
+     * @throws SQLException
+     */
+    public synchronized static boolean insertUrl(String md5Url){
         String isContainSql = "select count(*) from url WHERE md5_url ='" + md5Url + "'";
         try {
-            if(isExistRecord(cn, isContainSql)){
+            if(isExistRecord(isContainSql)){
                 logger.debug("数据库已经存在该url---" + md5Url);
                 return false;
             }
             String sql = "insert into url (md5_url) values( ?)";
             PreparedStatement pstmt;
-            pstmt = cn.prepareStatement(sql);
+            pstmt = ConnectionManager.getConnection().prepareStatement(sql);
             pstmt.setString(1,md5Url);
             pstmt.executeUpdate();
             pstmt.close();
@@ -158,5 +158,23 @@ public class VideoSiteDao1Imp implements VideoSiteDao1 {
         }
         logger.debug("url插入成功---");
         return true;
+    }
+
+    /**
+     * 清空表
+     * @param cn
+     * @throws SQLException
+     */
+    public synchronized static void deleteUrlTable(Connection cn){
+        String sql = "DELETE FROM url";
+        PreparedStatement pstmt = null;
+        try {
+            pstmt = cn.prepareStatement(sql);
+            pstmt.executeUpdate();
+            pstmt.close();
+            logger.info("url表删除成功---");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -7,7 +7,7 @@ import com.crawl.proxy.ProxyPool;
 import com.crawl.proxy.entity.Direct;
 import com.crawl.proxy.entity.Proxy;
 import com.crawl.proxy.util.ProxyUtil;
-import com.crawl.videosite.dao.VideoSiteDao1Imp;
+import com.crawl.videosite.dao.impl.VideoSiteDao1Imp;
 import com.crawl.videosite.entity.Page;
 import com.crawl.videosite.dao.VideoSiteDao1;
 import com.crawl.videosite.VideoSiteHttpClient;

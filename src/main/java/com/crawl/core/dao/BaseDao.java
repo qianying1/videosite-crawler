@@ -1,6 +1,10 @@
 package com.crawl.core.dao;
 
-
+/**
+ * dao层基类接口
+ *
+ * @param <T>
+ */
 public interface BaseDao<T> {
 
 
