@@ -13,6 +13,9 @@ import java.util.List;
 
 import static com.crawl.core.util.Constants.TIME_INTERVAL;
 
+/**
+ * Ip181代理列表页分析器
+ */
 public class Ip181ProxyListPageParser implements ProxyListPageParser {
     @Override
     public List<Proxy> parse(String content) {

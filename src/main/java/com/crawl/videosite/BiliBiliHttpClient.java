@@ -87,14 +87,14 @@ public class BiliBiliHttpClient extends AbstractHttpClient implements IHttpClien
      * 初始化线程池
      */
     private void intiThreadPool() {
-        //详情页线程池
+        //详情页下载线程池
         detailPageThreadPool = new SimpleThreadPoolExecutor(Config.downloadThreadSize,
                 Config.downloadThreadSize,
                 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(),
                 "biliBiliDetailPageThreadPool");
 
-        //列表页线程池
+        //列表页下载线程池
         listPageThreadPool = new SimpleThreadPoolExecutor(50, 80,
                 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(5000),
@@ -102,7 +102,7 @@ public class BiliBiliHttpClient extends AbstractHttpClient implements IHttpClien
         new Thread(new ThreadPoolMonitor(detailPageThreadPool, "biliBiliDetailPageDownloadThreadPool")).start();
         new Thread(new ThreadPoolMonitor(listPageThreadPool, "biliBiliListPageDownloadThreadPool")).start();
 
-        //详细列表线程池
+        //详情列表页下载线程池
         detailListPageThreadPool = new SimpleThreadPoolExecutor(Config.downloadThreadSize,
                 Config.downloadThreadSize,
                 0L, TimeUnit.MILLISECONDS,

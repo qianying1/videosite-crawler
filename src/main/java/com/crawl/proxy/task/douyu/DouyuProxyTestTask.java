@@ -1,4 +1,4 @@
-package com.crawl.proxy.task;
+package com.crawl.proxy.task.douyu;
 
 import com.crawl.core.util.Constants;
 import com.crawl.proxy.ProxyPool;
@@ -19,16 +19,16 @@ import java.io.IOException;
  * 通过访问知乎首页，能否正确响应
  * 将可用代理添加到DelayQueue延时队列中
  */
-public class AcfunProxyTestTask implements Runnable{
-    private final static Logger logger = LoggerFactory.getLogger(AcfunProxyTestTask.class);
+public class DouyuProxyTestTask implements Runnable{
+    private final static Logger logger = LoggerFactory.getLogger(DouyuProxyTestTask.class);
     private Proxy proxy;
-    public AcfunProxyTestTask(Proxy proxy){
+    public DouyuProxyTestTask(Proxy proxy){
         this.proxy = proxy;
     }
     @Override
     public void run() {
         long startTime = System.currentTimeMillis();
-        HttpGet request = new HttpGet(Constants.ACFUN_INDEX_URL);
+        HttpGet request = new HttpGet(Constants.DOUYU_INDEX_URL);
         try {
             RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(Constants.TIMEOUT).
                     setConnectTimeout(Constants.TIMEOUT).
@@ -49,7 +49,7 @@ public class AcfunProxyTestTask implements Runnable{
             request.releaseConnection();
             logger.debug(proxy.toString() + "---------" + page.toString());
             logger.debug(proxy.toString() + "----------代理可用--------请求耗时:" + (endTime - startTime) + "ms");
-            ProxyPool.proxyQueue.add(proxy);
+            ProxyPool.biliBiliProxyQueue.add(proxy);
         } catch (IOException e) {
             logger.debug("IOException:", e);
         } finally {

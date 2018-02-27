@@ -6,6 +6,9 @@ import com.crawl.proxy.ProxyListPageParser;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 代理分析器工厂
+ */
 public class ProxyListPageParserFactory {
     private static Map<String, ProxyListPageParser> map = new HashMap<>();
 

@@ -30,6 +30,46 @@ public class Constants {
     //youtube首页
     public final static String YOUTUBE_INDEX_URL = "https://www.youtube.com/";
 
+    /**
+     * a站名称
+     */
+    public final static String ACFUN = "acfun";
+    /**
+     * b站名称
+     */
+    public final static String BILIBILI = "bilibili";
+    /**
+     * 斗鱼名称
+     */
+    public final static String DOUYU = "douyu";
+    /**
+     * 爱奇艺名称
+     */
+    public final static String IQIYI = "iqiyi";
+    /**
+     * 乐视名称
+     */
+    public final static String LETV = "letv";
+    /**
+     * 皮皮电影名称
+     */
+    public final static String PPTV = "pptv";
+    /**
+     * 搜狐名称
+     */
+    public final static String SOHU = "sohu";
+    /**
+     * 土豆名称
+     */
+    public final static String TUDOU = "tudou";
+    /**
+     * 优酷名称
+     */
+    public final static String YOUKU = "youku";
+    /**
+     * youtube名称
+     */
+    public final static String YOUTUBE = "youtube";
 
     public final static String USER_FOLLOWEES_URL = "https://www.videosite.com/api/v4/members/%s/followees?" +
             "include=data[*].educations,employments,answer_count,business,locations,articles_count,follower_count," +

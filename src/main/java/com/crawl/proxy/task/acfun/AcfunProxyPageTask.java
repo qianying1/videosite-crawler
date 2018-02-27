@@ -1,9 +1,9 @@
-package com.crawl.proxy.task;
+package com.crawl.proxy.task.acfun;
 
 import com.crawl.core.util.Config;
 import com.crawl.core.util.Constants;
 import com.crawl.core.util.HttpClientUtil;
-import com.crawl.proxy.ProxyHttpClient;
+import com.crawl.proxy.AcfunProxyHttpClient;
 import com.crawl.proxy.ProxyListPageParser;
 import com.crawl.proxy.ProxyPool;
 import com.crawl.proxy.entity.Direct;
@@ -20,23 +20,23 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.List;
 
-import static com.crawl.proxy.ProxyPool.proxyQueue;
+import static com.crawl.proxy.ProxyPool.acfunProxyQueue;
 
 /**
  * 下载代理网页并解析
  * 若下载失败，通过代理去下载代理网页
  */
-public class ProxyPageTask implements Runnable{
-	private static Logger logger = LoggerFactory.getLogger(ProxyPageTask.class);
+public class AcfunProxyPageTask implements Runnable{
+	private static Logger logger = LoggerFactory.getLogger(AcfunProxyPageTask.class);
 	protected String url;
 	private boolean proxyFlag;//是否通过代理下载
 	private Proxy currentProxy;//当前线程使用的代理
 
-	protected static ProxyHttpClient proxyHttpClient = ProxyHttpClient.getInstance();
-	private ProxyPageTask(){
+	protected static AcfunProxyHttpClient proxyHttpClient = AcfunProxyHttpClient.getInstance();
+	private AcfunProxyPageTask(){
 
 	}
-	public ProxyPageTask(String url, boolean proxyFlag){
+	public AcfunProxyPageTask(String url, boolean proxyFlag){
 		this.url = url;
 		this.proxyFlag = proxyFlag;
 	}
@@ -47,7 +47,7 @@ public class ProxyPageTask implements Runnable{
 			Page page = null;
 			if (proxyFlag){
 				tempRequest = new HttpGet(url);
-				currentProxy = proxyQueue.take();
+				currentProxy = acfunProxyQueue.take();
 				if(!(currentProxy instanceof Direct)){
 					HttpHost proxy = new HttpHost(currentProxy.getIp(), currentProxy.getPort());
 					tempRequest.setConfig(HttpClientUtil.getRequestConfigBuilder().setProxy(proxy).build());
@@ -77,7 +77,7 @@ public class ProxyPageTask implements Runnable{
 		} finally {
 			if(currentProxy != null){
 				currentProxy.setTimeInterval(Constants.TIME_INTERVAL);
-				proxyQueue.add(currentProxy);
+				acfunProxyQueue.add(currentProxy);
 			}
 			if (tempRequest != null){
 				tempRequest.releaseConnection();
@@ -89,7 +89,7 @@ public class ProxyPageTask implements Runnable{
 	 * retry
 	 */
 	public void retry(){
-		proxyHttpClient.getProxyDownloadThreadExecutor().execute(new ProxyPageTask(url, Config.isProxy));
+		proxyHttpClient.getProxyDownloadThreadExecutor().execute(new AcfunProxyPageTask(url, Config.acfunIsProxy));
 	}
 
 	public void handle(Page page){
@@ -103,11 +103,11 @@ public class ProxyPageTask implements Runnable{
 		for(Proxy p : proxyList){
 			if(!CommonHttpClient.getInstance().getDetailListPageThreadPool().isTerminated()){
 				ProxyPool.lock.readLock().lock();
-				boolean containFlag = ProxyPool.proxySet.contains(p);
+				boolean containFlag = ProxyPool.acfunProxySet.contains(p);
 				ProxyPool.lock.readLock().unlock();
 				if (!containFlag){
 					ProxyPool.lock.writeLock().lock();
-					ProxyPool.proxySet.add(p);
+					ProxyPool.acfunProxySet.add(p);
 					ProxyPool.lock.writeLock().unlock();
 
 					proxyHttpClient.getProxyTestThreadExecutor().execute(new AcfunProxyTestTask(p));

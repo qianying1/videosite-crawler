@@ -1,4 +1,4 @@
-package com.crawl.proxy.task;
+package com.crawl.proxy.task.letv;
 
 import com.crawl.core.util.Config;
 import com.crawl.core.util.HttpClientUtil;
@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 /**
  * 代理序列化
  */
-public class ProxySerializeTask implements Runnable{
-    private static Logger logger = LoggerFactory.getLogger(ProxyPageTask.class);
+public class LetvProxySerializeTask implements Runnable{
+    private static Logger logger = LoggerFactory.getLogger(LetvProxyPageTask.class);
     @Override
     public void run() {
         while (!CommonHttpClient.isStop){
@@ -25,9 +25,9 @@ public class ProxySerializeTask implements Runnable{
             Proxy[] proxyArray = null;
             ProxyPool.lock.readLock().lock();
             try {
-                proxyArray = new Proxy[ProxyPool.proxySet.size()];
+                proxyArray = new Proxy[ProxyPool.letvProxySet.size()];
                 int i = 0;
-                for (Proxy p : ProxyPool.proxySet){
+                for (Proxy p : ProxyPool.letvProxySet){
                     if (!ProxyUtil.isDiscardProxy(p)){
                         proxyArray[i++] = p;
                     }
@@ -36,8 +36,8 @@ public class ProxySerializeTask implements Runnable{
                 ProxyPool.lock.readLock().unlock();
             }
 
-            HttpClientUtil.serializeObject(proxyArray, Config.proxyPath);
-            logger.info("成功序列化" + proxyArray.length + "个代理");
+            HttpClientUtil.serializeObject(proxyArray, Config.letvProxyPath);
+            logger.info("成功序列化乐视" + proxyArray.length + "个代理");
         }
     }
 }

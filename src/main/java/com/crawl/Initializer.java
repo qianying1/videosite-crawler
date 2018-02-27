@@ -1,52 +1,31 @@
-package com.crawl.videosite;
+package com.crawl;
 
-import com.crawl.Main;
 import com.crawl.core.util.Config;
-import com.crawl.core.util.Constants;
-import com.crawl.core.util.SimpleThreadPoolExecutor;
-import com.crawl.core.util.ThreadPoolMonitor;
-import com.crawl.proxy.ProxyHttpClient;
+import com.crawl.proxy.*;
+import com.crawl.videosite.BiliBiliHttpClient;
 import com.crawl.videosite.dao.impl.VideoSiteDao1Imp;
-import com.crawl.videosite.task.bilibili.DetailListPageTask;
-import com.crawl.videosite.task.bilibili.DetailPageTask;
-import com.crawl.videosite.task.bilibili.GeneralPageTask;
-import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Map;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-
-public class VideoSiteInitializer {
-    private static Logger logger = LoggerFactory.getLogger(Main.class);
-    private volatile static VideoSiteInitializer instance;
-    /**
-     * 统计用户数量
-     */
-    public static AtomicInteger parseUserCount = new AtomicInteger(0);
-    private static long startTime = System.currentTimeMillis();
-    public static volatile boolean isStop = false;
-
-    public static VideoSiteInitializer getInstance() {
+/**
+ * 网站数据爬取初始节点
+ */
+public class Initializer {
+    private volatile static Initializer instance;
+    public static Initializer getInstance() {
         if (instance == null) {
-            synchronized (VideoSiteInitializer.class) {
+            synchronized (Initializer.class) {
                 if (instance == null) {
-                    instance = new VideoSiteInitializer();
+                    instance = new Initializer();
                 }
             }
         }
         return instance;
     }
 
-    private VideoSiteInitializer() {
+    private Initializer() {
         initVideoCrawlerWeapon();
     }
 
@@ -64,24 +43,34 @@ public class VideoSiteInitializer {
      */
     public void startVideoSitesCrawler() {
         //a站
+//        AcfunProxyHttpClient.getInstance().startCrawl();
 //        AcfunHttpClient.getInstance().startCrawl();
         //b站
+        BiliBiliProxyHttpClient.getInstance().startCrawl();
         BiliBiliHttpClient.getInstance().startCrawl();
         //斗鱼
+//        DouyuProxyHttpClient.getInstance().startCrawl();
 //        DouyuHttpClient.getInstance().startCrawl();
 //        //爱奇艺
+//        IqiyiProxyHttpClient.getInstance().startCrawl();
 //        IqiyiHttpClient.getInstance().startCrawl();
 //        //乐视
+//        LetvProxyHttpClient.getInstance().startCrawl();
 //        LetvHttpClient.getInstance().startCrawl();
 //        //皮皮电影
+//        PptvProxyHttpClient.getInstance().startCrawl();
 //        PptvHttpClient.getInstance().startCrawl();
 //        //搜狐
+//        SohuProxyHttpClient.getInstance().startCrawl();
 //        SohuHttpClient.getInstance().startCrawl();
 //        //土豆
+//        TudouProxyHttpClient.getInstance().startCrawl();
 //        TudouHttpClient.getInstance().startCrawl();
 //        //优酷
+//        YoukuProxyHttpClient.getInstance().startCrawl();
 //        YoukuHttpClient.getInstance().startCrawl();
 //        //youtube
+//        YoutubeProxyHttpClient.getInstance().startCrawl();
 //        YoutubeHttpClient.getInstance().startCrawl();
     }
 

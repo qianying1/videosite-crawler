@@ -14,6 +14,8 @@ import java.util.List;
 import static com.crawl.core.util.Constants.TIME_INTERVAL;
 
 /**
+ * Ip66代理列表页分析器
+ *
  * http://www.66ip.cn/
  */
 public class Ip66ProxyListPageParser implements ProxyListPageParser {

@@ -13,6 +13,9 @@ import java.util.List;
 
 import static com.crawl.core.util.Constants.TIME_INTERVAL;
 
+/**
+ * mimiip代理列表页分析器
+ */
 public class MimiipProxyListPageParser implements ProxyListPageParser{
     @Override
     public List<Proxy> parse(String hmtl) {

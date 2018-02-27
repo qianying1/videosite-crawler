@@ -14,7 +14,43 @@ public class Config {
     /**
      * 是否使用代理抓取
      */
-    public static boolean isProxy;
+    public static boolean bilibiliIsProxy;
+    /**
+     * 是否使用代理抓取
+     */
+    public static boolean youkuIsProxy;
+    /**
+     * 是否使用代理抓取
+     */
+    public static boolean tudouIsProxy;
+    /**
+     * 是否使用代理抓取
+     */
+    public static boolean acfunIsProxy;
+    /**
+     * 是否使用代理抓取
+     */
+    public static boolean iqiyiIsProxy;
+    /**
+     * 是否使用代理抓取
+     */
+    public static boolean sohuIsProxy;
+    /**
+     * 是否使用代理抓取
+     */
+    public static boolean pptvIsProxy;
+    /**
+     * 是否使用代理抓取
+     */
+    public static boolean letvIsProxy;
+    /**
+     * 是否使用代理抓取
+     */
+    public static boolean douyuIsProxy;
+    /**
+     * 是否使用代理抓取
+     */
+    public static boolean youtubeIsProxy;
     /**
      * 下载网页线程数
      */
@@ -111,10 +147,47 @@ public class Config {
      * cookie路径
      */
     public static String cookiePath;
+
+    /**
+     * b站代理路径
+     */
+    public static String biliBiliProxyPath;
     /**
      * proxyPath
      */
-    public static String proxyPath;
+    public static String acfunProxyPath;
+    /**
+     * proxyPath
+     */
+    public static String douyuProxyPath;
+    /**
+     * proxyPath
+     */
+    public static String iqiyiProxyPath;
+    /**
+     * proxyPath
+     */
+    public static String letvProxyPath;
+    /**
+     * proxyPath
+     */
+    public static String pptvProxyPath;
+    /**
+     * proxyPath
+     */
+    public static String sohuProxyPath;
+    /**
+     * proxyPath
+     */
+    public static String tudouProxyPath;
+    /**
+     * proxyPath
+     */
+    public static String youkuProxyPath;
+    /**
+     * proxyPath
+     */
+    public static String youtubeProxyPath;
 
     static {
         Properties p = new Properties();
@@ -142,8 +215,26 @@ public class Config {
         downloadThreadSize = Integer.valueOf(p.getProperty("downloadThreadSize"));
         websitesThreadSize = Integer.valueOf(p.getProperty("websitesThreadSize"));
         cookiePath = p.getProperty("cookiePath");
-        proxyPath = p.getProperty("proxyPath");
-        isProxy = Boolean.valueOf(p.getProperty("isProxy"));
+        biliBiliProxyPath = p.getProperty("biliBiliProxyPath");
+        acfunProxyPath = p.getProperty("acfunProxyPath");
+        douyuProxyPath = p.getProperty("douyuProxyPath");
+        iqiyiProxyPath = p.getProperty("iqiyiProxyPath");
+        letvProxyPath = p.getProperty("letvProxyPath");
+        pptvProxyPath = p.getProperty("pptvProxyPath");
+        sohuProxyPath = p.getProperty("sohuProxyPath");
+        youkuProxyPath = p.getProperty("youkuProxyPath");
+        youtubeProxyPath = p.getProperty("youtubeProxyPath");
+        tudouProxyPath = p.getProperty("tudouProxyPath");
+        bilibiliIsProxy = Boolean.valueOf(p.getProperty("bilibiliIsProxy"));
+        acfunIsProxy = Boolean.valueOf(p.getProperty("acfunIsProxy"));
+        douyuIsProxy = Boolean.valueOf(p.getProperty("douyuIsProxy"));
+        iqiyiIsProxy = Boolean.valueOf(p.getProperty("iqiyiIsProxy"));
+        letvIsProxy = Boolean.valueOf(p.getProperty("letvIsProxy"));
+        pptvIsProxy = Boolean.valueOf(p.getProperty("pptvIsProxy"));
+        sohuIsProxy = Boolean.valueOf(p.getProperty("sohuIsProxy"));
+        tudouIsProxy = Boolean.valueOf(p.getProperty("tudouIsProxy"));
+        youkuIsProxy = Boolean.valueOf(p.getProperty("youkuIsProxy"));
+        youtubeIsProxy = Boolean.valueOf(p.getProperty("youtubeIsProxy"));
         if (dbEnable) {
             dbName = p.getProperty("db.name");
             dbHost = p.getProperty("db.host");

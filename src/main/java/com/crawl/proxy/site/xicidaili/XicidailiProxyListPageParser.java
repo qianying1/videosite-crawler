@@ -13,6 +13,9 @@ import java.util.List;
 
 import static com.crawl.core.util.Constants.TIME_INTERVAL;
 
+/**
+ * Xici代理列表页分析器
+ */
 public class XicidailiProxyListPageParser implements ProxyListPageParser {
     @Override
     public List<Proxy> parse(String hmtl) {
