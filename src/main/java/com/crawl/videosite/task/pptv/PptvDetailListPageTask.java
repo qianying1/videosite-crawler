@@ -1,4 +1,4 @@
-package com.crawl.videosite.task.bilibili;
+package com.crawl.videosite.task.pptv;
 
 
 import com.crawl.core.dao.ConnectionManager;
@@ -6,10 +6,10 @@ import com.crawl.core.parser.ListPageParser;
 import com.crawl.core.util.Config;
 import com.crawl.core.util.Md5Util;
 import com.crawl.core.util.SimpleInvocationHandler;
+import com.crawl.videosite.CommonHttpClient;
 import com.crawl.videosite.entity.Page;
 import com.crawl.videosite.entity.User;
 import com.crawl.videosite.parser.VideoSiteUserListPageParser;
-import com.crawl.videosite.CommonHttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.slf4j.Logger;
@@ -28,8 +28,8 @@ import static com.crawl.videosite.CommonHttpClient.parseUserCount;
 /**
  * 知乎用户列表详情页task
  */
-public class DetailListPageTask extends AbstractPageTask{
-    private static Logger logger = LoggerFactory.getLogger(DetailListPageTask.class);
+public class PptvDetailListPageTask extends PptvAbstractPageTask {
+    private static Logger logger = LoggerFactory.getLogger(PptvDetailListPageTask.class);
     private static ListPageParser proxyUserListPageParser;
     /**
      * Thread-数据库连接
@@ -40,7 +40,7 @@ public class DetailListPageTask extends AbstractPageTask{
     }
 
 
-    public DetailListPageTask(HttpRequestBase request, boolean proxyFlag) {
+    public PptvDetailListPageTask(HttpRequestBase request, boolean proxyFlag) {
         super(request, proxyFlag);
     }
 
@@ -58,7 +58,7 @@ public class DetailListPageTask extends AbstractPageTask{
 
     @Override
     void retry() {
-        commonHttpClient.getDetailListPageThreadPool().execute(new DetailListPageTask(request, Config.isProxy));
+        commonHttpClient.getDetailListPageThreadPool().execute(new PptvDetailListPageTask(request, Config.isProxy));
     }
 
     @Override
@@ -86,7 +86,7 @@ public class DetailListPageTask extends AbstractPageTask{
                         //防止死锁
                         HttpGet request = new HttpGet(nextUrl);
                         request.setHeader("authorization", "oauth " + CommonHttpClient.getAuthorization());
-                        commonHttpClient.getDetailListPageThreadPool().execute(new DetailListPageTask(request, true));
+                        commonHttpClient.getDetailListPageThreadPool().execute(new PptvDetailListPageTask(request, true));
                     }
                 }
             }
@@ -96,7 +96,7 @@ public class DetailListPageTask extends AbstractPageTask{
                     String nextUrl = String.format(USER_FOLLOWEES_URL, u.getUserToken(), j * 20);
                     HttpGet request = new HttpGet(nextUrl);
                     request.setHeader("authorization", "oauth " + CommonHttpClient.getAuthorization());
-                    commonHttpClient.getDetailListPageThreadPool().execute(new DetailListPageTask(request, true));
+                    commonHttpClient.getDetailListPageThreadPool().execute(new PptvDetailListPageTask(request, true));
                 }
             }
         }

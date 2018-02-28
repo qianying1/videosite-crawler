@@ -1,17 +1,17 @@
-package com.crawl.videosite.task.acfun;
+package com.crawl.videosite.task.letv;
 
 
 import com.crawl.videosite.entity.Page;
 
 
 /**
- * GeneralPageTask
+ * GeneralPageTaskCommon
  * 下载初始化authorization字段页面
  */
-public class GeneralPageTask extends AbstractPageTask {
+public class LetvGeneralPageTask extends LetvAbstractPageTask {
     private Page page = null;
 
-    public GeneralPageTask(String url, boolean proxyFlag) {
+    public LetvGeneralPageTask(String url, boolean proxyFlag) {
         super(url, proxyFlag);
     }
 

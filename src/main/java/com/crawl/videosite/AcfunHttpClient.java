@@ -7,17 +7,15 @@ import com.crawl.core.util.Config;
 import com.crawl.core.util.Constants;
 import com.crawl.core.util.SimpleThreadPoolExecutor;
 import com.crawl.core.util.ThreadPoolMonitor;
-import com.crawl.proxy.ProxyHttpClient;
-import com.crawl.videosite.dao.impl.VideoSiteDao1Imp;
-import com.crawl.videosite.task.bilibili.DetailListPageTask;
-import com.crawl.videosite.task.bilibili.DetailPageTask;
-import com.crawl.videosite.task.bilibili.GeneralPageTask;
+import com.crawl.proxy.AcfunProxyHttpClient;
+import com.crawl.videosite.task.bilibili.BiliBiliDetailListPageTask;
+import com.crawl.videosite.task.bilibili.BiliBiliDetailPageTask;
+import com.crawl.videosite.task.bilibili.BiliBiliGeneralPageTask;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -27,7 +25,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *
  * Created by qianhaibin on 2018/2/27.
  */
 public class AcfunHttpClient extends AbstractHttpClient implements IHttpClient {
@@ -102,6 +99,7 @@ public class AcfunHttpClient extends AbstractHttpClient implements IHttpClient {
                 new ThreadPoolExecutor.DiscardPolicy(), "listPageThreadPool");
         new Thread(new ThreadPoolMonitor(detailPageThreadPool, "DetailPageDownloadThreadPool")).start();
         new Thread(new ThreadPoolMonitor(listPageThreadPool, "ListPageDownloadThreadPool")).start();
+        //详情列表页下载线程池
         detailListPageThreadPool = new SimpleThreadPoolExecutor(Config.downloadThreadSize,
                 Config.downloadThreadSize,
                 0L, TimeUnit.MILLISECONDS,
@@ -118,7 +116,7 @@ public class AcfunHttpClient extends AbstractHttpClient implements IHttpClient {
      * @param url
      */
     public void startCrawl(String url) {
-        detailPageThreadPool.execute(new DetailPageTask(url, Config.isProxy));
+        detailPageThreadPool.execute(new BiliBiliDetailPageTask(url, Config.acfunIsProxy));
         manageHttpClient();
     }
 
@@ -133,7 +131,7 @@ public class AcfunHttpClient extends AbstractHttpClient implements IHttpClient {
         String startUrl = String.format(Constants.USER_FOLLOWEES_URL, startToken, 0);
         HttpGet request = new HttpGet(startUrl);
         request.setHeader("authorization", "oauth " + AcfunHttpClient.getAuthorization());
-        detailListPageThreadPool.execute(new DetailListPageTask(request, Config.isProxy));
+        detailListPageThreadPool.execute(new BiliBiliDetailListPageTask(request, Config.acfunIsProxy));
         manageHttpClient();
     }
 
@@ -146,7 +144,7 @@ public class AcfunHttpClient extends AbstractHttpClient implements IHttpClient {
         logger.info("初始化authoriztion中...");
         String content = null;
 
-        GeneralPageTask generalPageTask = new GeneralPageTask(Config.acfunStartURL, true);
+        BiliBiliGeneralPageTask generalPageTask = new BiliBiliGeneralPageTask(Config.acfunStartURL, true);
         generalPageTask.run();
         content = generalPageTask.getPage().getHtml();
 
@@ -159,7 +157,7 @@ public class AcfunHttpClient extends AbstractHttpClient implements IHttpClient {
             throw new RuntimeException("not find javascript url");
         }
         String jsContent = null;
-        GeneralPageTask jsPageTask = new GeneralPageTask(jsSrc, true);
+        BiliBiliGeneralPageTask jsPageTask = new BiliBiliGeneralPageTask(jsSrc, true);
         jsPageTask.run();
         jsContent = jsPageTask.getPage().getHtml();
 
@@ -196,20 +194,12 @@ public class AcfunHttpClient extends AbstractHttpClient implements IHttpClient {
             }
             if (detailListPageThreadPool.isTerminated()) {
                 //关闭数据库连接
-                Map<Thread, Connection> map = DetailListPageTask.getConnectionMap();
-                for (Connection cn : map.values()) {
-                    try {
-                        if (cn != null && !cn.isClosed()) {
-                            cn.close();
-                        }
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
+                Map<Thread, Connection> map = BiliBiliDetailListPageTask.getConnectionMap();
+                CommonHttpClient.closeConnections(map);
                 //关闭代理检测线程池
-                ProxyHttpClient.getInstance().getProxyTestThreadExecutor().shutdownNow();
+                AcfunProxyHttpClient.getInstance().getProxyTestThreadExecutor().shutdownNow();
                 //关闭代理下载页线程池
-                ProxyHttpClient.getInstance().getProxyDownloadThreadExecutor().shutdownNow();
+                AcfunProxyHttpClient.getInstance().getProxyDownloadThreadExecutor().shutdownNow();
 
                 break;
             }

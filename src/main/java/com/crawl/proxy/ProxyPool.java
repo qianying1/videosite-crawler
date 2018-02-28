@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.DelayQueue;
-import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static com.crawl.core.util.Constants.TIME_INTERVAL;
@@ -35,6 +34,10 @@ public class ProxyPool {
     public final static Set<Proxy> tudouProxySet = new HashSet<Proxy>();
     public final static Set<Proxy> youkuProxySet = new HashSet<Proxy>();
     public final static Set<Proxy> youtubeProxySet = new HashSet<Proxy>();
+    /**
+     * 共同代理池延迟队列
+     */
+    public final static DelayQueue<Proxy> proxyQueue = new DelayQueue();
     /**
      * a站代理池延迟队列
      */
@@ -92,6 +95,7 @@ public class ProxyPool {
                 proxyMap.put("http://www.66ip.cn/areaindex_" + j + "/" + i + ".html", Ip66ProxyListPageParser.class);
             }
         }
+        proxyQueue.add(new Direct(TIME_INTERVAL));
         acfunProxyQueue.add(new Direct(TIME_INTERVAL));
         biliBiliProxyQueue.add(new Direct(TIME_INTERVAL));
         douyuProxyQueue.add(new Direct(TIME_INTERVAL));

@@ -1,4 +1,4 @@
-package com.crawl.videosite.task;
+package com.crawl.videosite.task.sohu;
 
 import com.crawl.core.util.Constants;
 import com.crawl.core.util.HttpClientUtil;
@@ -28,8 +28,8 @@ import java.lang.reflect.InvocationHandler;
  * 若使用代理，从ProxyPool中取
  * @see ProxyPool
  */
-public abstract class AbstractPageTask implements Runnable{
-	private static Logger logger = LoggerFactory.getLogger(AbstractPageTask.class);
+public abstract class SohuAbstractPageTask implements Runnable{
+	private static Logger logger = LoggerFactory.getLogger(SohuAbstractPageTask.class);
 	protected String url;
 	protected HttpRequestBase request;
 	protected boolean proxyFlag;//是否通过代理下载
@@ -39,14 +39,14 @@ public abstract class AbstractPageTask implements Runnable{
 	static {
 		videoSiteDao1 = getVideoSiteDao1();
 	}
-	public AbstractPageTask(){
+	public SohuAbstractPageTask(){
 
 	}
-	public AbstractPageTask(String url, boolean proxyFlag){
+	public SohuAbstractPageTask(String url, boolean proxyFlag){
 		this.url = url;
 		this.proxyFlag = proxyFlag;
 	}
-	public AbstractPageTask(HttpRequestBase request, boolean proxyFlag){
+	public SohuAbstractPageTask(HttpRequestBase request, boolean proxyFlag){
 		this.request = request;
 		this.proxyFlag = proxyFlag;
 	}
@@ -58,7 +58,7 @@ public abstract class AbstractPageTask implements Runnable{
 			if(url != null){
 				if (proxyFlag){
 					tempRequest = new HttpGet(url);
-					currentProxy = ProxyPool.proxyQueue.take();
+					currentProxy = ProxyPool.sohuProxyQueue.take();
 					if(!(currentProxy instanceof Direct)){
 						HttpHost proxy = new HttpHost(currentProxy.getIp(), currentProxy.getPort());
 						tempRequest.setConfig(HttpClientUtil.getRequestConfigBuilder().setProxy(proxy).build());
@@ -71,7 +71,7 @@ public abstract class AbstractPageTask implements Runnable{
 				}
 			} else if(request != null){
 				if (proxyFlag){
-					currentProxy = ProxyPool.proxyQueue.take();
+					currentProxy = ProxyPool.sohuProxyQueue.take();
 					if(!(currentProxy instanceof Direct)) {
 						HttpHost proxy = new HttpHost(currentProxy.getIp(), currentProxy.getPort());
 						request.setConfig(HttpClientUtil.getRequestConfigBuilder().setProxy(proxy).build());
@@ -139,7 +139,7 @@ public abstract class AbstractPageTask implements Runnable{
 			}
 			if (currentProxy != null && !ProxyUtil.isDiscardProxy(currentProxy)){
 				currentProxy.setTimeInterval(Constants.TIME_INTERVAL);
-				ProxyPool.proxyQueue.add(currentProxy);
+				ProxyPool.sohuProxyQueue.add(currentProxy);
 			}
 		}
 	}

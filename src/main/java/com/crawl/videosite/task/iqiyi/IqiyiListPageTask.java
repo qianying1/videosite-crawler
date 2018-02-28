@@ -1,4 +1,4 @@
-package com.crawl.videosite.task.acfun;
+package com.crawl.videosite.task.iqiyi;
 
 
 import com.crawl.core.util.Config;
@@ -13,16 +13,16 @@ import java.util.List;
  * 知乎用户关注列表页task
  * 下载成功解析出用户token，去重,构造用户详情url，获，添加到DetailPageDownloadThreadPool
  */
-public class ListPageTask extends AbstractPageTask {
+public class IqiyiListPageTask extends IqiyiAbstractPageTask {
 
-    public ListPageTask(HttpRequestBase request, boolean proxyFlag) {
+    public IqiyiListPageTask(HttpRequestBase request, boolean proxyFlag) {
         super(request, proxyFlag);
     }
 
 
     @Override
     void retry() {
-        commonHttpClient.getListPageThreadPool().execute(new ListPageTask(request, Config.isProxy));
+        commonHttpClient.getListPageThreadPool().execute(new IqiyiListPageTask(request, Config.isProxy));
     }
 
     @Override
@@ -31,33 +31,34 @@ public class ListPageTask extends AbstractPageTask {
          * "我关注的人"列表页
          */
         List<String> urlTokenList = JsonPath.parse(page.getHtml()).read("$.data..url_token");
-        for (String s : urlTokenList){
-            if (s == null){
+        for (String s : urlTokenList) {
+            if (s == null) {
                 continue;
             }
             handleUserToken(s);
         }
     }
-    private void handleUserToken(String userToken){
-        String url = Constants.ACFUN_INDEX_URL + "/people/" + userToken + "/following";
-        if(!Config.dbEnable){
-            commonHttpClient.getDetailPageThreadPool().execute(new DetailPageTask(url, Config.isProxy));
-            return ;
+
+    private void handleUserToken(String userToken) {
+        String url = Constants.BILIBILI_INDEX_URL + "/people/" + userToken + "/following";
+        if (!Config.dbEnable) {
+            commonHttpClient.getDetailPageThreadPool().execute(new IqiyiDetailPageTask(url, Config.isProxy));
+            return;
         }
 //        boolean existUserFlag = VideoSiteDAO.isExistUser(userToken);
         boolean existUserFlag = videoSiteDao1.isExistUser(userToken);
-        while (commonHttpClient.getDetailPageThreadPool().getQueue().size() > 1000){
+        while (commonHttpClient.getDetailPageThreadPool().getQueue().size() > 1000) {
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        if(!existUserFlag || commonHttpClient.getDetailPageThreadPool().getActiveCount() == 0){
+        if (!existUserFlag || commonHttpClient.getDetailPageThreadPool().getActiveCount() == 0) {
             /**
              * 防止互相等待，导致死锁
              */
-            commonHttpClient.getDetailPageThreadPool().execute(new DetailPageTask(url, Config.isProxy));
+            commonHttpClient.getDetailPageThreadPool().execute(new IqiyiDetailPageTask(url, Config.isProxy));
 
         }
     }

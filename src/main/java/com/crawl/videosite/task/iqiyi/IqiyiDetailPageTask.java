@@ -1,4 +1,4 @@
-package com.crawl.videosite.task.acfun;
+package com.crawl.videosite.task.iqiyi;
 
 
 import com.crawl.core.parser.DetailPageParser;
@@ -21,20 +21,20 @@ import static com.crawl.videosite.CommonHttpClient.parseUserCount;
  * 知乎用户详情页task
  * 下载成功解析出用户信息并添加到数据库，获取该用户的关注用户list url，添加到ListPageDownloadThreadPool
  */
-public class DetailPageTask extends AbstractPageTask {
-    private static Logger logger = LoggerFactory.getLogger(DetailPageTask.class);
+public class IqiyiDetailPageTask extends IqiyiAbstractPageTask {
+    private static Logger logger = LoggerFactory.getLogger(IqiyiDetailPageTask.class);
     private static DetailPageParser proxyDetailPageParser;
     static {
         proxyDetailPageParser = getProxyDetailParser();
     }
 
-    public DetailPageTask(String url, boolean proxyFlag) {
+    public IqiyiDetailPageTask(String url, boolean proxyFlag) {
         super(url, proxyFlag);
     }
 
     @Override
     void retry() {
-        commonHttpClient.getDetailPageThreadPool().execute(new DetailPageTask(url, Config.isProxy));
+        commonHttpClient.getDetailPageThreadPool().execute(new IqiyiDetailPageTask(url, Config.isProxy));
     }
 
     @Override
@@ -63,10 +63,10 @@ public class DetailPageTask extends AbstractPageTask {
         HttpGet request = new HttpGet(url);
         request.setHeader("authorization", "oauth " + CommonHttpClient.getAuthorization());
         if(!Config.dbEnable){
-            commonHttpClient.getListPageThreadPool().execute(new ListPageTask(request, Config.isProxy));
+            commonHttpClient.getListPageThreadPool().execute(new IqiyiListPageTask(request, Config.isProxy));
             return ;
         }
-        commonHttpClient.getListPageThreadPool().execute(new ListPageTask(request, Config.isProxy));
+        commonHttpClient.getListPageThreadPool().execute(new IqiyiListPageTask(request, Config.isProxy));
     }
 
     /**

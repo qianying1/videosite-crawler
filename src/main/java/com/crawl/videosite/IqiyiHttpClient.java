@@ -7,17 +7,15 @@ import com.crawl.core.util.Config;
 import com.crawl.core.util.Constants;
 import com.crawl.core.util.SimpleThreadPoolExecutor;
 import com.crawl.core.util.ThreadPoolMonitor;
-import com.crawl.proxy.ProxyHttpClient;
-import com.crawl.videosite.dao.impl.VideoSiteDao1Imp;
-import com.crawl.videosite.task.bilibili.DetailListPageTask;
-import com.crawl.videosite.task.bilibili.DetailPageTask;
-import com.crawl.videosite.task.bilibili.GeneralPageTask;
+import com.crawl.proxy.IqiyiProxyHttpClient;
+import com.crawl.videosite.task.bilibili.BiliBiliDetailListPageTask;
+import com.crawl.videosite.task.bilibili.BiliBiliDetailPageTask;
+import com.crawl.videosite.task.bilibili.BiliBiliGeneralPageTask;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -27,7 +25,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *
  * Created by qianhaibin on 2018/2/27.
  */
 public class IqiyiHttpClient extends AbstractHttpClient implements IHttpClient {
@@ -93,22 +90,22 @@ public class IqiyiHttpClient extends AbstractHttpClient implements IHttpClient {
                 Config.downloadThreadSize,
                 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(),
-                "detailPageThreadPool");
+                "iqiyiDetailPageThreadPool");
 
         //列表页线程池
         listPageThreadPool = new SimpleThreadPoolExecutor(50, 80,
                 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(5000),
-                new ThreadPoolExecutor.DiscardPolicy(), "listPageThreadPool");
-        new Thread(new ThreadPoolMonitor(detailPageThreadPool, "DetailPageDownloadThreadPool")).start();
-        new Thread(new ThreadPoolMonitor(listPageThreadPool, "ListPageDownloadThreadPool")).start();
+                new ThreadPoolExecutor.DiscardPolicy(), "iqiyiListPageThreadPool");
+        new Thread(new ThreadPoolMonitor(detailPageThreadPool, "IqiyiDetailPageDownloadThreadPool")).start();
+        new Thread(new ThreadPoolMonitor(listPageThreadPool, "IqiyiListPageDownloadThreadPool")).start();
         detailListPageThreadPool = new SimpleThreadPoolExecutor(Config.downloadThreadSize,
                 Config.downloadThreadSize,
                 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(2000),
                 new ThreadPoolExecutor.DiscardPolicy(),
-                "detailListPageThreadPool");
-        new Thread(new ThreadPoolMonitor(detailListPageThreadPool, "DetailListPageThreadPool")).start();
+                "iqiyiDetailListPageThreadPool");
+        new Thread(new ThreadPoolMonitor(detailListPageThreadPool, "IqiyiDetailListPageThreadPool")).start();
 
     }
 
@@ -118,7 +115,7 @@ public class IqiyiHttpClient extends AbstractHttpClient implements IHttpClient {
      * @param url
      */
     public void startCrawl(String url) {
-        detailPageThreadPool.execute(new DetailPageTask(url, Config.isProxy));
+        detailPageThreadPool.execute(new BiliBiliDetailPageTask(url, Config.isProxy));
         manageHttpClient();
     }
 
@@ -133,7 +130,7 @@ public class IqiyiHttpClient extends AbstractHttpClient implements IHttpClient {
         String startUrl = String.format(Constants.USER_FOLLOWEES_URL, startToken, 0);
         HttpGet request = new HttpGet(startUrl);
         request.setHeader("authorization", "oauth " + IqiyiHttpClient.getAuthorization());
-        detailListPageThreadPool.execute(new DetailListPageTask(request, Config.isProxy));
+        detailListPageThreadPool.execute(new BiliBiliDetailListPageTask(request, Config.isProxy));
         manageHttpClient();
     }
 
@@ -146,7 +143,7 @@ public class IqiyiHttpClient extends AbstractHttpClient implements IHttpClient {
         logger.info("初始化authoriztion中...");
         String content = null;
 
-        GeneralPageTask generalPageTask = new GeneralPageTask(Config.iqiyiStartURL, true);
+        BiliBiliGeneralPageTask generalPageTask = new BiliBiliGeneralPageTask(Config.iqiyiStartURL, true);
         generalPageTask.run();
         content = generalPageTask.getPage().getHtml();
 
@@ -159,7 +156,7 @@ public class IqiyiHttpClient extends AbstractHttpClient implements IHttpClient {
             throw new RuntimeException("not find javascript url");
         }
         String jsContent = null;
-        GeneralPageTask jsPageTask = new GeneralPageTask(jsSrc, true);
+        BiliBiliGeneralPageTask jsPageTask = new BiliBiliGeneralPageTask(jsSrc, true);
         jsPageTask.run();
         jsContent = jsPageTask.getPage().getHtml();
 
@@ -178,7 +175,7 @@ public class IqiyiHttpClient extends AbstractHttpClient implements IHttpClient {
     }
 
     /**
-     * 管理知乎客户端
+     * 管理爱奇艺客户端
      * 关闭整个爬虫
      */
     public void manageHttpClient() {
@@ -196,20 +193,12 @@ public class IqiyiHttpClient extends AbstractHttpClient implements IHttpClient {
             }
             if (detailListPageThreadPool.isTerminated()) {
                 //关闭数据库连接
-                Map<Thread, Connection> map = DetailListPageTask.getConnectionMap();
-                for (Connection cn : map.values()) {
-                    try {
-                        if (cn != null && !cn.isClosed()) {
-                            cn.close();
-                        }
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
+                Map<Thread, Connection> map = BiliBiliDetailListPageTask.getConnectionMap();
+                CommonHttpClient.closeConnections(map);
                 //关闭代理检测线程池
-                ProxyHttpClient.getInstance().getProxyTestThreadExecutor().shutdownNow();
+                IqiyiProxyHttpClient.getInstance().getProxyTestThreadExecutor().shutdownNow();
                 //关闭代理下载页线程池
-                ProxyHttpClient.getInstance().getProxyDownloadThreadExecutor().shutdownNow();
+                IqiyiProxyHttpClient.getInstance().getProxyDownloadThreadExecutor().shutdownNow();
 
                 break;
             }

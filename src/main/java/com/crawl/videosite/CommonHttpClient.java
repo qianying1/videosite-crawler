@@ -7,11 +7,10 @@ import com.crawl.core.util.Config;
 import com.crawl.core.util.Constants;
 import com.crawl.core.util.SimpleThreadPoolExecutor;
 import com.crawl.core.util.ThreadPoolMonitor;
-import com.crawl.proxy.ProxyHttpClient;
-import com.crawl.videosite.dao.impl.VideoSiteDao1Imp;
-import com.crawl.videosite.task.bilibili.DetailListPageTask;
-import com.crawl.videosite.task.bilibili.DetailPageTask;
-import com.crawl.videosite.task.bilibili.GeneralPageTask;
+import com.crawl.proxy.CommonProxyHttpClient;
+import com.crawl.videosite.task.bilibili.BiliBiliDetailListPageTask;
+import com.crawl.videosite.task.bilibili.BiliBiliDetailPageTask;
+import com.crawl.videosite.task.bilibili.BiliBiliGeneralPageTask;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,7 +114,7 @@ public class CommonHttpClient extends AbstractHttpClient implements IHttpClient 
      * @param url
      */
     public void startCrawl(String url) {
-        detailPageThreadPool.execute(new DetailPageTask(url, Config.isProxy));
+        detailPageThreadPool.execute(new BiliBiliDetailPageTask(url, Config.isProxy));
         manageHttpClient();
     }
 
@@ -130,7 +129,7 @@ public class CommonHttpClient extends AbstractHttpClient implements IHttpClient 
         String startUrl = String.format(Constants.USER_FOLLOWEES_URL, startToken, 0);
         HttpGet request = new HttpGet(startUrl);
         request.setHeader("authorization", "oauth " + CommonHttpClient.getAuthorization());
-        detailListPageThreadPool.execute(new DetailListPageTask(request, Config.isProxy));
+        detailListPageThreadPool.execute(new BiliBiliDetailListPageTask(request, Config.isProxy));
         manageHttpClient();
     }
 
@@ -143,7 +142,7 @@ public class CommonHttpClient extends AbstractHttpClient implements IHttpClient 
         logger.info("初始化authoriztion中...");
         String content = null;
 
-        GeneralPageTask generalPageTask = new GeneralPageTask(Config.biliBiliStartURL, true);
+        BiliBiliGeneralPageTask generalPageTask = new BiliBiliGeneralPageTask(Config.biliBiliStartURL, true);
         generalPageTask.run();
         content = generalPageTask.getPage().getHtml();
 
@@ -156,7 +155,7 @@ public class CommonHttpClient extends AbstractHttpClient implements IHttpClient 
             throw new RuntimeException("not find javascript url");
         }
         String jsContent = null;
-        GeneralPageTask jsPageTask = new GeneralPageTask(jsSrc, true);
+        BiliBiliGeneralPageTask jsPageTask = new BiliBiliGeneralPageTask(jsSrc, true);
         jsPageTask.run();
         jsContent = jsPageTask.getPage().getHtml();
 
@@ -193,20 +192,12 @@ public class CommonHttpClient extends AbstractHttpClient implements IHttpClient 
             }
             if (detailListPageThreadPool.isTerminated()) {
                 //关闭数据库连接
-                Map<Thread, Connection> map = DetailListPageTask.getConnectionMap();
-                for (Connection cn : map.values()) {
-                    try {
-                        if (cn != null && !cn.isClosed()) {
-                            cn.close();
-                        }
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
+                Map<Thread, Connection> map = BiliBiliDetailListPageTask.getConnectionMap();
+                closeConnections(map);
                 //关闭代理检测线程池
-                ProxyHttpClient.getInstance().getProxyTestThreadExecutor().shutdownNow();
+                CommonProxyHttpClient.getInstance().getProxyTestThreadExecutor().shutdownNow();
                 //关闭代理下载页线程池
-                ProxyHttpClient.getInstance().getProxyDownloadThreadExecutor().shutdownNow();
+                CommonProxyHttpClient.getInstance().getProxyDownloadThreadExecutor().shutdownNow();
 
                 break;
             }
@@ -216,6 +207,18 @@ public class CommonHttpClient extends AbstractHttpClient implements IHttpClient 
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void closeConnections(Map<Thread, Connection> map) {
+        for (Connection cn : map.values()) {
+            try {
+                if (cn != null && !cn.isClosed()) {
+                    cn.close();
+                }
+            } catch (SQLException e) {
                 e.printStackTrace();
             }
         }

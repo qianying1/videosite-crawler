@@ -11,6 +11,11 @@ public class Config {
      * 是否持久化到数据库
      */
     public static boolean dbEnable;
+
+    /**
+     * 是否启用代理
+     */
+    public static boolean isProxy;
     /**
      * 是否使用代理抓取
      */
@@ -147,6 +152,10 @@ public class Config {
      * cookie路径
      */
     public static String cookiePath;
+    /**
+     * proxyPath
+     */
+    public static String proxyPath;
 
     /**
      * b站代理路径
@@ -215,6 +224,7 @@ public class Config {
         downloadThreadSize = Integer.valueOf(p.getProperty("downloadThreadSize"));
         websitesThreadSize = Integer.valueOf(p.getProperty("websitesThreadSize"));
         cookiePath = p.getProperty("cookiePath");
+        proxyPath = p.getProperty("proxyPath");
         biliBiliProxyPath = p.getProperty("biliBiliProxyPath");
         acfunProxyPath = p.getProperty("acfunProxyPath");
         douyuProxyPath = p.getProperty("douyuProxyPath");
@@ -225,6 +235,7 @@ public class Config {
         youkuProxyPath = p.getProperty("youkuProxyPath");
         youtubeProxyPath = p.getProperty("youtubeProxyPath");
         tudouProxyPath = p.getProperty("tudouProxyPath");
+        isProxy=Boolean.valueOf(p.getProperty("isProxy"));
         bilibiliIsProxy = Boolean.valueOf(p.getProperty("bilibiliIsProxy"));
         acfunIsProxy = Boolean.valueOf(p.getProperty("acfunIsProxy"));
         douyuIsProxy = Boolean.valueOf(p.getProperty("douyuIsProxy"));

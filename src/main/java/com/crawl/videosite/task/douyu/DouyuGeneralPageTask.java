@@ -1,17 +1,17 @@
-package com.crawl.videosite.task.bilibili;
+package com.crawl.videosite.task.douyu;
 
 
 import com.crawl.videosite.entity.Page;
 
 
 /**
- * GeneralPageTask
+ * GeneralPageTaskCommon
  * 下载初始化authorization字段页面
  */
-public class GeneralPageTask extends AbstractPageTask{
+public class DouyuGeneralPageTask extends DouyuAbstractPageTask {
     private Page page = null;
 
-    public GeneralPageTask(String url, boolean proxyFlag) {
+    public DouyuGeneralPageTask(String url, boolean proxyFlag) {
         super(url, proxyFlag);
     }
 

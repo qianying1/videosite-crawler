@@ -13,16 +13,16 @@ import java.util.List;
  * 知乎用户关注列表页task
  * 下载成功解析出用户token，去重,构造用户详情url，获，添加到DetailPageDownloadThreadPool
  */
-public class ListPageTask extends AbstractPageTask {
+public class BiliBiliListPageTask extends BiliBiliAbstractPageTask {
 
-    public ListPageTask(HttpRequestBase request, boolean proxyFlag) {
+    public BiliBiliListPageTask(HttpRequestBase request, boolean proxyFlag) {
         super(request, proxyFlag);
     }
 
 
     @Override
     void retry() {
-        commonHttpClient.getListPageThreadPool().execute(new ListPageTask(request, Config.isProxy));
+        commonHttpClient.getListPageThreadPool().execute(new BiliBiliListPageTask(request, Config.isProxy));
     }
 
     @Override
@@ -42,7 +42,7 @@ public class ListPageTask extends AbstractPageTask {
     private void handleUserToken(String userToken) {
         String url = Constants.BILIBILI_INDEX_URL + "/people/" + userToken + "/following";
         if (!Config.dbEnable) {
-            commonHttpClient.getDetailPageThreadPool().execute(new DetailPageTask(url, Config.isProxy));
+            commonHttpClient.getDetailPageThreadPool().execute(new BiliBiliDetailPageTask(url, Config.isProxy));
             return;
         }
 //        boolean existUserFlag = VideoSiteDAO.isExistUser(userToken);
@@ -58,7 +58,7 @@ public class ListPageTask extends AbstractPageTask {
             /**
              * 防止互相等待，导致死锁
              */
-            commonHttpClient.getDetailPageThreadPool().execute(new DetailPageTask(url, Config.isProxy));
+            commonHttpClient.getDetailPageThreadPool().execute(new BiliBiliDetailPageTask(url, Config.isProxy));
 
         }
     }

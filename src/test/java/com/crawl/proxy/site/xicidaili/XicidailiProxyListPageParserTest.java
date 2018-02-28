@@ -2,7 +2,7 @@ package com.crawl.proxy.site.xicidaili;
 
 
 import com.crawl.core.util.HttpClientUtil;
-import com.crawl.proxy.ProxyHttpClient;
+import com.crawl.proxy.CommonProxyHttpClient;
 import com.crawl.proxy.entity.Proxy;
 import com.crawl.videosite.entity.Page;
 import org.apache.http.HttpHost;
@@ -20,7 +20,7 @@ public class XicidailiProxyListPageParserTest {
         requestBuilder.setProxy(new HttpHost("125.31.19.27", 80));
         HttpGet request = new HttpGet("http://www.xicidaili.com/wt/1.html");
         request.setConfig(requestBuilder.build());
-        Page page = ProxyHttpClient.getInstance().getWebPage(request);
+        Page page = CommonProxyHttpClient.getInstance().getWebPage(request);
         List<Proxy> urlList = new XicidailiProxyListPageParser().parse(page.getHtml());
         System.out.println(urlList.size());
     }

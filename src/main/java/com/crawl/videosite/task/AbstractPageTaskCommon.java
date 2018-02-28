@@ -1,4 +1,4 @@
-package com.crawl.videosite.task.bilibili;
+package com.crawl.videosite.task;
 
 import com.crawl.core.util.Constants;
 import com.crawl.core.util.HttpClientUtil;
@@ -7,10 +7,10 @@ import com.crawl.proxy.ProxyPool;
 import com.crawl.proxy.entity.Direct;
 import com.crawl.proxy.entity.Proxy;
 import com.crawl.proxy.util.ProxyUtil;
+import com.crawl.videosite.CommonHttpClient;
+import com.crawl.videosite.dao.VideoSiteDao1;
 import com.crawl.videosite.dao.impl.VideoSiteDao1Imp;
 import com.crawl.videosite.entity.Page;
-import com.crawl.videosite.dao.VideoSiteDao1;
-import com.crawl.videosite.CommonHttpClient;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
@@ -28,8 +28,8 @@ import java.lang.reflect.InvocationHandler;
  * 若使用代理，从ProxyPool中取
  * @see ProxyPool
  */
-public abstract class AbstractPageTask implements Runnable{
-	private static Logger logger = LoggerFactory.getLogger(AbstractPageTask.class);
+public abstract class AbstractPageTaskCommon implements Runnable{
+	private static Logger logger = LoggerFactory.getLogger(AbstractPageTaskCommon.class);
 	protected String url;
 	protected HttpRequestBase request;
 	protected boolean proxyFlag;//是否通过代理下载
@@ -39,14 +39,14 @@ public abstract class AbstractPageTask implements Runnable{
 	static {
 		videoSiteDao1 = getVideoSiteDao1();
 	}
-	public AbstractPageTask(){
+	public AbstractPageTaskCommon(){
 
 	}
-	public AbstractPageTask(String url, boolean proxyFlag){
+	public AbstractPageTaskCommon(String url, boolean proxyFlag){
 		this.url = url;
 		this.proxyFlag = proxyFlag;
 	}
-	public AbstractPageTask(HttpRequestBase request, boolean proxyFlag){
+	public AbstractPageTaskCommon(HttpRequestBase request, boolean proxyFlag){
 		this.request = request;
 		this.proxyFlag = proxyFlag;
 	}

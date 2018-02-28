@@ -1,17 +1,17 @@
-package com.crawl.videosite.task;
+package com.crawl.videosite.task.iqiyi;
 
 
 import com.crawl.videosite.entity.Page;
 
 
 /**
- * GeneralPageTask
+ * GeneralPageTaskCommon
  * 下载初始化authorization字段页面
  */
-public class GeneralPageTask extends AbstractPageTask {
+public class IqiyiGeneralPageTask extends IqiyiAbstractPageTask {
     private Page page = null;
 
-    public GeneralPageTask(String url, boolean proxyFlag) {
+    public IqiyiGeneralPageTask(String url, boolean proxyFlag) {
         super(url, proxyFlag);
     }
 

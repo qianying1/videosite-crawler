@@ -1,4 +1,4 @@
-package com.crawl.videosite.task.acfun;
+package com.crawl.videosite.task.douyu;
 
 
 import com.crawl.core.dao.ConnectionManager;
@@ -28,8 +28,8 @@ import static com.crawl.videosite.CommonHttpClient.parseUserCount;
 /**
  * 知乎用户列表详情页task
  */
-public class DetailListPageTask extends AbstractPageTask {
-    private static Logger logger = LoggerFactory.getLogger(DetailListPageTask.class);
+public class DouyuDetailListPageTask extends DouyuAbstractPageTask {
+    private static Logger logger = LoggerFactory.getLogger(DouyuDetailListPageTask.class);
     private static ListPageParser proxyUserListPageParser;
     /**
      * Thread-数据库连接
@@ -40,7 +40,7 @@ public class DetailListPageTask extends AbstractPageTask {
     }
 
 
-    public DetailListPageTask(HttpRequestBase request, boolean proxyFlag) {
+    public DouyuDetailListPageTask(HttpRequestBase request, boolean proxyFlag) {
         super(request, proxyFlag);
     }
 
@@ -58,7 +58,7 @@ public class DetailListPageTask extends AbstractPageTask {
 
     @Override
     void retry() {
-        commonHttpClient.getDetailListPageThreadPool().execute(new DetailListPageTask(request, Config.isProxy));
+        commonHttpClient.getDetailListPageThreadPool().execute(new DouyuDetailListPageTask(request, Config.isProxy));
     }
 
     @Override
@@ -86,7 +86,7 @@ public class DetailListPageTask extends AbstractPageTask {
                         //防止死锁
                         HttpGet request = new HttpGet(nextUrl);
                         request.setHeader("authorization", "oauth " + CommonHttpClient.getAuthorization());
-                        commonHttpClient.getDetailListPageThreadPool().execute(new DetailListPageTask(request, true));
+                        commonHttpClient.getDetailListPageThreadPool().execute(new DouyuDetailListPageTask(request, true));
                     }
                 }
             }
@@ -96,7 +96,7 @@ public class DetailListPageTask extends AbstractPageTask {
                     String nextUrl = String.format(USER_FOLLOWEES_URL, u.getUserToken(), j * 20);
                     HttpGet request = new HttpGet(nextUrl);
                     request.setHeader("authorization", "oauth " + CommonHttpClient.getAuthorization());
-                    commonHttpClient.getDetailListPageThreadPool().execute(new DetailListPageTask(request, true));
+                    commonHttpClient.getDetailListPageThreadPool().execute(new DouyuDetailListPageTask(request, true));
                 }
             }
         }
