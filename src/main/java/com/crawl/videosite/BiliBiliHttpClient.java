@@ -3,26 +3,26 @@ package com.crawl.videosite;
 import com.crawl.Main;
 import com.crawl.core.httpclient.AbstractHttpClient;
 import com.crawl.core.httpclient.IHttpClient;
-import com.crawl.core.util.Config;
-import com.crawl.core.util.Constants;
-import com.crawl.core.util.SimpleThreadPoolExecutor;
-import com.crawl.core.util.ThreadPoolMonitor;
+import com.crawl.core.util.*;
 import com.crawl.proxy.BiliBiliProxyHttpClient;
+import com.crawl.videosite.entity.Page;
 import com.crawl.videosite.task.bilibili.BiliBiliDetailListPageTask;
 import com.crawl.videosite.task.bilibili.BiliBiliDetailPageTask;
-import com.crawl.videosite.task.bilibili.BiliBiliGeneralPageTask;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by qianhaibin on 2018/2/27.
@@ -64,7 +64,7 @@ public class BiliBiliHttpClient extends AbstractHttpClient implements IHttpClien
      * request　header
      * 获取列表页时，必须带上
      */
-    private static String authorization;
+//    private static String authorization;
 
     private BiliBiliHttpClient() {
         initHttpClient();
@@ -126,14 +126,28 @@ public class BiliBiliHttpClient extends AbstractHttpClient implements IHttpClien
      */
     @Override
     public void startCrawl() {
-        authorization = initAuthorization();
-
-        String startToken = Config.startUserToken;
-        String startUrl = String.format(Constants.USER_FOLLOWEES_URL, startToken, 0);
+        String startUrl = Constants.BILIBILI_INDEX_URL;
         HttpGet request = new HttpGet(startUrl);
-        request.setHeader("authorization", "oauth " + BiliBiliHttpClient.getAuthorization());
-        detailListPageThreadPool.execute(new BiliBiliDetailListPageTask(request, Config.bilibiliIsProxy));
+        detailListPageThreadPool.execute(new BiliBiliDetailListPageTask(request, false));
         manageHttpClient();
+    }
+
+    /**
+     * 对使用代理进行请求的方法进行重写
+     *
+     * @param request
+     * @return
+     * @throws IOException
+     */
+    @Override
+    public Page getWebPage(HttpRequestBase request) throws IOException {
+        CloseableHttpResponse response = null;
+        response = HttpClientUtil.getResponse(request);
+        Page page = new Page();
+        page.setStatusCode(response.getStatusLine().getStatusCode());
+        page.setHtml(EntityUtils.toString(response.getEntity()));
+        page.setUrl(request.getURI().toString());
+        return page;
     }
 
     /**
@@ -141,7 +155,7 @@ public class BiliBiliHttpClient extends AbstractHttpClient implements IHttpClien
      *
      * @return
      */
-    private String initAuthorization() {
+    /*private String initAuthorization() {
         logger.info("初始化authoriztion中...");
         String content = null;
 
@@ -170,14 +184,10 @@ public class BiliBiliHttpClient extends AbstractHttpClient implements IHttpClien
             return authorization;
         }
         throw new RuntimeException("not get authorization");
-    }
-
-    public static String getAuthorization() {
-        return authorization;
-    }
+    }*/
 
     /**
-     * 管理知乎客户端
+     * 管理b站客户端
      * 关闭整个爬虫
      */
     public void manageHttpClient() {

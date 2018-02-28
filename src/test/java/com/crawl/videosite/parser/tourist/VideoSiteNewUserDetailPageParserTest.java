@@ -1,8 +1,8 @@
 package com.crawl.videosite.parser.tourist;
 
 import com.crawl.core.parser.DetailPageParser;
-import com.crawl.videosite.parser.VideoSiteNewUserDetailPageParser;
 import com.crawl.videosite.entity.Page;
+import com.crawl.videosite.parser.VideoSiteNewUserDetailPageParser;
 import com.crawl.videosite.entity.User;
 import com.crawl.core.util.HttpClientUtil;
 import org.junit.Test;

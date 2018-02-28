@@ -19,12 +19,14 @@ import java.io.IOException;
  * 通过访问知乎首页，能否正确响应
  * 将可用代理添加到DelayQueue延时队列中
  */
-public class YoukuProxyTestTask implements Runnable{
+public class YoukuProxyTestTask implements Runnable {
     private final static Logger logger = LoggerFactory.getLogger(YoukuProxyTestTask.class);
     private Proxy proxy;
-    public YoukuProxyTestTask(Proxy proxy){
+
+    public YoukuProxyTestTask(Proxy proxy) {
         this.proxy = proxy;
     }
+
     @Override
     public void run() {
         long startTime = System.currentTimeMillis();
@@ -40,9 +42,9 @@ public class YoukuProxyTestTask implements Runnable{
             Page page = CommonHttpClient.getInstance().getWebPage(request);
             long endTime = System.currentTimeMillis();
             String logStr = Thread.currentThread().getName() + " " + proxy.getProxyStr() +
-                    "  executing request " + page.getUrl()  + " response statusCode:" + page.getStatusCode() +
+                    "  executing request " + page.getUrl() + " response statusCode:" + page.getStatusCode() +
                     "  request cost time:" + (endTime - startTime) + "ms";
-            if (page == null || page.getStatusCode() != 200){
+            if (page == null || page.getStatusCode() != 200) {
                 logger.warn(logStr);
                 return;
             }
@@ -53,12 +55,13 @@ public class YoukuProxyTestTask implements Runnable{
         } catch (IOException e) {
             logger.debug("IOException:", e);
         } finally {
-            if (request != null){
+            if (request != null) {
                 request.releaseConnection();
             }
         }
     }
-    private String getProxyStr(){
+
+    private String getProxyStr() {
         return proxy.getIp() + ":" + proxy.getPort();
     }
 }

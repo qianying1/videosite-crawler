@@ -35,6 +35,7 @@ public class LetvDetailListPageTask extends LetvAbstractPageTask {
      * Thread-数据库连接
      */
     private static Map<Thread, Connection> connectionMap = new ConcurrentHashMap<>();
+
     static {
         proxyUserListPageParser = getProxyUserListPageParser();
     }
@@ -46,9 +47,10 @@ public class LetvDetailListPageTask extends LetvAbstractPageTask {
 
     /**
      * 代理类
+     *
      * @return
      */
-    private static ListPageParser getProxyUserListPageParser(){
+    private static ListPageParser getProxyUserListPageParser() {
         ListPageParser userListPageParser = VideoSiteUserListPageParser.getInstance();
         InvocationHandler invocationHandler = new SimpleInvocationHandler(userListPageParser);
         ListPageParser proxyUserListPageParser = (ListPageParser) Proxy.newProxyInstance(userListPageParser.getClass().getClassLoader(),
@@ -63,36 +65,35 @@ public class LetvDetailListPageTask extends LetvAbstractPageTask {
 
     @Override
     void handle(Page page) {
-        if(!page.getHtml().startsWith("{\"paging\"")){
+        if (!page.getHtml().startsWith("{\"paging\"")) {
             //代理异常，未能正确返回目标请求数据，丢弃
             currentProxy = null;
             return;
         }
         List<User> list = proxyUserListPageParser.parseListPage(page);
-        for(User u : list){
+        for (User u : list) {
             logger.info("解析用户成功:" + u.toString());
-            if(Config.dbEnable){
+            if (Config.dbEnable) {
                 Connection cn = getConnection();
-                if (videoSiteDao1.insertUser(cn, u)){
+                if (videoSiteDao1.insertUser(cn, u)) {
                     parseUserCount.incrementAndGet();
                 }
-                for (int j = 0; j < u.getFollowees() / 20; j++){
-                    if (commonHttpClient.getDetailListPageThreadPool().getQueue().size() > 1000){
+                for (int j = 0; j < u.getFollowees() / 20; j++) {
+                    if (commonHttpClient.getDetailListPageThreadPool().getQueue().size() > 1000) {
                         continue;
                     }
                     String nextUrl = String.format(USER_FOLLOWEES_URL, u.getUserToken(), j * 20);
                     if (videoSiteDao1.insertUrl(cn, Md5Util.Convert2Md5(nextUrl)) ||
-                            commonHttpClient.getDetailListPageThreadPool().getActiveCount() == 1){
+                            commonHttpClient.getDetailListPageThreadPool().getActiveCount() == 1) {
                         //防止死锁
                         HttpGet request = new HttpGet(nextUrl);
                         request.setHeader("authorization", "oauth " + CommonHttpClient.getAuthorization());
                         commonHttpClient.getDetailListPageThreadPool().execute(new LetvDetailListPageTask(request, true));
                     }
                 }
-            }
-            else if(!Config.dbEnable || commonHttpClient.getDetailListPageThreadPool().getActiveCount() == 1){
+            } else if (!Config.dbEnable || commonHttpClient.getDetailListPageThreadPool().getActiveCount() == 1) {
                 parseUserCount.incrementAndGet();
-                for (int j = 0; j < u.getFollowees() / 20; j++){
+                for (int j = 0; j < u.getFollowees() / 20; j++) {
                     String nextUrl = String.format(USER_FOLLOWEES_URL, u.getUserToken(), j * 20);
                     HttpGet request = new HttpGet(nextUrl);
                     request.setHeader("authorization", "oauth " + CommonHttpClient.getAuthorization());
@@ -104,15 +105,16 @@ public class LetvDetailListPageTask extends LetvAbstractPageTask {
 
     /**
      * 每个thread维护一个Connection
+     *
      * @return
      */
-    private Connection getConnection(){
+    private Connection getConnection() {
         Thread currentThread = Thread.currentThread();
         Connection cn = null;
-        if (!connectionMap.containsKey(currentThread)){
+        if (!connectionMap.containsKey(currentThread)) {
             cn = ConnectionManager.createConnection();
             connectionMap.put(currentThread, cn);
-        }  else {
+        } else {
             cn = connectionMap.get(currentThread);
         }
         return cn;

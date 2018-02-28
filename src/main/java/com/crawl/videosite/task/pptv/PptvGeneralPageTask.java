@@ -30,7 +30,7 @@ public class PptvGeneralPageTask extends PptvAbstractPageTask {
         this.page = page;
     }
 
-    public Page getPage(){
+    public Page getPage() {
         return page;
     }
 }

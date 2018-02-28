@@ -30,7 +30,7 @@ public class DouyuGeneralPageTask extends DouyuAbstractPageTask {
         this.page = page;
     }
 
-    public Page getPage(){
+    public Page getPage() {
         return page;
     }
 }

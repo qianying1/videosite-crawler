@@ -14,29 +14,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 用户详情列表页
+ *
  */
-public class VideoSiteUserListPageParser implements ListPageParser {
-    private static VideoSiteUserListPageParser instance;
-
-    public static VideoSiteUserListPageParser getInstance() {
-        if (instance == null) {
-            synchronized (CommonHttpClient.class) {
-                if (instance == null) {
-                    instance = new VideoSiteUserListPageParser();
+public class VideoSiteIndexPageParser implements ListPageParser{
+    private static VideoSiteIndexPageParser instance;
+    public static VideoSiteIndexPageParser getInstance(){
+        if (instance == null){
+            synchronized (CommonHttpClient.class){
+                if (instance == null){
+                    instance = new VideoSiteIndexPageParser();
                 }
             }
         }
         return instance;
     }
-
     @Override
     public List<User> parseListPage(Page page) {
         List<User> userList = new ArrayList<>();
         String baseJsonPath = "$.data.length()";
         DocumentContext dc = JsonPath.parse(page.getHtml());
         Integer userCount = dc.read(baseJsonPath);
-        for (int i = 0; i < userCount; i++) {
+        for (int i = 0; i < userCount; i++){
             User user = new User();
             String userBaseJsonPath = "$.data[" + i + "]";
             setUserInfoByJsonPth(user, "userToken", dc, userBaseJsonPath + ".url_token");//user_token
@@ -56,28 +54,27 @@ public class VideoSiteUserListPageParser implements ListPageParser {
             setUserInfoByJsonPth(user, "thanks", dc, userBaseJsonPath + ".thanked_count");//感谢数
             try {
                 Integer gender = dc.read(userBaseJsonPath + ".gender");
-                if (gender != null && gender == 1) {
+                if (gender != null && gender == 1){
                     user.setSex("male");
-                } else if (gender != null && gender == 0) {
+                }
+                else if(gender != null && gender == 0){
                     user.setSex("female");
                 }
-            } catch (PathNotFoundException e) {
+            } catch (PathNotFoundException e){
                 //没有该属性
             }
             userList.add(user);
         }
         return userList;
     }
-
     /**
      * jsonPath获取值，并通过反射直接注入到user中
-     *
      * @param user
      * @param fieldName
      * @param dc
      * @param jsonPath
      */
-    private void setUserInfoByJsonPth(User user, String fieldName, DocumentContext dc, String jsonPath) {
+    private void setUserInfoByJsonPth(User user, String fieldName, DocumentContext dc , String jsonPath){
         try {
             Object o = dc.read(jsonPath);
             Field field = user.getClass().getDeclaredField(fieldName);
@@ -85,7 +82,7 @@ public class VideoSiteUserListPageParser implements ListPageParser {
             field.set(user, o);
         } catch (PathNotFoundException e1) {
             //no results
-        } catch (Exception e) {
+        } catch (Exception e){
             e.printStackTrace();
         }
     }

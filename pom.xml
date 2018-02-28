@@ -18,6 +18,12 @@
       <artifactId>jsoup</artifactId>
       <version>1.7.2</version>
     </dependency>
+    <!-- htmlunit以来库 -->
+    <dependency>
+      <groupId>net.sourceforge.htmlunit</groupId>
+      <artifactId>htmlunit</artifactId>
+      <version>2.27</version>
+    </dependency>
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>

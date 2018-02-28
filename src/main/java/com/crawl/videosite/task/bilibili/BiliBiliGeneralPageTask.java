@@ -27,10 +27,11 @@ public class BiliBiliGeneralPageTask extends BiliBiliAbstractPageTask {
 
     @Override
     void handle(Page page) {
+        System.out.println("BiliBiliGeneralPageTask used!");
         this.page = page;
     }
 
-    public Page getPage(){
+    public Page getPage() {
         return page;
     }
 }

@@ -3,8 +3,6 @@ package com.crawl.proxy;
 import com.crawl.core.httpclient.AbstractHttpClient;
 import com.crawl.core.util.*;
 import com.crawl.proxy.entity.Proxy;
-import com.crawl.proxy.task.bilibili.BiliBiliProxyPageTask;
-import com.crawl.proxy.task.bilibili.BiliBiliProxySerializeTask;
 import com.crawl.proxy.task.tudou.TudouProxyPageTask;
 import com.crawl.proxy.task.tudou.TudouProxySerializeTask;
 import com.crawl.videosite.entity.Page;

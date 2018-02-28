@@ -4,16 +4,13 @@ import com.crawl.core.util.Config;
 import com.crawl.proxy.*;
 import com.crawl.videosite.BiliBiliHttpClient;
 import com.crawl.videosite.dao.impl.VideoSiteDao1Imp;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 网站数据爬取初始节点
  */
 public class Initializer {
     private volatile static Initializer instance;
+
     public static Initializer getInstance() {
         if (instance == null) {
             synchronized (Initializer.class) {
@@ -43,34 +40,54 @@ public class Initializer {
      */
     public void startVideoSitesCrawler() {
         //a站
-//        AcfunProxyHttpClient.getInstance().startCrawl();
+//        if (Config.acfunIsProxy) {
+//            AcfunProxyHttpClient.getInstance().startCrawl();
+//        }
 //        AcfunHttpClient.getInstance().startCrawl();
         //b站
-        BiliBiliProxyHttpClient.getInstance().startCrawl();
+//        if (Config.bilibiliIsProxy) {
+//            BiliBiliProxyHttpClient.getInstance().startCrawl();
+//        }
         BiliBiliHttpClient.getInstance().startCrawl();
         //斗鱼
-//        DouyuProxyHttpClient.getInstance().startCrawl();
-//        DouyuHttpClient.getInstance().startCrawl();
-//        //爱奇艺
-//        IqiyiProxyHttpClient.getInstance().startCrawl();
-//        IqiyiHttpClient.getInstance().startCrawl();
-//        //乐视
-//        LetvProxyHttpClient.getInstance().startCrawl();
-//        LetvHttpClient.getInstance().startCrawl();
-//        //皮皮电影
-//        PptvProxyHttpClient.getInstance().startCrawl();
-//        PptvHttpClient.getInstance().startCrawl();
-//        //搜狐
-//        SohuProxyHttpClient.getInstance().startCrawl();
-//        SohuHttpClient.getInstance().startCrawl();
-//        //土豆
-//        TudouProxyHttpClient.getInstance().startCrawl();
-//        TudouHttpClient.getInstance().startCrawl();
-//        //优酷
-//        YoukuProxyHttpClient.getInstance().startCrawl();
-//        YoukuHttpClient.getInstance().startCrawl();
-//        //youtube
-//        YoutubeProxyHttpClient.getInstance().startCrawl();
+//        if (Config.douyuIsProxy) {
+//            DouyuProxyHttpClient.getInstance().startCrawl();
+//        }
+////        DouyuHttpClient.getInstance().startCrawl();
+////        //爱奇艺
+//        if (Config.iqiyiIsProxy) {
+//            IqiyiProxyHttpClient.getInstance().startCrawl();
+//        }
+////        IqiyiHttpClient.getInstance().startCrawl();
+////        //乐视
+//        if (Config.letvIsProxy) {
+//            LetvProxyHttpClient.getInstance().startCrawl();
+//        }
+////        LetvHttpClient.getInstance().startCrawl();
+////        //皮皮电影
+//        if (Config.pptvIsProxy) {
+//            PptvProxyHttpClient.getInstance().startCrawl();
+//        }
+////        PptvHttpClient.getInstance().startCrawl();
+////        //搜狐
+//        if (Config.sohuIsProxy) {
+//            SohuProxyHttpClient.getInstance().startCrawl();
+//        }
+////        SohuHttpClient.getInstance().startCrawl();
+////        //土豆
+//        if (Config.tudouIsProxy) {
+//            TudouProxyHttpClient.getInstance().startCrawl();
+//        }
+////        TudouHttpClient.getInstance().startCrawl();
+////        //优酷
+//        if (Config.youkuIsProxy) {
+//            YoukuProxyHttpClient.getInstance().startCrawl();
+//        }
+////        YoukuHttpClient.getInstance().startCrawl();
+////        //youtube
+//        if (Config.youtubeIsProxy) {
+//            YoutubeProxyHttpClient.getInstance().startCrawl();
+//        }
 //        YoutubeHttpClient.getInstance().startCrawl();
     }
 

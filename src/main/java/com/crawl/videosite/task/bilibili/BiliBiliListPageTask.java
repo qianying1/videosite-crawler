@@ -4,10 +4,7 @@ package com.crawl.videosite.task.bilibili;
 import com.crawl.core.util.Config;
 import com.crawl.core.util.Constants;
 import com.crawl.videosite.entity.Page;
-import com.jayway.jsonpath.JsonPath;
 import org.apache.http.client.methods.HttpRequestBase;
-
-import java.util.List;
 
 /**
  * 知乎用户关注列表页task
@@ -22,43 +19,44 @@ public class BiliBiliListPageTask extends BiliBiliAbstractPageTask {
 
     @Override
     void retry() {
-        commonHttpClient.getListPageThreadPool().execute(new BiliBiliListPageTask(request, Config.isProxy));
+        httpClient.getListPageThreadPool().execute(new BiliBiliListPageTask(request, Config.isProxy));
     }
 
     @Override
     void handle(Page page) {
+        System.out.println("BiliBiliListPageTask used!");
         /**
          * "我关注的人"列表页
          */
-        List<String> urlTokenList = JsonPath.parse(page.getHtml()).read("$.data..url_token");
+        /*List<String> urlTokenList = JsonPath.parse(page.getHtml()).read("$.data..url_token");
         for (String s : urlTokenList) {
             if (s == null) {
                 continue;
             }
             handleUserToken(s);
-        }
+        }*/
     }
 
     private void handleUserToken(String userToken) {
         String url = Constants.BILIBILI_INDEX_URL + "/people/" + userToken + "/following";
         if (!Config.dbEnable) {
-            commonHttpClient.getDetailPageThreadPool().execute(new BiliBiliDetailPageTask(url, Config.isProxy));
+            httpClient.getDetailPageThreadPool().execute(new BiliBiliDetailPageTask(url, Config.isProxy));
             return;
         }
 //        boolean existUserFlag = VideoSiteDAO.isExistUser(userToken);
         boolean existUserFlag = videoSiteDao1.isExistUser(userToken);
-        while (commonHttpClient.getDetailPageThreadPool().getQueue().size() > 1000) {
+        while (httpClient.getDetailPageThreadPool().getQueue().size() > 1000) {
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        if (!existUserFlag || commonHttpClient.getDetailPageThreadPool().getActiveCount() == 0) {
+        if (!existUserFlag || httpClient.getDetailPageThreadPool().getActiveCount() == 0) {
             /**
              * 防止互相等待，导致死锁
              */
-            commonHttpClient.getDetailPageThreadPool().execute(new BiliBiliDetailPageTask(url, Config.isProxy));
+            httpClient.getDetailPageThreadPool().execute(new BiliBiliDetailPageTask(url, Config.isProxy));
 
         }
     }

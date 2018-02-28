@@ -30,7 +30,7 @@ public class IqiyiGeneralPageTask extends IqiyiAbstractPageTask {
         this.page = page;
     }
 
-    public Page getPage(){
+    public Page getPage() {
         return page;
     }
 }

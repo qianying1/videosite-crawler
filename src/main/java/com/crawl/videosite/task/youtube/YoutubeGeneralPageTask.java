@@ -30,7 +30,7 @@ public class YoutubeGeneralPageTask extends YoutubeAbstractPageTask {
         this.page = page;
     }
 
-    public Page getPage(){
+    public Page getPage() {
         return page;
     }
 }

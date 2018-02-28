@@ -139,6 +139,34 @@ public class Config {
      */
     public static String dbPassword;
     /**
+     * 创建AnalizedMessage表语句
+     */
+    public static String createAnalizedMessageTable;
+    /**
+     * 创建GrabLib表语句
+     */
+    public static String createGrabLibTable;
+    /**
+     * 创建GrabMessage表语句
+     */
+    public static String createGrabMessageTable;
+    /**
+     * 创建Style表语句
+     */
+    public static String createStyleTable;
+    /**
+     * 创建VideoAuthor表语句
+     */
+    public static String createVideoAuthorTable;
+    /**
+     * 创建Video表语句
+     */
+    public static String createVideoTable;
+    /**
+     * 创建WebSites表语句
+     */
+    public static String createWebSitesTable;
+    /**
      * 创建Url表语句
      */
     public static String createUrlTable;
@@ -235,7 +263,7 @@ public class Config {
         youkuProxyPath = p.getProperty("youkuProxyPath");
         youtubeProxyPath = p.getProperty("youtubeProxyPath");
         tudouProxyPath = p.getProperty("tudouProxyPath");
-        isProxy=Boolean.valueOf(p.getProperty("isProxy"));
+        isProxy = Boolean.valueOf(p.getProperty("isProxy"));
         bilibiliIsProxy = Boolean.valueOf(p.getProperty("bilibiliIsProxy"));
         acfunIsProxy = Boolean.valueOf(p.getProperty("acfunIsProxy"));
         douyuIsProxy = Boolean.valueOf(p.getProperty("douyuIsProxy"));
@@ -253,6 +281,13 @@ public class Config {
             dbPassword = p.getProperty("db.password");
             createUrlTable = p.getProperty("createUrlTable");
             createUserTable = p.getProperty("createUserTable");
+            createAnalizedMessageTable = p.getProperty("createAnalizedMessageTable");
+            createGrabLibTable = p.getProperty("createGrabLibTable");
+            createGrabMessageTable = p.getProperty("createGrabMessageTable");
+            createStyleTable = p.getProperty("createStyleTable");
+            createVideoAuthorTable = p.getProperty("createVideoAuthorTable");
+            createVideoTable = p.getProperty("createVideoTable");
+            createWebSitesTable = p.getProperty("createWebSitesTable");
         }
     }
 

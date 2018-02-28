@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: net.sourceforge.htmlunit:htmlunit:4.12">
+    <CLASSES>
+      <root url="jar://D:/maven-pool/net/sourceforge/htmlunit/htmlunit/4.12/htmlunit-4.12.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://D:/maven-pool/net/sourceforge/htmlunit/htmlunit/4.12/htmlunit-4.12-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://D:/maven-pool/net/sourceforge/htmlunit/htmlunit/4.12/htmlunit-4.12-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

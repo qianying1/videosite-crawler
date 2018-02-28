@@ -37,7 +37,7 @@ public class YoutubeProxySerializeTask implements Runnable{
             }
 
             HttpClientUtil.serializeObject(proxyArray, Config.youtubeProxyPath);
-            logger.info("成功序列化youtube " + proxyArray.length + "个代理");
+            logger.info("youtube成功序列化youtube " + proxyArray.length + "个代理");
         }
     }
 }

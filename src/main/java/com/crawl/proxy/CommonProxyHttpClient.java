@@ -23,16 +23,17 @@ public class CommonProxyHttpClient extends AbstractHttpClient {
     private volatile static CommonProxyHttpClient instance;
     public static Set<Page> downloadFailureProxyPageSet = new HashSet<>(ProxyPool.proxyMap.size());
 
-    public static CommonProxyHttpClient getInstance(){
-        if (instance == null){
-            synchronized (CommonProxyHttpClient.class){
-                if (instance == null){
+    public static CommonProxyHttpClient getInstance() {
+        if (instance == null) {
+            synchronized (CommonProxyHttpClient.class) {
+                if (instance == null) {
                     instance = new CommonProxyHttpClient();
                 }
             }
         }
         return instance;
     }
+
     /**
      * 代理测试线程池
      */
@@ -41,14 +42,16 @@ public class CommonProxyHttpClient extends AbstractHttpClient {
      * 代理网站下载线程池
      */
     private ThreadPoolExecutor proxyDownloadThreadExecutor;
-    public CommonProxyHttpClient(){
+
+    public CommonProxyHttpClient() {
         initThreadPool();
         initProxy();
     }
+
     /**
      * 初始化线程池
      */
-    private void initThreadPool(){
+    private void initThreadPool() {
         proxyTestThreadExecutor = new SimpleThreadPoolExecutor(100, 100,
                 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(10000),
@@ -64,22 +67,21 @@ public class CommonProxyHttpClient extends AbstractHttpClient {
 
     /**
      * 初始化proxy
-     *
      */
-    private void initProxy(){
+    private void initProxy() {
         Proxy[] proxyArray = null;
         try {
             proxyArray = (Proxy[]) HttpClientUtil.deserializeObject(Config.proxyPath);
             int usableProxyCount = 0;
-            for (Proxy p : proxyArray){
-                if (p == null){
+            for (Proxy p : proxyArray) {
+                if (p == null) {
                     continue;
                 }
                 p.setTimeInterval(Constants.TIME_INTERVAL);
                 p.setFailureTimes(0);
                 p.setSuccessfulTimes(0);
                 long nowTime = System.currentTimeMillis();
-                if (nowTime - p.getLastSuccessfulTime() < 1000 * 60 *60){
+                if (nowTime - p.getLastSuccessfulTime() < 1000 * 60 * 60) {
                     //上次成功离现在少于一小时
                     ProxyPool.acfunProxyQueue.add(p);
                     ProxyPool.acfunProxySet.add(p);
@@ -95,12 +97,12 @@ public class CommonProxyHttpClient extends AbstractHttpClient {
     /**
      * 抓取代理
      */
-    public void startCrawl(){
+    public void startCrawl() {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                while (true){
-                    for (String url : ProxyPool.proxyMap.keySet()){
+                while (true) {
+                    for (String url : ProxyPool.proxyMap.keySet()) {
                         /**
                          * 首次本机直接下载代理页面
                          */
@@ -121,6 +123,7 @@ public class CommonProxyHttpClient extends AbstractHttpClient {
         }).start();
         new Thread(new AcfunProxySerializeTask()).start();
     }
+
     public ThreadPoolExecutor getProxyTestThreadExecutor() {
         return proxyTestThreadExecutor;
     }

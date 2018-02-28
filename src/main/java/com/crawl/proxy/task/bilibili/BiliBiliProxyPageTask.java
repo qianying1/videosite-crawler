@@ -11,6 +11,7 @@ import com.crawl.proxy.entity.Proxy;
 import com.crawl.proxy.site.ProxyListPageParserFactory;
 import com.crawl.videosite.CommonHttpClient;
 import com.crawl.videosite.entity.Page;
+import com.crawl.videosite.entity.Page;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
@@ -99,7 +100,6 @@ public class BiliBiliProxyPageTask implements Runnable {
         if (page.getHtml() == null || page.getHtml().equals("")) {
             return;
         }
-
         ProxyListPageParser parser = ProxyListPageParserFactory.
                 getProxyListPageParser(ProxyPool.proxyMap.get(url));
         List<Proxy> proxyList = parser.parse(page.getHtml());
