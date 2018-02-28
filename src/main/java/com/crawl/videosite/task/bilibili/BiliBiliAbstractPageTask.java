@@ -64,7 +64,6 @@ public abstract class BiliBiliAbstractPageTask implements Runnable {
             Page page = null;
             if (url != null) {
                 if (proxyFlag) {
-                    tempRequest = new HttpGet(url);
                     currentProxy = ProxyPool.biliBiliProxyQueue.take();
                     if (!(currentProxy instanceof Direct)) {
                         HttpHost proxy = new HttpHost(currentProxy.getIp(), currentProxy.getPort());

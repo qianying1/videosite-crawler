@@ -1,6 +1,5 @@
 package com.crawl.core.jsoup;
 
-import com.crawl.core.htmlunit.AbstractHtmlUnit;
 import com.crawl.videosite.entity.Page;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +14,11 @@ import java.io.InputStream;
  */
 public class AbstractJsoup {
 
-    private Logger logger = LoggerFactory.getLogger(AbstractHtmlUnit.class);
+    private Logger logger = LoggerFactory.getLogger(AbstractJsoup.class);
+
+    private AbstractJsoup(){
+
+    }
 
     public InputStream getWebPageInputStream(String url) {
 
