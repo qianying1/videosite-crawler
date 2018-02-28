@@ -54,7 +54,7 @@ public class Config {
     /**
      * 浏览器cookies
      */
-    public static Map<String,Object> acfunCookies;
+    public static Map<String, Object> acfunCookies;
 
     /**
      * 需要传递数据的key
@@ -69,7 +69,7 @@ public class Config {
     /**
      * 需要传递datas
      */
-    public static Map<String,Object> acfunDatas;
+    public static Map<String, Object> acfunDatas;
 
     /**
      * 是否忽略数据类型
@@ -153,7 +153,7 @@ public class Config {
     /**
      * 浏览器cookies
      */
-    public static Map<String,Object> biliBiliCookies;
+    public static Map<String, Object> biliBiliCookies;
 
     /**
      * 需要传递数据的key
@@ -168,7 +168,7 @@ public class Config {
     /**
      * 需要传递datas
      */
-    public static Map<String,Object> biliBiliDatas;
+    public static Map<String, Object> biliBiliDatas;
 
     /**
      * 是否忽略数据类型
@@ -253,7 +253,7 @@ public class Config {
     /**
      * 浏览器cookies
      */
-    public static Map<String,Object> douyuCookies;
+    public static Map<String, Object> douyuCookies;
 
     /**
      * 需要传递数据的key
@@ -268,7 +268,7 @@ public class Config {
     /**
      * 需要传递datas
      */
-    public static Map<String,Object> douyuDatas;
+    public static Map<String, Object> douyuDatas;
 
     /**
      * 是否忽略数据类型
@@ -353,7 +353,7 @@ public class Config {
     /**
      * 浏览器cookies
      */
-    public static Map<String,Object> iqiyiCookies;
+    public static Map<String, Object> iqiyiCookies;
 
     /**
      * 需要传递数据的key
@@ -368,7 +368,7 @@ public class Config {
     /**
      * 需要传递datas
      */
-    public static Map<String,Object> iqiyiDatas;
+    public static Map<String, Object> iqiyiDatas;
 
     /**
      * 是否忽略数据类型
@@ -453,7 +453,7 @@ public class Config {
     /**
      * 浏览器cookies
      */
-    public static Map<String,Object> letvCookies;
+    public static Map<String, Object> letvCookies;
 
     /**
      * 需要传递数据的key
@@ -468,7 +468,7 @@ public class Config {
     /**
      * 需要传递datas
      */
-    public static Map<String,Object> letvDatas;
+    public static Map<String, Object> letvDatas;
 
     /**
      * 是否忽略数据类型
@@ -542,7 +542,7 @@ public class Config {
     /**
      * 浏览器cookies
      */
-    public static Map<String,Object> pptvCookies;
+    public static Map<String, Object> pptvCookies;
 
     /**
      * 需要传递数据的key
@@ -557,7 +557,7 @@ public class Config {
     /**
      * 需要传递datas
      */
-    public static Map<String,Object> pptvDatas;
+    public static Map<String, Object> pptvDatas;
 
     /**
      * 是否忽略数据类型
@@ -643,7 +643,7 @@ public class Config {
     /**
      * 浏览器cookies
      */
-    public static Map<String,Object> sohuCookies;
+    public static Map<String, Object> sohuCookies;
 
     /**
      * 需要传递数据的key
@@ -658,7 +658,7 @@ public class Config {
     /**
      * 需要传递datas
      */
-    public static Map<String,Object> sohuDatas;
+    public static Map<String, Object> sohuDatas;
 
     /**
      * 是否忽略数据类型
@@ -744,7 +744,7 @@ public class Config {
     /**
      * 浏览器cookies
      */
-    public static Map<String,Object> tudouCookies;
+    public static Map<String, Object> tudouCookies;
 
     /**
      * 需要传递数据的key
@@ -759,7 +759,7 @@ public class Config {
     /**
      * 需要传递datas
      */
-    public static Map<String,Object> tudouDatas;
+    public static Map<String, Object> tudouDatas;
 
     /**
      * 是否忽略数据类型
@@ -845,7 +845,7 @@ public class Config {
     /**
      * 浏览器cookies
      */
-    public static Map<String,Object> youkuCookies;
+    public static Map<String, Object> youkuCookies;
 
     /**
      * 需要传递数据的key
@@ -860,7 +860,7 @@ public class Config {
     /**
      * 需要传递datas
      */
-    public static Map<String,Object> youkuDatas;
+    public static Map<String, Object> youkuDatas;
 
     /**
      * 是否忽略数据类型
@@ -944,7 +944,7 @@ public class Config {
     /**
      * 浏览器cookies
      */
-    public static Map<String,Object> youtubeCookies;
+    public static Map<String, Object> youtubeCookies;
 
     /**
      * 需要传递数据的key
@@ -959,7 +959,7 @@ public class Config {
     /**
      * 需要传递datas
      */
-    public static Map<String,Object> youtubeDatas;
+    public static Map<String, Object> youtubeDatas;
 
     /**
      * 是否忽略数据类型
@@ -1128,7 +1128,7 @@ public class Config {
         acfunStartURL = p.getProperty("acfunStartURL");
         acfunProxyPath = p.getProperty("acfunProxyPath");
         acfunIsProxy = Boolean.valueOf(p.getProperty("acfunIsProxy"));
-        acfunTimeout=Integer.valueOf(p.getProperty("acfunTimeout"));
+        acfunTimeout = Integer.valueOf(p.getProperty("acfunTimeout"));
         //----------------------------------------------biliBili-------------------------------------------------//
         biliBiliStartURL = p.getProperty("biliBiliStartURL");
         biliBiliProxyPath = p.getProperty("biliBiliProxyPath");
@@ -1165,8 +1165,7 @@ public class Config {
         youtubeStartURL = p.getProperty("youtubeStartURL");
         youtubeProxyPath = p.getProperty("youtubeProxyPath");
         youtubeIsProxy = Boolean.valueOf(p.getProperty("youtubeIsProxy"));
-        youtubeTimeout=Integer.valueOf(p.getProperty("youtubeTimeout"));
-        youtubeUserAgent=p.getProperty("youtubeUserAgent");
+        youtubeUserAgent = p.getProperty("youtubeUserAgent");
         //----------------------------------------------common-------------------------------------------------//
         dbEnable = Boolean.parseBoolean(p.getProperty("db.enable"));
         verificationCodePath = p.getProperty("verificationCodePath");
@@ -1179,6 +1178,181 @@ public class Config {
         cookiePath = p.getProperty("cookiePath");
         proxyPath = p.getProperty("proxyPath");
         isProxy = Boolean.valueOf(p.getProperty("isProxy"));
+
+        acfunCharset = p.getProperty("acfunCharset");
+        biliBiliCharset = p.getProperty("biliBiliCharset");
+        douyuCharset = p.getProperty("douyuCharset");
+        iqiyiCharset = p.getProperty("iqiyiCharset");
+        letvCharset = p.getProperty("letvCharset");
+        pptvCharset = p.getProperty("pptvCharset");
+        sohuCharset = p.getProperty("sohuCharset");
+        tudouCharset = p.getProperty("tudouCharset");
+        youkuCharset = p.getProperty("youkuCharset");
+        youtubeCharset = p.getProperty("youtubeCharset");
+
+        acfunReferrer = p.getProperty("acfunReferrer");
+        biliBiliReferrer = p.getProperty("biliBiliReferrer");
+        douyuReferrer = p.getProperty("douyuReferrer");
+        iqiyiReferrer = p.getProperty("iqiyiReferrer");
+        letvReferrer = p.getProperty("letvReferrer");
+        pptvReferrer = p.getProperty("pptvReferrer");
+        sohuReferrer = p.getProperty("sohuReferrer");
+        tudouReferrer = p.getProperty("tudouReferrer");
+        youkuReferrer = p.getProperty("youkuReferrer");
+        youtubeReferrer = p.getProperty("youtubeReferrer");
+
+        acfunCookieKey = p.getProperty("acfunCookieKey");
+        biliBiliCookieKey = p.getProperty("biliBiliCookieKey");
+        douyuCookieKey = p.getProperty("douyuCookieKey");
+        iqiyiCookieKey = p.getProperty("iqiyiCookieKey");
+        letvCookieKey = p.getProperty("letvCookieKey");
+        pptvCookieKey = p.getProperty("pptvCookieKey");
+        sohuCookieKey = p.getProperty("sohuCookieKey");
+        tudouCookieKey = p.getProperty("tudouCookieKey");
+        youkuCookieKey = p.getProperty("youkuCookieKey");
+        youtubeCookieKey = p.getProperty("youtubeCookieKey");
+
+        acfunCookieValue = p.getProperty("acfunCookieValue");
+        biliBiliCookieValue = p.getProperty("biliBiliCookieValue");
+        douyuCookieValue = p.getProperty("douyuCookieValue");
+        iqiyiCookieValue = p.getProperty("iqiyiCookieValue");
+        letvCookieValue = p.getProperty("letvCookieValue");
+        pptvCookieValue = p.getProperty("pptvCookieValue");
+        sohuCookieValue = p.getProperty("sohuCookieValue");
+        tudouCookieValue = p.getProperty("tudouCookieValue");
+        youkuCookieValue = p.getProperty("youkuCookieValue");
+        youtubeCookieValue = p.getProperty("youtubeCookieValue");
+
+        acfunUserAgent = p.getProperty("acfunUserAgent");
+        biliBiliUserAgent = p.getProperty("biliBiliUserAgent");
+        douyuUserAgent = p.getProperty("douyuUserAgent");
+        iqiyiUserAgent = p.getProperty("iqiyiUserAgent");
+        letvUserAgent = p.getProperty("letvUserAgent");
+        pptvUserAgent = p.getProperty("pptvUserAgent");
+        sohuUserAgent = p.getProperty("sohuUserAgent");
+        tudouUserAgent = p.getProperty("tudouUserAgent");
+        youkuUserAgent = p.getProperty("youkuUserAgent");
+        youtubeUserAgent = p.getProperty("youtubeUserAgent");
+
+        acfunDataValue = p.getProperty("acfunDataValue");
+        biliBiliDataValue = p.getProperty("biliBiliDataValue");
+        douyuDataValue = p.getProperty("douyuDataValue");
+        iqiyiDataValue = p.getProperty("iqiyiDataValue");
+        letvDataValue = p.getProperty("letvDataValue");
+        pptvDataValue = p.getProperty("pptvDataValue");
+        sohuDataValue = p.getProperty("sohuDataValue");
+        tudouDataValue = p.getProperty("tudouDataValue");
+        youkuDataValue = p.getProperty("youkuDataValue");
+        youtubeDataValue = p.getProperty("youtubeDataValue");
+
+        acfunDataKey = p.getProperty("acfunDataKey");
+        biliBiliDataKey = p.getProperty("biliBiliDataKey");
+        douyuDataKey = p.getProperty("douyuDataKey");
+        iqiyiDataKey = p.getProperty("iqiyiDataKey");
+        letvDataKey = p.getProperty("letvDataKey");
+        pptvDataKey = p.getProperty("pptvDataKey");
+        sohuDataKey = p.getProperty("sohuDataKey");
+        tudouDataKey = p.getProperty("tudouDataKey");
+        youkuDataKey = p.getProperty("youkuDataKey");
+        youtubeDataKey = p.getProperty("youtubeDataKey");
+
+        biliBiliTimeout = Integer.valueOf(p.getProperty("biliBiliTimeout"));
+        douyuTimeout = Integer.valueOf(p.getProperty("douyuTimeout"));
+        iqiyiTimeout = Integer.valueOf(p.getProperty("iqiyiTimeout"));
+        letvTimeout = Integer.valueOf(p.getProperty("letvTimeout"));
+        pptvTimeout = Integer.valueOf(p.getProperty("pptvTimeout"));
+        sohuTimeout = Integer.valueOf(p.getProperty("sohuTimeout"));
+        tudouTimeout = Integer.valueOf(p.getProperty("tudouTimeout"));
+        youkuTimeout = Integer.valueOf(p.getProperty("youkuTimeout"));
+        youtubeTimeout = Integer.valueOf(p.getProperty("youtubeTimeout"));
+
+        acfunMaxBodySize = Integer.valueOf(p.getProperty("acfunMaxBodySize"));
+        biliBiliMaxBodySize = Integer.valueOf(p.getProperty("biliBiliMaxBodySize"));
+        douyuMaxBodySize = Integer.valueOf(p.getProperty("douyuMaxBodySize"));
+        iqiyiMaxBodySize = Integer.valueOf(p.getProperty("iqiyiMaxBodySize"));
+        letvMaxBodySize = Integer.valueOf(p.getProperty("letvMaxBodySize"));
+        pptvMaxBodySize = Integer.valueOf(p.getProperty("pptvMaxBodySize"));
+        sohuMaxBodySize = Integer.valueOf(p.getProperty("sohuMaxBodySize"));
+        tudouMaxBodySize = Integer.valueOf(p.getProperty("tudouMaxBodySize"));
+        youkuMaxBodySize = Integer.valueOf(p.getProperty("youkuMaxBodySize"));
+        youtubeMaxBodySize = Integer.valueOf(p.getProperty("youtubeMaxBodySize"));
+
+        acfunIgnoreHttpErrors = Boolean.valueOf(p.getProperty("acfunIgnoreHttpErrors"));
+        biliBiliIgnoreHttpErrors = Boolean.valueOf(p.getProperty("biliBiliIgnoreHttpErrors"));
+        douyuIgnoreHttpErrors = Boolean.valueOf(p.getProperty("douyuIgnoreHttpErrors"));
+        iqiyiIgnoreHttpErrors = Boolean.valueOf(p.getProperty("iqiyiIgnoreHttpErrors"));
+        letvIgnoreHttpErrors = Boolean.valueOf(p.getProperty("letvIgnoreHttpErrors"));
+        pptvIgnoreHttpErrors = Boolean.valueOf(p.getProperty("pptvIgnoreHttpErrors"));
+        sohuIgnoreHttpErrors = Boolean.valueOf(p.getProperty("sohuIgnoreHttpErrors"));
+        tudouIgnoreHttpErrors = Boolean.valueOf(p.getProperty("tudouIgnoreHttpErrors"));
+        youkuIgnoreHttpErrors = Boolean.valueOf(p.getProperty("youkuIgnoreHttpErrors"));
+        youtubeIgnoreHttpErrors = Boolean.valueOf(p.getProperty("youtubeIgnoreHttpErrors"));
+
+        acfunFollowRedirects = Boolean.valueOf(p.getProperty("acfunFollowRedirects"));
+        biliBiliFollowRedirects = Boolean.valueOf(p.getProperty("biliBiliFollowRedirects"));
+        douyuFollowRedirects = Boolean.valueOf(p.getProperty("douyuFollowRedirects"));
+        iqiyiFollowRedirects = Boolean.valueOf(p.getProperty("iqiyiFollowRedirects"));
+        letvFollowRedirects = Boolean.valueOf(p.getProperty("letvFollowRedirects"));
+        pptvFollowRedirects = Boolean.valueOf(p.getProperty("pptvFollowRedirects"));
+        sohuFollowRedirects = Boolean.valueOf(p.getProperty("sohuFollowRedirects"));
+        tudouFollowRedirects = Boolean.valueOf(p.getProperty("tudouFollowRedirects"));
+        youkuFollowRedirects = Boolean.valueOf(p.getProperty("youkuFollowRedirects"));
+        youtubeFollowRedirects = Boolean.valueOf(p.getProperty("youtubeFollowRedirects"));
+
+        acfunIgnoreContentType = Boolean.valueOf(p.getProperty("acfunIgnoreContentType"));
+        biliBiliIgnoreContentType = Boolean.valueOf(p.getProperty("biliBiliIgnoreContentType"));
+        douyuIgnoreContentType = Boolean.valueOf(p.getProperty("douyuIgnoreContentType"));
+        iqiyiIgnoreContentType = Boolean.valueOf(p.getProperty("iqiyiIgnoreContentType"));
+        letvIgnoreContentType = Boolean.valueOf(p.getProperty("letvIgnoreContentType"));
+        pptvIgnoreContentType = Boolean.valueOf(p.getProperty("pptvIgnoreContentType"));
+        sohuIgnoreContentType = Boolean.valueOf(p.getProperty("sohuIgnoreContentType"));
+        tudouIgnoreContentType = Boolean.valueOf(p.getProperty("tudouIgnoreContentType"));
+        youkuIgnoreContentType = Boolean.valueOf(p.getProperty("youkuIgnoreContentType"));
+        youtubeIgnoreContentType = Boolean.valueOf(p.getProperty("youtubeIgnoreContentType"));
+
+        acfunThrowExceptionOnScriptError = Boolean.valueOf(p.getProperty("acfunThrowExceptionOnScriptError"));
+        biliBiliThrowExceptionOnScriptError = Boolean.valueOf(p.getProperty("biliBiliThrowExceptionOnScriptError"));
+        douyuThrowExceptionOnScriptError = Boolean.valueOf(p.getProperty("douyuThrowExceptionOnScriptError"));
+        iqiyiThrowExceptionOnScriptError = Boolean.valueOf(p.getProperty("iqiyiThrowExceptionOnScriptError"));
+        letvThrowExceptionOnScriptError = Boolean.valueOf(p.getProperty("letvThrowExceptionOnScriptError"));
+        pptvThrowExceptionOnScriptError = Boolean.valueOf(p.getProperty("pptvThrowExceptionOnScriptError"));
+        sohuThrowExceptionOnScriptError = Boolean.valueOf(p.getProperty("sohuThrowExceptionOnScriptError"));
+        tudouThrowExceptionOnScriptError = Boolean.valueOf(p.getProperty("tudouThrowExceptionOnScriptError"));
+        youkuThrowExceptionOnScriptError = Boolean.valueOf(p.getProperty("youkuThrowExceptionOnScriptError"));
+        youtubeThrowExceptionOnScriptError = Boolean.valueOf(p.getProperty("youtubeThrowExceptionOnScriptError"));
+
+        acfunThrowExceptionOnFailingStatusCode = Boolean.valueOf(p.getProperty("acfunThrowExceptionOnFailingStatusCode"));
+        biliBiliThrowExceptionOnFailingStatusCode = Boolean.valueOf(p.getProperty("biliBiliThrowExceptionOnFailingStatusCode"));
+        douyuThrowExceptionOnFailingStatusCode = Boolean.valueOf(p.getProperty("douyuThrowExceptionOnFailingStatusCode"));
+        iqiyiThrowExceptionOnFailingStatusCode = Boolean.valueOf(p.getProperty("iqiyiThrowExceptionOnFailingStatusCode"));
+        letvThrowExceptionOnFailingStatusCode = Boolean.valueOf(p.getProperty("letvThrowExceptionOnFailingStatusCode"));
+        pptvThrowExceptionOnFailingStatusCode = Boolean.valueOf(p.getProperty("pptvThrowExceptionOnFailingStatusCode"));
+        sohuThrowExceptionOnFailingStatusCode = Boolean.valueOf(p.getProperty("sohuThrowExceptionOnFailingStatusCode"));
+        tudouThrowExceptionOnFailingStatusCode = Boolean.valueOf(p.getProperty("tudouThrowExceptionOnFailingStatusCode"));
+        youkuThrowExceptionOnFailingStatusCode = Boolean.valueOf(p.getProperty("youkuThrowExceptionOnFailingStatusCode"));
+        youtubeThrowExceptionOnFailingStatusCode = Boolean.valueOf(p.getProperty("youtubeThrowExceptionOnFailingStatusCode"));
+
+        acfunJavaScriptEnabled = Boolean.valueOf(p.getProperty("acfunJavaScriptEnabled"));
+        biliBiliJavaScriptEnabled = Boolean.valueOf(p.getProperty("biliBiliJavaScriptEnabled"));
+        douyuJavaScriptEnabled = Boolean.valueOf(p.getProperty("douyuJavaScriptEnabled"));
+        iqiyiJavaScriptEnabled = Boolean.valueOf(p.getProperty("iqiyiJavaScriptEnabled"));
+        letvJavaScriptEnabled = Boolean.valueOf(p.getProperty("letvJavaScriptEnabled"));
+        pptvJavaScriptEnabled = Boolean.valueOf(p.getProperty("pptvJavaScriptEnabled"));
+        sohuJavaScriptEnabled = Boolean.valueOf(p.getProperty("sohuJavaScriptEnabled"));
+        tudouJavaScriptEnabled = Boolean.valueOf(p.getProperty("tudouJavaScriptEnabled"));
+        youkuJavaScriptEnabled = Boolean.valueOf(p.getProperty("youkuJavaScriptEnabled"));
+        youtubeJavaScriptEnabled = Boolean.valueOf(p.getProperty("youtubeJavaScriptEnabled"));
+
+        acfunCssEnabled = Boolean.valueOf(p.getProperty("acfunCssEnabled"));
+        biliBiliCssEnabled = Boolean.valueOf(p.getProperty("biliBiliCssEnabled"));
+        douyuCssEnabled = Boolean.valueOf(p.getProperty("douyuCssEnabled"));
+        iqiyiCssEnabled = Boolean.valueOf(p.getProperty("iqiyiCssEnabled"));
+        letvCssEnabled = Boolean.valueOf(p.getProperty("letvCssEnabled"));
+        pptvCssEnabled = Boolean.valueOf(p.getProperty("pptvCssEnabled"));
+        sohuCssEnabled = Boolean.valueOf(p.getProperty("sohuCssEnabled"));
+        tudouCssEnabled = Boolean.valueOf(p.getProperty("tudouCssEnabled"));
+        youkuCssEnabled = Boolean.valueOf(p.getProperty("youkuCssEnabled"));
+        youtubeCssEnabled = Boolean.valueOf(p.getProperty("youtubeCssEnabled"));
         if (dbEnable) {
             dbName = p.getProperty("db.name");
             dbHost = p.getProperty("db.host");
@@ -1193,6 +1367,96 @@ public class Config {
             createVideoAuthorTable = p.getProperty("createVideoAuthorTable");
             createVideoTable = p.getProperty("createVideoTable");
             createWebSitesTable = p.getProperty("createWebSitesTable");
+        }
+
+        try {
+            String[] str = p.getProperty("acfunDatas").split(",");
+            for (int i = 0; i < str.length; i += 2) {
+                acfunDatas.put(str[i], str[i + 1]);
+            }
+            str = p.getProperty("biliBiliDatas").split(",");
+            for (int i = 0; i < str.length; i += 2) {
+                biliBiliDatas.put(str[i], str[i + 1]);
+            }
+            str = p.getProperty("douyuDatas").split(",");
+            for (int i = 0; i < str.length; i += 2) {
+                douyuDatas.put(str[i], str[i + 1]);
+            }
+            str = p.getProperty("iqiyiDatas").split(",");
+            for (int i = 0; i < str.length; i += 2) {
+                iqiyiDatas.put(str[i], str[i + 1]);
+            }
+            str = p.getProperty("letvDatas").split(",");
+            for (int i = 0; i < str.length; i += 2) {
+                letvDatas.put(str[i], str[i + 1]);
+            }
+            str = p.getProperty("pptvDatas").split(",");
+            for (int i = 0; i < str.length; i += 2) {
+                pptvDatas.put(str[i], str[i + 1]);
+            }
+            str = p.getProperty("sohuDatas").split(",");
+            for (int i = 0; i < str.length; i += 2) {
+                sohuDatas.put(str[i], str[i + 1]);
+            }
+            str = p.getProperty("tudouDatas").split(",");
+            for (int i = 0; i < str.length; i += 2) {
+                tudouDatas.put(str[i], str[i + 1]);
+            }
+            str = p.getProperty("youkuDatas").split(",");
+            for (int i = 0; i < str.length; i += 2) {
+                youkuDatas.put(str[i], str[i + 1]);
+            }
+            str = p.getProperty("youtubeDatas").split(",");
+            for (int i = 0; i < str.length; i += 2) {
+                youtubeDatas.put(str[i], str[i + 1]);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            String[] str = p.getProperty("acfunCookies").split(",");
+            for (int i = 0; i < str.length; i += 2) {
+                acfunCookies.put(str[i], str[i + 1]);
+            }
+            str = p.getProperty("biliBiliCookies").split(",");
+            for (int i = 0; i < str.length; i += 2) {
+                biliBiliCookies.put(str[i], str[i + 1]);
+            }
+            str = p.getProperty("douyuCookies").split(",");
+            for (int i = 0; i < str.length; i += 2) {
+                douyuCookies.put(str[i], str[i + 1]);
+            }
+            str = p.getProperty("iqiyiCookies").split(",");
+            for (int i = 0; i < str.length; i += 2) {
+                iqiyiCookies.put(str[i], str[i + 1]);
+            }
+            str = p.getProperty("letvCookies").split(",");
+            for (int i = 0; i < str.length; i += 2) {
+                letvCookies.put(str[i], str[i + 1]);
+            }
+            str = p.getProperty("pptvCookies").split(",");
+            for (int i = 0; i < str.length; i += 2) {
+                pptvCookies.put(str[i], str[i + 1]);
+            }
+            str = p.getProperty("sohuCookies").split(",");
+            for (int i = 0; i < str.length; i += 2) {
+                sohuCookies.put(str[i], str[i + 1]);
+            }
+            str = p.getProperty("tudouCookies").split(",");
+            for (int i = 0; i < str.length; i += 2) {
+                tudouCookies.put(str[i], str[i + 1]);
+            }
+            str = p.getProperty("youkuCookies").split(",");
+            for (int i = 0; i < str.length; i += 2) {
+                youkuCookies.put(str[i], str[i + 1]);
+            }
+            str = p.getProperty("youtubeCookies").split(",");
+            for (int i = 0; i < str.length; i += 2) {
+                youtubeCookies.put(str[i], str[i + 1]);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

@@ -1,49 +1,15 @@
 package com.crawl.core.util;
 
-import org.apache.http.*;
-import org.apache.http.client.CookieStore;
-import org.apache.http.client.HttpRequestRetryHandler;
-import org.apache.http.client.config.CookieSpecs;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.config.ConnectionConfig;
-import org.apache.http.config.Registry;
-import org.apache.http.config.RegistryBuilder;
-import org.apache.http.config.SocketConfig;
-import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.conn.socket.ConnectionSocketFactory;
-import org.apache.http.conn.socket.PlainConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustStrategy;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.ssl.SSLContexts;
-import org.apache.http.util.EntityUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.parser.Parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLException;
 import java.io.*;
-import java.net.UnknownHostException;
-import java.nio.charset.CodingErrorAction;
-import java.security.KeyStore;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.List;
+import java.net.URL;
 import java.util.Map;
 import java.util.Random;
 
@@ -54,11 +20,7 @@ import java.util.Random;
 public class JsoupUtil {
 
     private static Logger logger = LoggerFactory.getLogger(JsoupUtil.class);
-    private static CookieStore cookieStore = new BasicCookieStore();
-    private static CloseableHttpClient httpClient;
-    private final static String userAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36";
-    private static HttpHost proxy;
-    private static RequestConfig requestConfig;
+    private static Connection conn;
 
     static {
         init();
@@ -66,167 +28,251 @@ public class JsoupUtil {
 
     private static void init() {
         try {
-            SSLContext sslContext =
-                    SSLContexts.custom()
-                            .loadTrustMaterial(KeyStore.getInstance(KeyStore.getDefaultType()), new TrustStrategy() {
-                                @Override
-                                public boolean isTrusted(X509Certificate[] chain, String authType)
-                                        throws CertificateException {
-                                    return true;
-                                }
-                            }).build();
-            SSLConnectionSocketFactory sslSFactory =
-                    new SSLConnectionSocketFactory(sslContext);
-            Registry<ConnectionSocketFactory> socketFactoryRegistry =
-                    RegistryBuilder.<ConnectionSocketFactory>create()
-                            .register("http", PlainConnectionSocketFactory.INSTANCE).register("https", sslSFactory)
-                            .build();
 
-            PoolingHttpClientConnectionManager connManager =
-                    new PoolingHttpClientConnectionManager(socketFactoryRegistry);
-
-            SocketConfig socketConfig = SocketConfig.custom().setSoTimeout(Constants.TIMEOUT).setTcpNoDelay(true).build();
-            connManager.setDefaultSocketConfig(socketConfig);
-
-            ConnectionConfig connectionConfig =
-                    ConnectionConfig.custom().setMalformedInputAction(CodingErrorAction.IGNORE)
-                            .setUnmappableInputAction(CodingErrorAction.IGNORE).setCharset(Consts.UTF_8).build();
-            connManager.setDefaultConnectionConfig(connectionConfig);
-            connManager.setMaxTotal(500);
-            connManager.setDefaultMaxPerRoute(300);
-            HttpRequestRetryHandler retryHandler = new HttpRequestRetryHandler() {
-                @Override
-                public boolean retryRequest(IOException exception, int executionCount, HttpContext context) {
-                    if (executionCount > 2) {
-                        return false;
-                    }
-                    if (exception instanceof InterruptedIOException) {
-                        return true;
-                    }
-                    if (exception instanceof ConnectTimeoutException) {
-                        return true;
-                    }
-                    if (exception instanceof UnknownHostException) {
-                        return true;
-                    }
-                    if (exception instanceof SSLException) {
-                        return true;
-                    }
-                    HttpRequest request = HttpClientContext.adapt(context).getRequest();
-                    if (!(request instanceof HttpEntityEnclosingRequest)) {
-                        return true;
-                    }
-                    return false;
-                }
-            };
-            HttpClientBuilder httpClientBuilder =
-                    HttpClients.custom().setConnectionManager(connManager)
-                            .setRetryHandler(retryHandler)
-                            .setDefaultCookieStore(new BasicCookieStore()).setUserAgent(userAgent);
-            if (proxy != null) {
-                httpClientBuilder.setRoutePlanner(new DefaultProxyRoutePlanner(proxy)).build();
-            }
-            httpClient = httpClientBuilder.build();
-
-            requestConfig = RequestConfig.custom().setSocketTimeout(Constants.TIMEOUT).
-                    setConnectTimeout(Constants.TIMEOUT).
-                    setConnectionRequestTimeout(Constants.TIMEOUT).
-                    setCookieSpec(CookieSpecs.STANDARD).
-                    build();
         } catch (Exception e) {
             logger.error("Exception:", e);
         }
     }
 
-    public static String getWebPage(String url) throws IOException {
-        HttpGet request = new HttpGet(url);
+    public static void url(String url) {
+        conn = Jsoup.connect(url);
+    }
+
+    /**
+     * 获取整个静态页面
+     *
+     * @param url
+     * @param datas
+     * @param cookies
+     * @param httpParams
+     * @return String
+     * @throws IOException
+     */
+    public static String getWebPage(String url, Map<String, String> datas, Map<String, String> cookies, HttpClientParams httpParams) throws IOException {
+        if (url.equals("")) {
+            return "";
+        }
+        conn = Jsoup.connect(url);
+        if (datas != null && !datas.isEmpty())
+            conn.data(datas);
+        if (cookies != null && !cookies.isEmpty())
+            conn.cookies(cookies);
+        initConn(conn, httpParams);
+        Document doc = conn.get();
+        if (doc == null) {
+            return "";
+        }
+        return doc.toString();
+    }
+
+    /**
+     * 对连接器进行参数初始化
+     *
+     * @param conn
+     * @param httpParams
+     */
+    private static void initConn(Connection conn, HttpClientParams httpParams) {
+        if (httpParams != null) {
+            if (httpParams.getIgnoreContentType())
+                conn.ignoreContentType(httpParams.getIgnoreContentType());
+            if (httpParams.getIgnoreHttpErrors())
+                conn.ignoreHttpErrors(httpParams.getIgnoreHttpErrors());
+            if (httpParams.getCookieKey() != null && StringUtils.isNotBlank(httpParams.getCookieKey()) && httpParams.getCookieValue() != null && StringUtils.isNotBlank(httpParams.getCookieValue()))
+                conn.cookie(httpParams.getCookieKey(), httpParams.getCookieValue());
+            if (httpParams.getDataKey() != null && StringUtils.isNotBlank(httpParams.getDataKey()) && httpParams.getDataValue() != null && StringUtils.isNotBlank(httpParams.getDataValue()))
+                conn.data(httpParams.getDataKey(), httpParams.getDataValue());
+            if (httpParams.getReferrer() != null && StringUtils.isNotBlank(httpParams.getReferrer())) {
+                conn.referrer(httpParams.getReferrer());
+            }
+            if (httpParams.getMaxBodySize() != null && httpParams.getMaxBodySize().compareTo(0) > 0) {
+                conn.maxBodySize(httpParams.getMaxBodySize());
+            }
+            if (httpParams.getFollowRedirects() != null) {
+                conn.followRedirects(httpParams.getFollowRedirects());
+            }
+            if (httpParams.getUserAgent() != null && StringUtils.isNotBlank(httpParams.getUserAgent())) {
+                conn.userAgent(httpParams.getUserAgent());
+            }
+            if (httpParams.getTimeout() > 0) {
+                conn.timeout(httpParams.getTimeout());
+            }
+            if (httpParams.getHeaders() != null && !httpParams.getHeaders().isEmpty()) {
+                for (String key : httpParams.getHeaders().keySet())
+                    if (StringUtils.isBlank(key))
+                        continue;
+                    else
+                        conn.header(key, httpParams.getHeaders().get(key));
+            }
+        }
+    }
+
+    public static String getWebPage(Connection.Request request) throws IOException {
         return getWebPage(request, "utf-8");
     }
 
-    public static String getWebPage(HttpRequestBase request) throws IOException {
-        return getWebPage(request, "utf-8");
-    }
-
-    public static String postRequest(String postUrl, Map<String, String> params) throws IOException {
-        HttpPost post = new HttpPost(postUrl);
-        setHttpPostParams(post, params);
-        return getWebPage(post, "utf-8");
+    public static String postRequest(String postUrl, final Map<String, String> params) throws IOException {
+        conn = Jsoup.connect(postUrl);
+        if (params != null && !params.isEmpty())
+            conn.data(params);
+        Document doc = conn.post();
+        if (doc == null) {
+            return "";
+        }
+        return doc.toString();
     }
 
     /**
      * @param encoding 字符编码
      * @return 网页内容
      */
-    public static String getWebPage(HttpRequestBase request
-            , String encoding) throws IOException {
-        CloseableHttpResponse response = null;
-        response = getResponse(request);
-        logger.info("status---" + response.getStatusLine().getStatusCode());
-        String content = EntityUtils.toString(response.getEntity(), encoding);
-        request.releaseConnection();
-        return content;
-    }
-
-    public static CloseableHttpResponse getResponse(HttpRequestBase request) throws IOException {
-        if (request.getConfig() == null) {
-            request.setConfig(requestConfig);
+    public static String getWebPage(Connection.Request request, String encoding) throws IOException {
+        if (conn == null) {
+            return "";
         }
-        request.setHeader("User-Agent", Constants.userAgentArray[new Random().nextInt(Constants.userAgentArray.length)]);
-        HttpClientContext httpClientContext = HttpClientContext.create();
-        httpClientContext.setCookieStore(cookieStore);
-        CloseableHttpResponse response = httpClient.execute(request, httpClientContext);
-//		int statusCode = response.getStatusLine().getStatusCode();
-//		if(statusCode != 200){
-//			throw new IOException("status code is:" + statusCode);
-//		}
-        return response;
-    }
-
-    public static CloseableHttpResponse getResponse(String url) throws IOException {
-        HttpGet request = new HttpGet(url);
-        return getResponse(request);
-    }
-
-    /**
-     * 序列化对象
-     *
-     * @param object
-     * @throws Exception
-     */
-    public static void serializeObject(Object object, String filePath) {
-        OutputStream fos = null;
-        try {
-            fos = new FileOutputStream(filePath, false);
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(object);
-            logger.info("序列化成功");
-            oos.flush();
-            fos.close();
-            oos.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        Document doc = conn.request(request).header("Content-type", "application/x-www-form-urlencoded;charset:" + encoding).get();
+        if (doc == null) {
+            return "";
         }
+        return doc.toString();
     }
 
-    /**
-     * 反序列化对象
-     *
-     * @param path
-     * @throws Exception
-     */
-    public static Object deserializeObject(String path) throws Exception {
-//		InputStream fis = HttpClientUtil.class.getResourceAsStream(name);
-        File file = new File(path);
-        InputStream fis = new FileInputStream(file);
-        ObjectInputStream ois = null;
-        Object object = null;
-        ois = new ObjectInputStream(fis);
-        object = ois.readObject();
-        fis.close();
-        ois.close();
-        return object;
+    public static Connection.Response getResponse(final Connection.Request request) throws IOException {
+        URL url = request.url();
+        conn = new Connection() {
+            @Override
+            public Connection url(URL url) {
+                return null;
+            }
+
+            @Override
+            public Connection url(String url) {
+                return null;
+            }
+
+            @Override
+            public Connection userAgent(String userAgent) {
+                return null;
+            }
+
+            @Override
+            public Connection timeout(int millis) {
+                return null;
+            }
+
+            @Override
+            public Connection maxBodySize(int bytes) {
+                return null;
+            }
+
+            @Override
+            public Connection referrer(String referrer) {
+                return null;
+            }
+
+            @Override
+            public Connection followRedirects(boolean followRedirects) {
+                return null;
+            }
+
+            @Override
+            public Connection method(Method method) {
+                return null;
+            }
+
+            @Override
+            public Connection ignoreHttpErrors(boolean ignoreHttpErrors) {
+                return null;
+            }
+
+            @Override
+            public Connection ignoreContentType(boolean ignoreContentType) {
+                return null;
+            }
+
+            @Override
+            public Connection data(String key, String value) {
+                return null;
+            }
+
+            @Override
+            public Connection data(Map<String, String> data) {
+                return null;
+            }
+
+            @Override
+            public Connection data(String... keyvals) {
+                return null;
+            }
+
+            @Override
+            public Connection header(String name, String value) {
+                return null;
+            }
+
+            @Override
+            public Connection cookie(String name, String value) {
+                return null;
+            }
+
+            @Override
+            public Connection cookies(Map<String, String> cookies) {
+                return null;
+            }
+
+            @Override
+            public Connection parser(Parser parser) {
+                return null;
+            }
+
+            @Override
+            public Document get() throws IOException {
+                return null;
+            }
+
+            @Override
+            public Document post() throws IOException {
+                return null;
+            }
+
+            @Override
+            public Response execute() throws IOException {
+                return null;
+            }
+
+            @Override
+            public Request request() {
+                return request;
+            }
+
+            @Override
+            public Connection request(Request request) {
+                return null;
+            }
+
+            @Override
+            public Response response() {
+                this.request(request);
+                try {
+                    this.execute();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return this.response();
+            }
+
+            @Override
+            public Connection response(Response response) {
+                return null;
+            }
+        };
+        return conn.response();
+    }
+
+    public static Connection.Response getResponse(String url) throws IOException {
+        conn = Jsoup.connect(url).userAgent(Constants.userAgentArray[new Random().nextInt(Constants.userAgentArray.length)]);
+        if (conn == null)
+            return null;
+        return conn.response();
     }
 
     /**
@@ -242,8 +288,6 @@ public class JsoupUtil {
             , String saveFileName
             , Boolean isReplaceFile) {
         try {
-            CloseableHttpResponse response = getResponse(fileURL);
-            logger.info("status:" + response.getStatusLine().getStatusCode());
             File file = new File(path);
             //如果文件夹不存在则创建
             if (!file.exists() && !file.isDirectory()) {
@@ -256,8 +300,8 @@ public class JsoupUtil {
                 //如果文件不存在，则下载
                 try {
                     OutputStream os = new FileOutputStream(file);
-                    InputStream is = response.getEntity().getContent();
-                    byte[] buff = new byte[(int) response.getEntity().getContentLength()];
+                    InputStream is = null;
+                    byte[] buff = new byte[0];
                     while (true) {
                         int readed = is.read(buff);
                         if (readed == -1) {
@@ -278,7 +322,7 @@ public class JsoupUtil {
                 logger.info(path);
                 logger.info("该文件存在！");
             }
-            response.close();
+//            response.close();
         } catch (IllegalArgumentException e) {
             logger.info("连接超时...");
         } catch (Exception e1) {
@@ -286,71 +330,7 @@ public class JsoupUtil {
         }
     }
 
-    public static CookieStore getCookieStore() {
-        return cookieStore;
-    }
-
-    public static void setCookieStore(CookieStore cookieStore) {
-        JsoupUtil.cookieStore = cookieStore;
-    }
-
-    /**
-     * 有bug 慎用
-     * unicode转化String
-     *
-     * @return
-     */
-    public static String decodeUnicode(String dataStr) {
-        int start = 0;
-        int end = 0;
-        final StringBuffer buffer = new StringBuffer();
-        while (start > -1) {
-            start = dataStr.indexOf("\\u", start - (6 - 1));
-            if (start == -1) {
-                break;
-            }
-            start = start + 2;
-            end = start + 4;
-            String tempStr = dataStr.substring(start, end);
-            String charStr = "";
-            charStr = dataStr.substring(start, end);
-            char letter = (char) Integer.parseInt(charStr, 16); // 16进制parse整形字符串。
-            dataStr = dataStr.replace("\\u" + tempStr, letter + "");
-            start = end;
-        }
-        logger.debug(dataStr);
-        return dataStr;
-    }
-
-    /**
-     * 设置request请求参数
-     *
-     * @param request
-     * @param params
-     */
-    public static void setHttpPostParams(HttpPost request, Map<String, String> params) {
-        List<NameValuePair> formParams = new ArrayList<NameValuePair>();
-        for (String key : params.keySet()) {
-            formParams.add(new BasicNameValuePair(key, params.get(key)));
-        }
-        UrlEncodedFormEntity entity = null;
-        try {
-            entity = new UrlEncodedFormEntity(formParams, "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        request.setEntity(entity);
-    }
-
-    public static RequestConfig.Builder getRequestConfigBuilder() {
-        return RequestConfig.custom().setSocketTimeout(Constants.TIMEOUT).
-                setConnectTimeout(Constants.TIMEOUT).
-                setConnectionRequestTimeout(Constants.TIMEOUT).
-                setCookieSpec(CookieSpecs.STANDARD);
-    }
-
     public static void main(String args[]) {
-        String s = "{    \"r\": 1,    \"errcode\": 100000,        \"data\": {\"account\":\"\\u5e10\\u53f7\\u6216\\u5bc6\\u7801\\u9519\\u8bef\"},            \"msg\": \"\\u8be5\\u624b\\u673a\\u53f7\\u5c1a\\u672a\\u6ce8\\u518c\\u77e5\\u4e4e";
-        logger.info(decodeUnicode(s));
+
     }
 }

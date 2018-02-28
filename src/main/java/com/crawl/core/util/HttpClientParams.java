@@ -1,18 +1,13 @@
 package com.crawl.core.util;
 
-import org.jsoup.Connection;
+import java.util.Map;
 
 /**
  * http需要进行设置的参数
- *
+ * <p>
  * Created by qianhaibin on 2018/2/28.
  */
 public class HttpClientParams {
-
-    /**
-     * 网络http文档连接器
-     */
-    private Connection conn;
 
     /**
      * 连接超时时间
@@ -109,14 +104,10 @@ public class HttpClientParams {
      * 是否允许cookie传输
      */
     private Boolean cookieEnable;
-
-    public Connection getConn() {
-        return conn;
-    }
-
-    public void setConn(Connection conn) {
-        this.conn = conn;
-    }
+    /**
+     * header头
+     */
+    private Map<String,String> headers;
 
     public int getTimeout() {
         return timeout;
@@ -276,5 +267,13 @@ public class HttpClientParams {
 
     public void setCookieEnable(Boolean cookieEnable) {
         this.cookieEnable = cookieEnable;
+    }
+
+    public Map<String, String> getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(Map<String, String> headers) {
+        this.headers = headers;
     }
 }
