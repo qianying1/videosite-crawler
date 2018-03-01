@@ -4,6 +4,7 @@ package com.crawl.videosite.task.youtube;
 import com.crawl.core.util.Config;
 import com.crawl.core.util.Constants;
 import com.crawl.videosite.entity.Page;
+import com.gargoylesoftware.htmlunit.WebRequest;
 import com.jayway.jsonpath.JsonPath;
 import org.apache.http.client.methods.HttpRequestBase;
 
@@ -15,14 +16,14 @@ import java.util.List;
  */
 public class YoutubeListPageTask extends YoutubeAbstractPageTask {
 
-    public YoutubeListPageTask(HttpRequestBase request, boolean proxyFlag) {
+    public YoutubeListPageTask(WebRequest request, boolean proxyFlag) {
         super(request, proxyFlag);
     }
 
 
     @Override
     void retry() {
-        commonHttpClient.getListPageThreadPool().execute(new YoutubeListPageTask(request, Config.isProxy));
+        httpClient.getListPageThreadPool().execute(new YoutubeListPageTask(request, Config.isProxy));
     }
 
     @Override
@@ -42,23 +43,23 @@ public class YoutubeListPageTask extends YoutubeAbstractPageTask {
     private void handleUserToken(String userToken) {
         String url = Constants.BILIBILI_INDEX_URL + "/people/" + userToken + "/following";
         if (!Config.dbEnable) {
-            commonHttpClient.getDetailPageThreadPool().execute(new YoutubeDetailPageTask(url, Config.isProxy));
+            httpClient.getDetailPageThreadPool().execute(new YoutubeDetailPageTask(url, Config.isProxy));
             return;
         }
 //        boolean existUserFlag = VideoSiteDAO.isExistUser(userToken);
         boolean existUserFlag = videoSiteDao1.isExistUser(userToken);
-        while (commonHttpClient.getDetailPageThreadPool().getQueue().size() > 1000) {
+        while (httpClient.getDetailPageThreadPool().getQueue().size() > 1000) {
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        if (!existUserFlag || commonHttpClient.getDetailPageThreadPool().getActiveCount() == 0) {
+        if (!existUserFlag || httpClient.getDetailPageThreadPool().getActiveCount() == 0) {
             /**
              * 防止互相等待，导致死锁
              */
-            commonHttpClient.getDetailPageThreadPool().execute(new YoutubeDetailPageTask(url, Config.isProxy));
+            httpClient.getDetailPageThreadPool().execute(new YoutubeDetailPageTask(url, Config.isProxy));
 
         }
     }

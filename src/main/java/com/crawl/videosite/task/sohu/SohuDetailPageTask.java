@@ -35,7 +35,7 @@ public class SohuDetailPageTask extends SohuAbstractPageTask {
 
     @Override
     void retry() {
-        commonHttpClient.getDetailPageThreadPool().execute(new SohuDetailPageTask(url, Config.isProxy));
+        httpClient.getDetailPageThreadPool().execute(new SohuDetailPageTask(url, Config.isProxy));
     }
 
     @Override
@@ -66,10 +66,10 @@ public class SohuDetailPageTask extends SohuAbstractPageTask {
         HttpGet request = new HttpGet(url);
         request.setHeader("authorization", "oauth " + CommonHttpClient.getAuthorization());
         if (!Config.dbEnable) {
-            commonHttpClient.getListPageThreadPool().execute(new SohuListPageTask(request, Config.isProxy));
+//            httpClient.getListPageThreadPool().execute(new SohuListPageTask(request, Config.isProxy));
             return;
         }
-        commonHttpClient.getListPageThreadPool().execute(new SohuListPageTask(request, Config.isProxy));
+//        httpClient.getListPageThreadPool().execute(new SohuListPageTask(request, Config.isProxy));
     }
 
     /**

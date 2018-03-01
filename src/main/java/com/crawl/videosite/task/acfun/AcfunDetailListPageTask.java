@@ -10,6 +10,7 @@ import com.crawl.videosite.CommonHttpClient;
 import com.crawl.videosite.entity.Page;
 import com.crawl.videosite.entity.User;
 import com.crawl.videosite.parser.VideoSiteUserListPageParser;
+import com.gargoylesoftware.htmlunit.WebRequest;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.slf4j.Logger;
@@ -40,7 +41,7 @@ public class AcfunDetailListPageTask extends AcfunAbstractPageTask {
     }
 
 
-    public AcfunDetailListPageTask(HttpRequestBase request, boolean proxyFlag) {
+    public AcfunDetailListPageTask(WebRequest request, boolean proxyFlag) {
         super(request, proxyFlag);
     }
 
@@ -58,7 +59,7 @@ public class AcfunDetailListPageTask extends AcfunAbstractPageTask {
 
     @Override
     void retry() {
-        commonHttpClient.getDetailListPageThreadPool().execute(new AcfunDetailListPageTask(request, Config.isProxy));
+        httpClient.getDetailListPageThreadPool().execute(new AcfunDetailListPageTask(request, Config.isProxy));
     }
 
     @Override
@@ -77,26 +78,26 @@ public class AcfunDetailListPageTask extends AcfunAbstractPageTask {
                     parseUserCount.incrementAndGet();
                 }
                 for (int j = 0; j < u.getFollowees() / 20; j++){
-                    if (commonHttpClient.getDetailListPageThreadPool().getQueue().size() > 1000){
+                    if (httpClient.getDetailListPageThreadPool().getQueue().size() > 1000){
                         continue;
                     }
                     String nextUrl = String.format(USER_FOLLOWEES_URL, u.getUserToken(), j * 20);
                     if (videoSiteDao1.insertUrl(cn, Md5Util.Convert2Md5(nextUrl)) ||
-                            commonHttpClient.getDetailListPageThreadPool().getActiveCount() == 1){
+                            httpClient.getDetailListPageThreadPool().getActiveCount() == 1){
                         //防止死锁
                         HttpGet request = new HttpGet(nextUrl);
                         request.setHeader("authorization", "oauth " + CommonHttpClient.getAuthorization());
-                        commonHttpClient.getDetailListPageThreadPool().execute(new AcfunDetailListPageTask(request, true));
+//                        httpClient.getDetailListPageThreadPool().execute(new AcfunDetailListPageTask(request, true));
                     }
                 }
             }
-            else if(!Config.dbEnable || commonHttpClient.getDetailListPageThreadPool().getActiveCount() == 1){
+            else if(!Config.dbEnable || httpClient.getDetailListPageThreadPool().getActiveCount() == 1){
                 parseUserCount.incrementAndGet();
                 for (int j = 0; j < u.getFollowees() / 20; j++){
                     String nextUrl = String.format(USER_FOLLOWEES_URL, u.getUserToken(), j * 20);
                     HttpGet request = new HttpGet(nextUrl);
                     request.setHeader("authorization", "oauth " + CommonHttpClient.getAuthorization());
-                    commonHttpClient.getDetailListPageThreadPool().execute(new AcfunDetailListPageTask(request, true));
+//                    httpClient.getDetailListPageThreadPool().execute(new AcfunDetailListPageTask(request, true));
                 }
             }
         }

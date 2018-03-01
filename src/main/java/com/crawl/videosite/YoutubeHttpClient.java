@@ -1,8 +1,8 @@
 package com.crawl.videosite;
 
 import com.crawl.Main;
-import com.crawl.core.httpclient.AbstractHttpClient;
-import com.crawl.core.httpclient.IHttpClient;
+import com.crawl.core.htmlunit.AbstractHtmlUnit;
+import com.crawl.core.htmlunit.IHtmlUnit;
 import com.crawl.core.util.Config;
 import com.crawl.core.util.Constants;
 import com.crawl.core.util.SimpleThreadPoolExecutor;
@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 /**
  * Created by qianhaibin on 2018/2/27.
  */
-public class YoutubeHttpClient extends AbstractHttpClient implements IHttpClient {
+public class YoutubeHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
     private static Logger logger = LoggerFactory.getLogger(Main.class);
     private volatile static YoutubeHttpClient instance;
     /**
@@ -130,7 +130,7 @@ public class YoutubeHttpClient extends AbstractHttpClient implements IHttpClient
         String startUrl = String.format(Constants.USER_FOLLOWEES_URL, startToken, 0);
         HttpGet request = new HttpGet(startUrl);
         request.setHeader("authorization", "oauth " + YoutubeHttpClient.getAuthorization());
-        detailListPageThreadPool.execute(new BiliBiliDetailListPageTask(request, Config.isProxy));
+//        detailListPageThreadPool.execute(new BiliBiliDetailListPageTask(request, Config.isProxy));
         manageHttpClient();
     }
 

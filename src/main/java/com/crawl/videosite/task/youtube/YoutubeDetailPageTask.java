@@ -34,7 +34,7 @@ public class YoutubeDetailPageTask extends YoutubeAbstractPageTask {
 
     @Override
     void retry() {
-        commonHttpClient.getDetailPageThreadPool().execute(new YoutubeDetailPageTask(url, Config.isProxy));
+        httpClient.getDetailPageThreadPool().execute(new YoutubeDetailPageTask(url, Config.isProxy));
     }
 
     @Override
@@ -63,10 +63,10 @@ public class YoutubeDetailPageTask extends YoutubeAbstractPageTask {
         HttpGet request = new HttpGet(url);
         request.setHeader("authorization", "oauth " + CommonHttpClient.getAuthorization());
         if(!Config.dbEnable){
-            commonHttpClient.getListPageThreadPool().execute(new YoutubeListPageTask(request, Config.isProxy));
+//            httpClient.getListPageThreadPool().execute(new YoutubeListPageTask(request, Config.isProxy));
             return ;
         }
-        commonHttpClient.getListPageThreadPool().execute(new YoutubeListPageTask(request, Config.isProxy));
+//        httpClient.getListPageThreadPool().execute(new YoutubeListPageTask(request, Config.isProxy));
     }
 
     /**

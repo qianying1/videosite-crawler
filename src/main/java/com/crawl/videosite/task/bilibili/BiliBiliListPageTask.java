@@ -4,6 +4,7 @@ package com.crawl.videosite.task.bilibili;
 import com.crawl.core.util.Config;
 import com.crawl.core.util.Constants;
 import com.crawl.videosite.entity.Page;
+import com.gargoylesoftware.htmlunit.WebRequest;
 import org.apache.http.client.methods.HttpRequestBase;
 
 /**
@@ -12,7 +13,7 @@ import org.apache.http.client.methods.HttpRequestBase;
  */
 public class BiliBiliListPageTask extends BiliBiliAbstractPageTask {
 
-    public BiliBiliListPageTask(HttpRequestBase request, boolean proxyFlag) {
+    public BiliBiliListPageTask(WebRequest request, boolean proxyFlag) {
         super(request, proxyFlag);
     }
 

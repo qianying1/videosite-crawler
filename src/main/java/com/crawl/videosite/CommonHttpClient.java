@@ -8,6 +8,7 @@ import com.crawl.core.util.Constants;
 import com.crawl.core.util.SimpleThreadPoolExecutor;
 import com.crawl.core.util.ThreadPoolMonitor;
 import com.crawl.proxy.CommonProxyHttpClient;
+import com.crawl.videosite.task.DetailListPageTaskCommon;
 import com.crawl.videosite.task.bilibili.BiliBiliDetailListPageTask;
 import com.crawl.videosite.task.bilibili.BiliBiliDetailPageTask;
 import com.crawl.videosite.task.bilibili.BiliBiliGeneralPageTask;
@@ -129,7 +130,7 @@ public class CommonHttpClient extends AbstractHttpClient implements IHttpClient 
         String startUrl = String.format(Constants.USER_FOLLOWEES_URL, startToken, 0);
         HttpGet request = new HttpGet(startUrl);
         request.setHeader("authorization", "oauth " + CommonHttpClient.getAuthorization());
-        detailListPageThreadPool.execute(new BiliBiliDetailListPageTask(request, Config.isProxy));
+        detailListPageThreadPool.execute(new DetailListPageTaskCommon(request, Config.isProxy));
         manageHttpClient();
     }
 

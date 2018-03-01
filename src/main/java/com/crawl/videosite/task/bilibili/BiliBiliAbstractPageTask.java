@@ -12,6 +12,7 @@ import com.crawl.videosite.dao.VideoSiteDao1;
 import com.crawl.videosite.dao.impl.VideoSiteDao1Imp;
 import com.crawl.videosite.entity.Page;
 import com.crawl.videosite.task.AbstractPageTaskCommon;
+import com.gargoylesoftware.htmlunit.WebRequest;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
@@ -33,7 +34,7 @@ import java.lang.reflect.InvocationHandler;
 public abstract class BiliBiliAbstractPageTask implements Runnable {
     private static Logger logger = LoggerFactory.getLogger(BiliBiliAbstractPageTask.class);
     protected String url;
-    protected HttpRequestBase request;
+    protected WebRequest request;
     protected boolean proxyFlag;//是否通过代理下载
     protected Proxy currentProxy;//当前线程使用的代理
     protected static VideoSiteDao1 videoSiteDao1;
@@ -52,22 +53,22 @@ public abstract class BiliBiliAbstractPageTask implements Runnable {
         this.proxyFlag = proxyFlag;
     }
 
-    public BiliBiliAbstractPageTask(HttpRequestBase request, boolean proxyFlag) {
+    public BiliBiliAbstractPageTask(WebRequest request, boolean proxyFlag) {
         this.request = request;
         this.proxyFlag = proxyFlag;
     }
 
     public void run() {
         long requestStartTime = 0l;
-        HttpGet tempRequest = null;
+        WebRequest tempRequest = null;
         try {
             Page page = null;
             if (url != null) {
                 if (proxyFlag) {
                     currentProxy = ProxyPool.biliBiliProxyQueue.take();
                     if (!(currentProxy instanceof Direct)) {
-                        HttpHost proxy = new HttpHost(currentProxy.getIp(), currentProxy.getPort());
-                        tempRequest.setConfig(HttpClientUtil.getRequestConfigBuilder().setProxy(proxy).build());
+                        tempRequest.setProxyHost(currentProxy.getIp());
+                        tempRequest.setProxyPort(currentProxy.getPort());
                     }
                     requestStartTime = System.currentTimeMillis();
                     page = httpClient.getWebPage(tempRequest);
@@ -79,8 +80,8 @@ public abstract class BiliBiliAbstractPageTask implements Runnable {
                 if (proxyFlag) {
                     currentProxy = ProxyPool.biliBiliProxyQueue.take();
                     if (!(currentProxy instanceof Direct)) {
-                        HttpHost proxy = new HttpHost(currentProxy.getIp(), currentProxy.getPort());
-                        request.setConfig(HttpClientUtil.getRequestConfigBuilder().setProxy(proxy).build());
+                        request.setProxyHost(currentProxy.getIp());
+                        request.setProxyPort(currentProxy.getPort());
                     }
                     requestStartTime = System.currentTimeMillis();
                     page = httpClient.getWebPage(request);
@@ -130,12 +131,6 @@ public abstract class BiliBiliAbstractPageTask implements Runnable {
                 retry();
             }
         } finally {
-            if (request != null) {
-                request.releaseConnection();
-            }
-            if (tempRequest != null) {
-                tempRequest.releaseConnection();
-            }
             if (currentProxy != null && !ProxyUtil.isDiscardProxy(currentProxy)) {
                 currentProxy.setTimeInterval(Constants.TIME_INTERVAL);
                 ProxyPool.biliBiliProxyQueue.add(currentProxy);

@@ -66,10 +66,10 @@ public class BiliBiliDetailPageTask extends BiliBiliAbstractPageTask {
         HttpGet request = new HttpGet(url);
         request.setHeader("authorization", "oauth " + CommonHttpClient.getAuthorization());
         if (!Config.dbEnable) {
-            httpClient.getListPageThreadPool().execute(new BiliBiliListPageTask(request, Config.isProxy));
+//            httpClient.getListPageThreadPool().execute(new BiliBiliListPageTask(request, Config.isProxy));
             return;
         }
-        httpClient.getListPageThreadPool().execute(new BiliBiliListPageTask(request, Config.isProxy));
+//        httpClient.getListPageThreadPool().execute(new BiliBiliListPageTask(request, Config.isProxy));
     }
 
     /**

@@ -1,6 +1,8 @@
 package com.crawl.videosite;
 
 import com.crawl.Main;
+import com.crawl.core.htmlunit.AbstractHtmlUnit;
+import com.crawl.core.htmlunit.IHtmlUnit;
 import com.crawl.core.httpclient.AbstractHttpClient;
 import com.crawl.core.httpclient.IHttpClient;
 import com.crawl.core.util.*;
@@ -8,6 +10,7 @@ import com.crawl.proxy.BiliBiliProxyHttpClient;
 import com.crawl.videosite.entity.Page;
 import com.crawl.videosite.task.bilibili.BiliBiliDetailListPageTask;
 import com.crawl.videosite.task.bilibili.BiliBiliDetailPageTask;
+import com.gargoylesoftware.htmlunit.WebRequest;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -27,7 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by qianhaibin on 2018/2/27.
  */
-public class BiliBiliHttpClient extends AbstractHttpClient implements IHttpClient {
+public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
     private static Logger logger = LoggerFactory.getLogger(Main.class);
     private volatile static BiliBiliHttpClient instance;
     /**
@@ -128,26 +131,8 @@ public class BiliBiliHttpClient extends AbstractHttpClient implements IHttpClien
     public void startCrawl() {
         String startUrl = Constants.BILIBILI_INDEX_URL;
         HttpGet request = new HttpGet(startUrl);
-        detailListPageThreadPool.execute(new BiliBiliDetailListPageTask(request, false));
+//        detailListPageThreadPool.execute(new BiliBiliDetailListPageTask(request, false));
         manageHttpClient();
-    }
-
-    /**
-     * 对使用代理进行请求的方法进行重写
-     *
-     * @param request
-     * @return
-     * @throws IOException
-     */
-    @Override
-    public Page getWebPage(HttpRequestBase request) throws IOException {
-        CloseableHttpResponse response = null;
-        response = HttpClientUtil.getResponse(request);
-        Page page = new Page();
-        page.setStatusCode(response.getStatusLine().getStatusCode());
-        page.setHtml(EntityUtils.toString(response.getEntity()));
-        page.setUrl(request.getURI().toString());
-        return page;
     }
 
     /**

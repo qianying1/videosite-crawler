@@ -3,14 +3,17 @@ package com.crawl.videosite.task.acfun;
 import com.crawl.core.util.Constants;
 import com.crawl.core.util.HttpClientUtil;
 import com.crawl.core.util.SimpleInvocationHandler;
+import com.crawl.proxy.AcfunProxyHttpClient;
 import com.crawl.proxy.ProxyPool;
 import com.crawl.proxy.entity.Direct;
 import com.crawl.proxy.entity.Proxy;
 import com.crawl.proxy.util.ProxyUtil;
+import com.crawl.videosite.AcfunHttpClient;
 import com.crawl.videosite.CommonHttpClient;
 import com.crawl.videosite.dao.VideoSiteDao1;
 import com.crawl.videosite.dao.impl.VideoSiteDao1Imp;
 import com.crawl.videosite.entity.Page;
+import com.gargoylesoftware.htmlunit.WebRequest;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
@@ -20,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
+import java.net.URL;
 
 
 /**
@@ -32,11 +36,11 @@ import java.lang.reflect.InvocationHandler;
 public abstract class AcfunAbstractPageTask implements Runnable {
     private static Logger logger = LoggerFactory.getLogger(AcfunAbstractPageTask.class);
     protected String url;
-    protected HttpRequestBase request;
+    protected WebRequest request;
     protected boolean proxyFlag;//是否通过代理下载
     protected Proxy currentProxy;//当前线程使用的代理
     protected static VideoSiteDao1 videoSiteDao1;
-    protected static CommonHttpClient commonHttpClient = CommonHttpClient.getInstance();
+    protected static AcfunHttpClient httpClient = AcfunHttpClient.getInstance();
 
     static {
         videoSiteDao1 = getVideoSiteDao1();
@@ -51,42 +55,42 @@ public abstract class AcfunAbstractPageTask implements Runnable {
         this.proxyFlag = proxyFlag;
     }
 
-    public AcfunAbstractPageTask(HttpRequestBase request, boolean proxyFlag) {
+    public AcfunAbstractPageTask(WebRequest request, boolean proxyFlag) {
         this.request = request;
         this.proxyFlag = proxyFlag;
     }
 
     public void run() {
         long requestStartTime = 0l;
-        HttpGet tempRequest = null;
+        WebRequest tempRequest = null;
         try {
             Page page = null;
             if (url != null) {
                 if (proxyFlag) {
-                    tempRequest = new HttpGet(url);
+                    tempRequest = new WebRequest(new URL(url));
                     currentProxy = ProxyPool.acfunProxyQueue.take();
                     if (!(currentProxy instanceof Direct)) {
-                        HttpHost proxy = new HttpHost(currentProxy.getIp(), currentProxy.getPort());
-                        tempRequest.setConfig(HttpClientUtil.getRequestConfigBuilder().setProxy(proxy).build());
+                        tempRequest.setProxyHost(currentProxy.getIp());
+                        tempRequest.setProxyPort(currentProxy.getPort());
                     }
                     requestStartTime = System.currentTimeMillis();
-                    page = commonHttpClient.getWebPage(tempRequest);
+                    page = httpClient.getWebPage(tempRequest);
                 } else {
                     requestStartTime = System.currentTimeMillis();
-                    page = commonHttpClient.getWebPage(url);
+                    page = httpClient.getWebPage(url);
                 }
             } else if (request != null) {
                 if (proxyFlag) {
                     currentProxy = ProxyPool.acfunProxyQueue.take();
                     if (!(currentProxy instanceof Direct)) {
-                        HttpHost proxy = new HttpHost(currentProxy.getIp(), currentProxy.getPort());
-                        request.setConfig(HttpClientUtil.getRequestConfigBuilder().setProxy(proxy).build());
+                        request.setProxyHost(currentProxy.getIp());
+                        request.setProxyPort(currentProxy.getPort());
                     }
                     requestStartTime = System.currentTimeMillis();
-                    page = commonHttpClient.getWebPage(request);
+                    page = httpClient.getWebPage(request);
                 } else {
                     requestStartTime = System.currentTimeMillis();
-                    page = commonHttpClient.getWebPage(request);
+                    page = httpClient.getWebPage(request);
                 }
             }
             long requestEndTime = System.currentTimeMillis();
@@ -132,16 +136,10 @@ public abstract class AcfunAbstractPageTask implements Runnable {
                  */
                 currentProxy.setFailureTimes(currentProxy.getFailureTimes() + 1);
             }
-            if (!commonHttpClient.getDetailListPageThreadPool().isShutdown()) {
+            if (!httpClient.getDetailListPageThreadPool().isShutdown()) {
                 retry();
             }
         } finally {
-            if (request != null) {
-                request.releaseConnection();
-            }
-            if (tempRequest != null) {
-                tempRequest.releaseConnection();
-            }
             if (currentProxy != null && !ProxyUtil.isDiscardProxy(currentProxy)) {
                 currentProxy.setTimeInterval(Constants.TIME_INTERVAL);
                 ProxyPool.acfunProxyQueue.add(currentProxy);

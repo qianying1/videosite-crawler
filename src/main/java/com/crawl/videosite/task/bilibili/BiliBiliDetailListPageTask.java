@@ -9,6 +9,7 @@ import com.crawl.videosite.entity.Page;
 import com.crawl.videosite.entity.Video;
 import com.crawl.videosite.parser.VideoSiteUserListPageParser;
 import com.crawl.videosite.parser.bilibili.BiliBiliVideoSiteIndexPageParser;
+import com.gargoylesoftware.htmlunit.WebRequest;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,7 @@ public class BiliBiliDetailListPageTask extends BiliBiliAbstractPageTask {
     }
 
 
-    public BiliBiliDetailListPageTask(HttpRequestBase request, boolean proxyFlag) {
+    public BiliBiliDetailListPageTask(WebRequest request, boolean proxyFlag) {
         super(request, proxyFlag);
     }
 

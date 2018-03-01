@@ -34,7 +34,7 @@ public class AcfunDetailPageTask extends AcfunAbstractPageTask {
 
     @Override
     void retry() {
-        commonHttpClient.getDetailPageThreadPool().execute(new AcfunDetailPageTask(url, Config.isProxy));
+        httpClient.getDetailPageThreadPool().execute(new AcfunDetailPageTask(url, Config.isProxy));
     }
 
     @Override
@@ -63,10 +63,10 @@ public class AcfunDetailPageTask extends AcfunAbstractPageTask {
         HttpGet request = new HttpGet(url);
         request.setHeader("authorization", "oauth " + CommonHttpClient.getAuthorization());
         if(!Config.dbEnable){
-            commonHttpClient.getListPageThreadPool().execute(new AcfunListPageTask(request, Config.isProxy));
+//            httpClient.getListPageThreadPool().execute(new AcfunListPageTask(request, Config.isProxy));
             return ;
         }
-        commonHttpClient.getListPageThreadPool().execute(new AcfunListPageTask(request, Config.isProxy));
+//        httpClient.getListPageThreadPool().execute(new AcfunListPageTask(request, Config.isProxy));
     }
 
     /**
