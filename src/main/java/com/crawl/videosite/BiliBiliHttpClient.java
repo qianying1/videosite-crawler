@@ -3,25 +3,21 @@ package com.crawl.videosite;
 import com.crawl.Main;
 import com.crawl.core.htmlunit.AbstractHtmlUnit;
 import com.crawl.core.htmlunit.IHtmlUnit;
-import com.crawl.core.httpclient.AbstractHttpClient;
-import com.crawl.core.httpclient.IHttpClient;
-import com.crawl.core.util.*;
+import com.crawl.core.util.Config;
+import com.crawl.core.util.Constants;
+import com.crawl.core.util.SimpleThreadPoolExecutor;
+import com.crawl.core.util.ThreadPoolMonitor;
 import com.crawl.proxy.BiliBiliProxyHttpClient;
-import com.crawl.videosite.entity.Page;
 import com.crawl.videosite.task.bilibili.BiliBiliDetailListPageTask;
 import com.crawl.videosite.task.bilibili.BiliBiliDetailPageTask;
 import com.gargoylesoftware.htmlunit.WebRequest;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.Connection;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -63,12 +59,12 @@ public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
      * 详情列表页下载线程池
      */
     private ThreadPoolExecutor detailListPageThreadPool;
+
     /**
      * request　header
      * 获取列表页时，必须带上
      */
 //    private static String authorization;
-
     private BiliBiliHttpClient() {
         initHttpClient();
         intiThreadPool();
@@ -130,8 +126,14 @@ public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
     @Override
     public void startCrawl() {
         String startUrl = Constants.BILIBILI_INDEX_URL;
-        HttpGet request = new HttpGet(startUrl);
-//        detailListPageThreadPool.execute(new BiliBiliDetailListPageTask(request, false));
+        WebRequest request = null;
+        try {
+            request = new WebRequest(new URL(startUrl));
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            logger.error("fail to new WebRequest from uri: " + startUrl, e);
+        }
+        detailListPageThreadPool.execute(new BiliBiliDetailListPageTask(request, Config.bilibiliIsProxy));
         manageHttpClient();
     }
 
