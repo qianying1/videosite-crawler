@@ -1,6 +1,8 @@
 package com.crawl.core.util;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * http需要进行设置的参数
@@ -12,12 +14,12 @@ public class HttpClientParams {
     /**
      * 连接超时时间
      */
-    private int timeout;
+    private int timeout = Constants.TIMEOUT;
 
     /**
      * 用户代理器
      */
-    private String userAgent;
+    private String userAgent = Constants.userAgentArray[new Random().nextInt(Constants.userAgentArray.length)];
 
     /**
      * 浏览器cookie key
@@ -42,49 +44,49 @@ public class HttpClientParams {
     /**
      * 是否忽略数据类型
      */
-    private Boolean ignoreContentType;
+    private Boolean ignoreContentType = true;
 
     /**
      * 是否接受重定向
      */
-    private Boolean followRedirects;
+    private Boolean followRedirects = false;
 
     /**
      * 是否忽略ssl认证
      */
-    private Boolean useInsecureSSL;
+    private Boolean useInsecureSSL = false;
 
     /**
      * 是否忽略http请求错误
      */
-    private Boolean ignoreHttpErrors;
+    private Boolean ignoreHttpErrors = false;
 
     /**
      * 文档内容容量大小
      */
-    private Integer maxBodySize;
+    private Integer maxBodySize = 8192;
 
     /**
      * 访问者
      */
-    private String referrer;
+    private String referrer = "https://baidu.com";
 
     /**
      * 是否允许javascript脚本执行
      */
-    private Boolean javaScriptEnabled;
+    private Boolean javaScriptEnabled = true;
     /**
      * 是否允许css样式
      */
-    private Boolean cssEnabled;
+    private Boolean cssEnabled = false;
     /**
      * 是否在遇到返回失败响应码时抛出异常
      */
-    private Boolean throwExceptionOnFailingStatusCode;
+    private Boolean throwExceptionOnFailingStatusCode = false;
     /**
      * 是否在遇到脚本运行错误时抛出异常
      */
-    private Boolean throwExceptionOnScriptError;
+    private Boolean throwExceptionOnScriptError = false;
     /**
      * 代理端口
      */
@@ -98,7 +100,7 @@ public class HttpClientParams {
     /**
      * http请求字符编码
      */
-    private String charset;
+    private String charset = "UTF-8";
 
     /**
      * 代理地址
@@ -108,11 +110,11 @@ public class HttpClientParams {
     /**
      * 是否允许cookie传输
      */
-    private Boolean cookieEnable;
+    private Boolean cookieEnable = true;
     /**
      * 需要发送的数据
      */
-    private Map<String,String> datas;
+    private Map<String, String> datas;
     /**
      * 加密类型
      */
@@ -124,7 +126,11 @@ public class HttpClientParams {
     /**
      * header头
      */
-    private Map<String, String> headers;
+    private Map<String, String> headers = new HashMap<>();
+
+    public HttpClientParams() {
+        headers.put("User-Agent", Constants.userAgentArray[new Random().nextInt(Constants.userAgentArray.length)]);
+    }
 
     public int getTimeout() {
         return timeout;

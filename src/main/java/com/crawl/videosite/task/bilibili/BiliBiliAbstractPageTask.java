@@ -1,7 +1,8 @@
 package com.crawl.videosite.task.bilibili;
 
 import com.crawl.core.util.Constants;
-import com.crawl.core.util.HttpClientUtil;
+import com.crawl.core.util.HtmlUnitWebClientUtil;
+import com.crawl.core.util.HttpClientParams;
 import com.crawl.core.util.SimpleInvocationHandler;
 import com.crawl.proxy.ProxyPool;
 import com.crawl.proxy.entity.Direct;
@@ -11,17 +12,15 @@ import com.crawl.videosite.BiliBiliHttpClient;
 import com.crawl.videosite.dao.VideoSiteDao1;
 import com.crawl.videosite.dao.impl.VideoSiteDao1Imp;
 import com.crawl.videosite.entity.Page;
-import com.crawl.videosite.task.AbstractPageTaskCommon;
 import com.gargoylesoftware.htmlunit.WebRequest;
-import org.apache.http.HttpHost;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpRequestBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
+import java.net.URL;
 
 
 /**
@@ -38,11 +37,14 @@ public abstract class BiliBiliAbstractPageTask implements Runnable {
     protected boolean proxyFlag;//是否通过代理下载
     protected Proxy currentProxy;//当前线程使用的代理
     protected static VideoSiteDao1 videoSiteDao1;
+    protected static HttpClientParams params;
     protected static BiliBiliHttpClient httpClient = BiliBiliHttpClient.getInstance();
 
     static {
         videoSiteDao1 = getVideoSiteDao1();
     }
+
+    private String pageText;
 
     public BiliBiliAbstractPageTask() {
 
@@ -61,12 +63,15 @@ public abstract class BiliBiliAbstractPageTask implements Runnable {
     public void run() {
         long requestStartTime = 0l;
         WebRequest tempRequest = null;
+        params = new HttpClientParams();
         try {
             Page page = null;
             if (url != null) {
                 if (proxyFlag) {
+                    tempRequest = new WebRequest(new URL(url));
                     currentProxy = ProxyPool.biliBiliProxyQueue.take();
                     if (!(currentProxy instanceof Direct)) {
+                        tempRequest.setSocksProxy(true);
                         tempRequest.setProxyHost(currentProxy.getIp());
                         tempRequest.setProxyPort(currentProxy.getPort());
                     }
@@ -80,17 +85,18 @@ public abstract class BiliBiliAbstractPageTask implements Runnable {
                 if (proxyFlag) {
                     currentProxy = ProxyPool.biliBiliProxyQueue.take();
                     if (!(currentProxy instanceof Direct)) {
+                        request.setSocksProxy(true);
                         request.setProxyHost(currentProxy.getIp());
                         request.setProxyPort(currentProxy.getPort());
                     }
-                    requestStartTime = System.currentTimeMillis();
-                    page = httpClient.getWebPage(request);
-                } else {
-                    requestStartTime = System.currentTimeMillis();
-                    page = httpClient.getWebPage(request);
                 }
+                requestStartTime = System.currentTimeMillis();
+                page = httpClient.getWebPage(request);
             }
             System.out.println(page.getHtml());
+
+            HtmlPage pageText = HtmlUnitWebClientUtil.getWebPage(page.getUrl(), params, null);
+            System.out.println(pageText.getPage().getDocumentElement());
             long requestEndTime = System.currentTimeMillis();
             page.setProxy(currentProxy != null ? currentProxy : new Proxy("127.0.0.1", 8080, 1000));
             int status = page.getStatusCode();
@@ -98,21 +104,15 @@ public abstract class BiliBiliAbstractPageTask implements Runnable {
                     "  executing request " + page.getUrl() + " response statusCode:" + status +
                     "  request cost time:" + (requestEndTime - requestStartTime) + "ms";
             if (status == HttpStatus.SC_OK) {
-                if (page.getHtml().contains("bili-header-m")) {
+                /*if (page.getHtml().contains("bili-header-m")) {
                     AbstractPageTaskCommon.setProxyTimesLog(currentProxy, logStr, logger, requestEndTime, requestStartTime);
                     handle(page);
                 } else {
-                    /**
-                     * 代理异常，没有正确返回目标url
-                     */
+                    *//**
+                 * 代理异常，没有正确返回目标url
+                 *//*
                     logger.warn("proxy exception:" + currentProxy.toString());
-                }
-            }
-            /**
-             * 401--不能通过验证
-             */
-            else if (status == 404 || status == 401 || status == 410) {
-                logger.warn(logStr);
+                }*/
             } else {
                 logger.error(logStr);
                 Thread.sleep(100);

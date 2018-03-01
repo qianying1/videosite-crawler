@@ -109,7 +109,7 @@ public class HtmlUnitWebClientUtil {
      * @param webClient
      * @param params
      */
-    private static void initWebClientParams(WebClient webClient, HttpClientParams params) {
+    private static void initWebClientParams(WebClient webClient, HttpClientParams params) throws Exception {
         if (params.getJavaScriptEnabled() != null)
             webClient.getOptions().setJavaScriptEnabled(params.getJavaScriptEnabled());
         if (params.getCookieEnable() != null)
@@ -149,7 +149,7 @@ public class HtmlUnitWebClientUtil {
         if (params.getHeaders() != null && !params.getHeaders().isEmpty())
             request.setAdditionalHeaders(params.getHeaders());
         List<NameValuePair> nameValuePairList = new ArrayList<>();
-        if (StringUtils.isNotBlank(params.getDataKey()) && StringUtils.isNoneBlank(params.getDataValue()))
+        if (StringUtils.isNotBlank(params.getDataKey()) && !StringUtils.isBlank(params.getDataValue()))
             nameValuePairList.add(new NameValuePair(params.getDataKey(), params.getDataValue()));
         if (ObjectUtils.notEqual(params.getDatas(), null) && !params.getDatas().isEmpty())
             for (String key : params.getDatas().keySet())
@@ -182,11 +182,11 @@ public class HtmlUnitWebClientUtil {
     private static WebClient getWebClient() {
         WebClient client = new WebClient(BrowserVersion.CHROME);
         if (client == null)
-            client = new WebClient(BrowserVersion.EDGE);
-        if (client == null)
             client = new WebClient(BrowserVersion.FIREFOX_45);
         if (client == null)
             client = new WebClient(BrowserVersion.FIREFOX_52);
+        if (client == null)
+            client = new WebClient(BrowserVersion.EDGE);
         if (client == null)
             client = new WebClient(BrowserVersion.INTERNET_EXPLORER);
         if (client == null)

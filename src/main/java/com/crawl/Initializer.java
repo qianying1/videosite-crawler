@@ -45,9 +45,9 @@ public class Initializer {
 //        }
 //        AcfunHttpClient.getInstance().startCrawl();
         //b站
-//        if (Config.bilibiliIsProxy) {
-//            BiliBiliProxyHttpClient.getInstance().startCrawl();
-//        }
+        if (Config.bilibiliIsProxy) {
+            BiliBiliProxyHttpClient.getInstance().startCrawl();
+        }
         BiliBiliHttpClient.getInstance().startCrawl();
         //斗鱼
 //        if (Config.douyuIsProxy) {
