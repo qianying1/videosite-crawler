@@ -1,6 +1,6 @@
-知乎爬虫
+视频网站爬虫
 ====
-zhihu-crawler是一个基于Java的爬虫实战项目，主要功能是抓取知乎用户的基本资料，如果觉得不错，请给个star。
+videosite-crawler是一个基于Java的爬虫实战项目，主要功能是抓取视频网站数据，如果觉得不错，请给个star。
 ## 爬取结果
 * 下图为爬取117w知乎用户数据的简单统计<br>
 ![](https://github.com/wycm/zhihu-crawler/blob/2.0/src/main/resources/img/zhihu-charts.png)
