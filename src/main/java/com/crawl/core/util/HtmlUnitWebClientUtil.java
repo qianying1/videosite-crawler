@@ -1,67 +1,54 @@
 package com.crawl.core.util;
 
-import org.apache.http.*;
+import com.crawl.proxy.entity.Proxy;
+import com.gargoylesoftware.htmlunit.*;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.util.NameValuePair;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHost;
 import org.apache.http.client.CookieStore;
-import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.config.ConnectionConfig;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
-import org.apache.http.config.SocketConfig;
-import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContexts;
-import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLException;
-import java.io.*;
-import java.net.UnknownHostException;
-import java.nio.charset.CodingErrorAction;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.Charset;
 import java.security.KeyStore;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 
 /**
- * WebClient浏览器模拟器
+ * WebClient浏览器模拟工具
  */
 public class HtmlUnitWebClientUtil {
     private static Logger logger = LoggerFactory.getLogger(HtmlUnitWebClientUtil.class);
     private static CookieStore cookieStore = new BasicCookieStore();
-    private static CloseableHttpClient httpClient;
-    private final static String userAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36";
     private static HttpHost proxy;
-    private static RequestConfig requestConfig;
 
     static {
         init();
     }
 
+    /**
+     * 参数初始化
+     */
     private static void init() {
         try {
             SSLContext sslContext =
@@ -82,149 +69,240 @@ public class HtmlUnitWebClientUtil {
 
             PoolingHttpClientConnectionManager connManager =
                     new PoolingHttpClientConnectionManager(socketFactoryRegistry);
-
-            SocketConfig socketConfig = SocketConfig.custom().setSoTimeout(Constants.TIMEOUT).setTcpNoDelay(true).build();
-            connManager.setDefaultSocketConfig(socketConfig);
-
-            ConnectionConfig connectionConfig =
-                    ConnectionConfig.custom().setMalformedInputAction(CodingErrorAction.IGNORE)
-                            .setUnmappableInputAction(CodingErrorAction.IGNORE).setCharset(Consts.UTF_8).build();
-            connManager.setDefaultConnectionConfig(connectionConfig);
-            connManager.setMaxTotal(500);
-            connManager.setDefaultMaxPerRoute(300);
-            HttpRequestRetryHandler retryHandler = new HttpRequestRetryHandler() {
-                @Override
-                public boolean retryRequest(IOException exception, int executionCount, HttpContext context) {
-                    if (executionCount > 2) {
-                        return false;
-                    }
-                    if (exception instanceof InterruptedIOException) {
-                        return true;
-                    }
-                    if (exception instanceof ConnectTimeoutException) {
-                        return true;
-                    }
-                    if (exception instanceof UnknownHostException) {
-                        return true;
-                    }
-                    if (exception instanceof SSLException) {
-                        return true;
-                    }
-                    HttpRequest request = HttpClientContext.adapt(context).getRequest();
-                    if (!(request instanceof HttpEntityEnclosingRequest)) {
-                        return true;
-                    }
-                    return false;
-                }
-            };
-            HttpClientBuilder httpClientBuilder =
-                    HttpClients.custom().setConnectionManager(connManager)
-                            .setRetryHandler(retryHandler)
-                            .setDefaultCookieStore(new BasicCookieStore()).setUserAgent(userAgent);
-            if (proxy != null) {
-                httpClientBuilder.setRoutePlanner(new DefaultProxyRoutePlanner(proxy)).build();
-            }
-            httpClient = httpClientBuilder.build();
-
-            requestConfig = RequestConfig.custom().setSocketTimeout(Constants.TIMEOUT).
-                    setConnectTimeout(Constants.TIMEOUT).
-                    setConnectionRequestTimeout(Constants.TIMEOUT).
-                    setCookieSpec(CookieSpecs.STANDARD).
-                    build();
         } catch (Exception e) {
             logger.error("Exception:", e);
         }
     }
 
-    public static String getWebPage(String url) throws IOException {
-        HttpGet request = new HttpGet(url);
+    /**
+     * 通过url地址获取网页
+     *
+     * @param url
+     * @return
+     * @throws IOException
+     */
+    public static HtmlPage getWebPage(String url, HttpClientParams params, Proxy proxy) throws IOException {
+        try {
+            WebClient webClient = getWebClient();
+            initWebClientParams(webClient, params);
+            //设置代理
+            ProxyConfig proxyConfig;
+            if (proxy != null && proxy.getIp() != null) {
+                proxyConfig = webClient.getOptions().getProxyConfig();
+                proxyConfig.setProxyHost(proxy.getIp());
+                proxyConfig.setProxyPort(proxy.getPort());
+            }
+            //获取页面
+            HtmlPage page = webClient.getPage(url);
+            webClient.waitForBackgroundJavaScript(Constants.WAITFORBACKGROUNDJAVASCRIPT);
+            return page;
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("fail to crawl page from url: " + url, e);
+            return null;
+        }
+    }
+
+    /**
+     * 初始化浏览器模拟工具
+     *
+     * @param webClient
+     * @param params
+     */
+    private static void initWebClientParams(WebClient webClient, HttpClientParams params) {
+        if (params.getJavaScriptEnabled() != null)
+            webClient.getOptions().setJavaScriptEnabled(params.getJavaScriptEnabled());
+        if (params.getCookieEnable() != null)
+            webClient.getCookieManager().setCookiesEnabled(params.getCookieEnable());
+        // 启动JS
+        if (params.getJavaScriptEnabled() != null)
+            webClient.getOptions().setJavaScriptEnabled(params.getJavaScriptEnabled());
+        //忽略ssl认证
+        if (params.getUseInsecureSSL() != null)
+            webClient.getOptions().setUseInsecureSSL(params.getUseInsecureSSL());
+        //禁用Css，可避免自动二次请求CSS进行渲染
+        if (params.getCssEnabled() != null)
+            webClient.getOptions().setCssEnabled(params.getCssEnabled());
+        else
+            webClient.getOptions().setCssEnabled(false);
+        //运行错误时，不抛出异常
+        if (params.getThrowExceptionOnScriptError() != null)
+            webClient.getOptions().setThrowExceptionOnScriptError(params.getThrowExceptionOnScriptError());
+        else
+            webClient.getOptions().setThrowExceptionOnScriptError(false);
+        // 设置Ajax异步
+        webClient.setAjaxController(new NicelyResynchronizingAjaxController());
+    }
+
+    /**
+     * 初始化请求参数
+     *
+     * @param request
+     * @param params
+     * @param proxy
+     */
+    private static void initWebRequest(WebRequest request, HttpClientParams params, Proxy proxy, Map<String, String> datas) {
+        if (params.getCharset() != null) {
+            request.setCharset(Charset.forName(params.getCharset()));
+        } else
+            request.setCharset(Charset.forName("utf-8"));
+        if (params.getHeaders() != null && !params.getHeaders().isEmpty())
+            request.setAdditionalHeaders(params.getHeaders());
+        List<NameValuePair> nameValuePairList = new ArrayList<>();
+        if (StringUtils.isNotBlank(params.getDataKey()) && StringUtils.isNoneBlank(params.getDataValue()))
+            nameValuePairList.add(new NameValuePair(params.getDataKey(), params.getDataValue()));
+        if (ObjectUtils.notEqual(params.getDatas(), null) && !params.getDatas().isEmpty())
+            for (String key : params.getDatas().keySet())
+                nameValuePairList.add(new NameValuePair(key, params.getDatas().get(key)));
+        if (ObjectUtils.notEqual(proxy, null)) {
+            request.setSocksProxy(true);
+            request.setProxyHost(proxy.getIp());
+            request.setProxyPort(proxy.getPort());
+        }
+        if (datas != null && !datas.isEmpty())
+            for (String key : datas.keySet())
+                nameValuePairList.add(new NameValuePair(key, datas.get(key)));
+        request.setRequestParameters(nameValuePairList);
+        if (StringUtils.isNotBlank(params.getEncodeType()))
+            try {
+                request.setEncodingType(FormEncodingType.getInstance(params.getEncodeType()));
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.error("fail to get form encode type from name: " + params.getEncodeType(), e);
+            }
+        if (StringUtils.isNotBlank(params.getRequestBody()))
+            request.setRequestBody(params.getRequestBody());
+    }
+
+    /**
+     * 按照个版本的浏览器内核获取浏览器模拟工具
+     *
+     * @return
+     */
+    private static WebClient getWebClient() {
+        WebClient client = new WebClient(BrowserVersion.CHROME);
+        if (client == null)
+            client = new WebClient(BrowserVersion.EDGE);
+        if (client == null)
+            client = new WebClient(BrowserVersion.FIREFOX_45);
+        if (client == null)
+            client = new WebClient(BrowserVersion.FIREFOX_52);
+        if (client == null)
+            client = new WebClient(BrowserVersion.INTERNET_EXPLORER);
+        if (client == null)
+            client = new WebClient(BrowserVersion.getDefault());
+        return client;
+    }
+
+    public static String getWebPage(WebRequest request) throws IOException {
         return getWebPage(request, "utf-8");
     }
 
-    public static String getWebPage(HttpRequestBase request) throws IOException {
-        return getWebPage(request, "utf-8");
+    /**
+     * 通过url发送post请求
+     *
+     * @param postUrl
+     * @param datas
+     * @param params
+     * @param proxy
+     * @return
+     * @throws IOException
+     */
+    public static String postRequest(String postUrl, Map<String, String> datas, HttpClientParams params, Proxy proxy) throws IOException {
+        try {
+            WebClient webClient = getWebClient();
+            initWebClientParams(webClient, params);
+            WebConnection connection = getWebClient().getWebConnection();
+            URL url = new URL(postUrl);
+            WebRequest request = new WebRequest(url, HttpMethod.POST);
+            initWebRequest(request, params, proxy, datas);
+            WebResponse response = connection.getResponse(request);
+            return response.getContentAsString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("fail to crawl page from url: " + postUrl + " in post method", e);
+            return "";
+        }
     }
 
-    public static String postRequest(String postUrl, Map<String, String> params) throws IOException {
-        HttpPost post = new HttpPost(postUrl);
-        setHttpPostParams(post, params);
-        return getWebPage(post, "utf-8");
+    /**
+     * 通过url发送get请求
+     *
+     * @param getUrl
+     * @param params
+     * @return
+     * @throws IOException
+     */
+    public static String getRequest(String getUrl, Map<String, String> datas, HttpClientParams params, Proxy proxy) throws IOException {
+        try {
+            WebClient webClient = getWebClient();
+            initWebClientParams(webClient, params);
+            WebConnection connection = getWebClient().getWebConnection();
+            URL url = new URL(getUrl);
+            WebRequest request = new WebRequest(url, HttpMethod.GET);
+            initWebRequest(request, params, proxy, datas);
+            WebResponse response = connection.getResponse(request);
+            return response.getContentAsString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("fail to crawl page from url: " + getUrl + " in get method", e);
+            return "";
+        }
     }
 
     /**
      * @param encoding 字符编码
      * @return 网页内容
      */
-    public static String getWebPage(HttpRequestBase request
+    public static String getWebPage(WebRequest request
             , String encoding) throws IOException {
-        CloseableHttpResponse response = null;
-        response = getResponse(request);
-        logger.info("status---" + response.getStatusLine().getStatusCode());
-        String content = EntityUtils.toString(response.getEntity(), encoding);
-        request.releaseConnection();
-        return content;
-    }
-
-    public static CloseableHttpResponse getResponse(HttpRequestBase request) throws IOException {
-        if (request.getConfig() == null) {
-            request.setConfig(requestConfig);
+        WebClient client = getWebClient();
+        if (StringUtils.isNotBlank(encoding)) {
+            request.setCharset(Charset.forName(encoding));
         }
-        request.setHeader("User-Agent", Constants.userAgentArray[new Random().nextInt(Constants.userAgentArray.length)]);
-        HttpClientContext httpClientContext = HttpClientContext.create();
-        httpClientContext.setCookieStore(cookieStore);
-        CloseableHttpResponse response = httpClient.execute(request, httpClientContext);
-//		int statusCode = response.getStatusLine().getStatusCode();
-//		if(statusCode != 200){
-//			throw new IOException("status code is:" + statusCode);
-//		}
-        return response;
+        WebConnection connection = client.getWebConnection();
+        WebResponse response = connection.getResponse(request);
+        if (response == null || response.getStatusCode() != 200) {
+            if (request.getHttpMethod().equals(HttpMethod.GET)) {
+                request.setHttpMethod(HttpMethod.POST);
+            } else if (request.getHttpMethod().equals(HttpMethod.POST)) {
+                request.setHttpMethod(HttpMethod.GET);
+            }
+            response = connection.getResponse(request);
+        }
+        return response.getContentAsString();
     }
 
-    public static CloseableHttpResponse getResponse(String url) throws IOException {
-        HttpGet request = new HttpGet(url);
+    /**
+     * 通过请求获取响应
+     *
+     * @param request
+     * @return
+     * @throws IOException
+     */
+    public static WebResponse getResponse(WebRequest request) throws IOException {
+        if (request == null)
+            return null;
+        WebClient client = getWebClient();
+        WebConnection connection = client.getWebConnection();
+        if (connection == null) {
+            return new WebResponse(null, request, 0);
+        }
+        return connection.getResponse(request);
+    }
+
+    /**
+     * 通过url地址获取响应
+     *
+     * @param url
+     * @return
+     * @throws IOException
+     */
+    public static WebResponse getResponse(String url) throws IOException {
+        if (StringUtils.isBlank(url))
+            return null;
+        WebRequest request = new WebRequest(new URL(url));
         return getResponse(request);
-    }
-
-    /**
-     * 序列化对象
-     *
-     * @param object
-     * @throws Exception
-     */
-    public static void serializeObject(Object object, String filePath) {
-        OutputStream fos = null;
-        try {
-            fos = new FileOutputStream(filePath, false);
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(object);
-            logger.info("序列化成功");
-            oos.flush();
-            fos.close();
-            oos.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * 反序列化对象
-     *
-     * @param path
-     * @throws Exception
-     */
-    public static Object deserializeObject(String path) throws Exception {
-//		InputStream fis = HttpClientUtil.class.getResourceAsStream(name);
-        File file = new File(path);
-        InputStream fis = new FileInputStream(file);
-        ObjectInputStream ois = null;
-        Object object = null;
-        ois = new ObjectInputStream(fis);
-        object = ois.readObject();
-        fis.close();
-        ois.close();
-        return object;
     }
 
     /**
@@ -239,51 +317,14 @@ public class HtmlUnitWebClientUtil {
             , String path
             , String saveFileName
             , Boolean isReplaceFile) {
-        try {
-            CloseableHttpResponse response = getResponse(fileURL);
-            logger.info("status:" + response.getStatusLine().getStatusCode());
-            File file = new File(path);
-            //如果文件夹不存在则创建
-            if (!file.exists() && !file.isDirectory()) {
-                file.mkdirs();
-            } else {
-                logger.info("//目录存在");
-            }
-            file = new File(path + saveFileName);
-            if (!file.exists() || isReplaceFile) {
-                //如果文件不存在，则下载
-                try {
-                    OutputStream os = new FileOutputStream(file);
-                    InputStream is = response.getEntity().getContent();
-                    byte[] buff = new byte[(int) response.getEntity().getContentLength()];
-                    while (true) {
-                        int readed = is.read(buff);
-                        if (readed == -1) {
-                            break;
-                        }
-                        byte[] temp = new byte[readed];
-                        System.arraycopy(buff, 0, temp, 0, readed);
-                        os.write(temp);
-                        logger.info("文件下载中....");
-                    }
-                    is.close();
-                    os.close();
-                    logger.info(fileURL + "--文件成功下载至" + path + saveFileName);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                logger.info(path);
-                logger.info("该文件存在！");
-            }
-            response.close();
-        } catch (IllegalArgumentException e) {
-            logger.info("连接超时...");
-        } catch (Exception e1) {
-            e1.printStackTrace();
-        }
+
     }
 
+    /**
+     * 获取cookie集(已弃用)
+     *
+     * @return
+     */
     public static CookieStore getCookieStore() {
         return cookieStore;
     }
@@ -293,53 +334,25 @@ public class HtmlUnitWebClientUtil {
     }
 
     /**
-     * 有bug 慎用
-     * unicode转化String
-     *
-     * @return
-     */
-    public static String decodeUnicode(String dataStr) {
-        int start = 0;
-        int end = 0;
-        final StringBuffer buffer = new StringBuffer();
-        while (start > -1) {
-            start = dataStr.indexOf("\\u", start - (6 - 1));
-            if (start == -1) {
-                break;
-            }
-            start = start + 2;
-            end = start + 4;
-            String tempStr = dataStr.substring(start, end);
-            String charStr = "";
-            charStr = dataStr.substring(start, end);
-            char letter = (char) Integer.parseInt(charStr, 16); // 16进制parse整形字符串。
-            dataStr = dataStr.replace("\\u" + tempStr, letter + "");
-            start = end;
-        }
-        logger.debug(dataStr);
-        return dataStr;
-    }
-
-    /**
      * 设置request请求参数
      *
      * @param request
      * @param params
      */
-    public static void setHttpPostParams(HttpPost request, Map<String, String> params) {
-        List<NameValuePair> formParams = new ArrayList<NameValuePair>();
-        for (String key : params.keySet()) {
-            formParams.add(new BasicNameValuePair(key, params.get(key)));
-        }
-        UrlEncodedFormEntity entity = null;
-        try {
-            entity = new UrlEncodedFormEntity(formParams, "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        request.setEntity(entity);
+    public static void setHttpPostParams(WebRequest request, Map<String, String> params) {
+        if (request == null || params == null || params.isEmpty())
+            return;
+        List<NameValuePair> nameValuePairs = new ArrayList<>();
+        for (String key : params.keySet())
+            nameValuePairs.add(new NameValuePair(key, params.get(key)));
+        request.setRequestParameters(nameValuePairs);
     }
 
+    /**
+     * 获取请求配置工厂
+     *
+     * @return
+     */
     public static RequestConfig.Builder getRequestConfigBuilder() {
         return RequestConfig.custom().setSocketTimeout(Constants.TIMEOUT).
                 setConnectTimeout(Constants.TIMEOUT).
@@ -348,7 +361,6 @@ public class HtmlUnitWebClientUtil {
     }
 
     public static void main(String args[]) {
-        String s = "{    \"r\": 1,    \"errcode\": 100000,        \"data\": {\"account\":\"\\u5e10\\u53f7\\u6216\\u5bc6\\u7801\\u9519\\u8bef\"},            \"msg\": \"\\u8be5\\u624b\\u673a\\u53f7\\u5c1a\\u672a\\u6ce8\\u518c\\u77e5\\u4e4e";
-        logger.info(decodeUnicode(s));
+
     }
 }

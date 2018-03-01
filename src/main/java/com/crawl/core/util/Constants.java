@@ -5,6 +5,7 @@ public class Constants {
     public final static String DIRECT_CRAWL_STRATEGY = "direct";
     public final static String PROXY_CRAWL_STRATEGY = "proxy";
     public final static int TIMEOUT = 10000;
+    public final static int WAITFORBACKGROUNDJAVASCRIPT=10000;
     /**
      * 单个ip请求间隔，单位ms
      */

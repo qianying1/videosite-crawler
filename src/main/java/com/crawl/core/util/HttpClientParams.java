@@ -50,6 +50,11 @@ public class HttpClientParams {
     private Boolean followRedirects;
 
     /**
+     * 是否忽略ssl认证
+     */
+    private Boolean useInsecureSSL;
+
+    /**
      * 是否忽略http请求错误
      */
     private Boolean ignoreHttpErrors;
@@ -105,9 +110,21 @@ public class HttpClientParams {
      */
     private Boolean cookieEnable;
     /**
+     * 需要发送的数据
+     */
+    private Map<String,String> datas;
+    /**
+     * 加密类型
+     */
+    private String encodeType;
+    /**
+     * 请求内容
+     */
+    private String requestBody;
+    /**
      * header头
      */
-    private Map<String,String> headers;
+    private Map<String, String> headers;
 
     public int getTimeout() {
         return timeout;
@@ -275,5 +292,37 @@ public class HttpClientParams {
 
     public void setHeaders(Map<String, String> headers) {
         this.headers = headers;
+    }
+
+    public Boolean getUseInsecureSSL() {
+        return useInsecureSSL;
+    }
+
+    public void setUseInsecureSSL(Boolean useInsecureSSL) {
+        this.useInsecureSSL = useInsecureSSL;
+    }
+
+    public Map<String, String> getDatas() {
+        return datas;
+    }
+
+    public void setDatas(Map<String, String> datas) {
+        this.datas = datas;
+    }
+
+    public String getEncodeType() {
+        return encodeType;
+    }
+
+    public void setEncodeType(String encodeType) {
+        this.encodeType = encodeType;
+    }
+
+    public String getRequestBody() {
+        return requestBody;
+    }
+
+    public void setRequestBody(String requestBody) {
+        this.requestBody = requestBody;
     }
 }

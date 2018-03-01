@@ -1117,6 +1117,47 @@ public class Config {
      */
     public static String youtubeProxyPath;
 
+    /**
+     * 是否忽略ssl认证
+     */
+    public static Boolean acfunUseInsecureSSL;
+    /**
+     * 是否忽略ssl认证
+     */
+    public static Boolean biliBiliUseInsecureSSL;
+    /**
+     * 是否忽略ssl认证
+     */
+    public static Boolean douyuUseInsecureSSL;
+    /**
+     * 是否忽略ssl认证
+     */
+    public static Boolean iqiyiUseInsecureSSL;
+    /**
+     * 是否忽略ssl认证
+     */
+    public static Boolean letvUseInsecureSSL;
+    /**
+     * 是否忽略ssl认证
+     */
+    public static Boolean pptvUseInsecureSSL;
+    /**
+     * 是否忽略ssl认证
+     */
+    public static Boolean tudouUseInsecureSSL;
+    /**
+     * 是否忽略ssl认证
+     */
+    public static Boolean youkuUseInsecureSSL;
+    /**
+     * 是否忽略ssl认证
+     */
+    public static Boolean youtubeUseInsecureSSL;
+    /**
+     * 是否忽略ssl认证
+     */
+    public static Boolean sohuUseInsecureSSL;
+
     static {
         Properties p = new Properties();
         try {
@@ -1309,6 +1350,17 @@ public class Config {
         tudouIgnoreContentType = Boolean.valueOf(p.getProperty("tudouIgnoreContentType"));
         youkuIgnoreContentType = Boolean.valueOf(p.getProperty("youkuIgnoreContentType"));
         youtubeIgnoreContentType = Boolean.valueOf(p.getProperty("youtubeIgnoreContentType"));
+
+        acfunUseInsecureSSL = Boolean.valueOf(p.getProperty("acfunUseInsecureSSL"));
+        biliBiliUseInsecureSSL = Boolean.valueOf(p.getProperty("biliBiliUseInsecureSSL"));
+        douyuUseInsecureSSL = Boolean.valueOf(p.getProperty("douyuUseInsecureSSL"));
+        iqiyiUseInsecureSSL = Boolean.valueOf(p.getProperty("iqiyiUseInsecureSSL"));
+        letvUseInsecureSSL = Boolean.valueOf(p.getProperty("letvUseInsecureSSL"));
+        pptvUseInsecureSSL = Boolean.valueOf(p.getProperty("pptvUseInsecureSSL"));
+        sohuUseInsecureSSL = Boolean.valueOf(p.getProperty("sohuUseInsecureSSL"));
+        tudouUseInsecureSSL = Boolean.valueOf(p.getProperty("tudouUseInsecureSSL"));
+        youkuUseInsecureSSL = Boolean.valueOf(p.getProperty("youkuUseInsecureSSL"));
+        youtubeUseInsecureSSL = Boolean.valueOf(p.getProperty("youtubeUseInsecureSSL"));
 
         acfunThrowExceptionOnScriptError = Boolean.valueOf(p.getProperty("acfunThrowExceptionOnScriptError"));
         biliBiliThrowExceptionOnScriptError = Boolean.valueOf(p.getProperty("biliBiliThrowExceptionOnScriptError"));
