@@ -48,10 +48,10 @@ import java.util.Random;
 
 
 /**
- * HttpClient工具类
+ * WebClient浏览器模拟器
  */
-public class HtmlUnitUtil {
-    private static Logger logger = LoggerFactory.getLogger(HtmlUnitUtil.class);
+public class HtmlUnitWebClientUtil {
+    private static Logger logger = LoggerFactory.getLogger(HtmlUnitWebClientUtil.class);
     private static CookieStore cookieStore = new BasicCookieStore();
     private static CloseableHttpClient httpClient;
     private final static String userAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36";
@@ -289,7 +289,7 @@ public class HtmlUnitUtil {
     }
 
     public static void setCookieStore(CookieStore cookieStore) {
-        HtmlUnitUtil.cookieStore = cookieStore;
+        HtmlUnitWebClientUtil.cookieStore = cookieStore;
     }
 
     /**
