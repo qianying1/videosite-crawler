@@ -123,7 +123,8 @@ public abstract class SohuAbstractPageTask implements Runnable {
             }
         } catch (InterruptedException e) {
             logger.error("InterruptedException", e);
-        } catch (IOException e) {
+        } catch (Exception e) {
+            e.printStackTrace();
             if (currentProxy != null) {
                 /**
                  * 该代理可用，将该代理继续添加到proxyQueue

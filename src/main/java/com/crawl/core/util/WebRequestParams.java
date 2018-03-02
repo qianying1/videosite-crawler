@@ -5,11 +5,11 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- * http需要进行设置的参数
+ * http request请求需要进行设置的参数
  * <p>
  * Created by qianhaibin on 2018/2/28.
  */
-public class HttpClientParams {
+public class WebRequestParams {
 
     /**
      * 连接超时时间
@@ -63,7 +63,7 @@ public class HttpClientParams {
     /**
      * 是否将探出的页面阻塞住, 防止因为自动弹出页面.
      */
-    private Boolean popupBlockerEnabled =true;
+    private Boolean popupBlockerEnabled = true;
 
     /**
      * 文档内容容量大小
@@ -94,7 +94,7 @@ public class HttpClientParams {
     /**
      * 是否开启打印log日志
      */
-    private Boolean logEnabled=false;
+    private Boolean logEnabled = false;
     /**
      * 代理端口
      */
@@ -136,9 +136,9 @@ public class HttpClientParams {
      */
     private Map<String, String> headers = new HashMap<>();
 
-    public HttpClientParams() {
+    public WebRequestParams() {
         headers.put("User-Agent", Constants.userAgentArray[12]);
-        headers.put("Referer",referrer);
+        headers.put("Referer", referrer);
     }
 
     public int getTimeout() {
@@ -356,4 +356,5 @@ public class HttpClientParams {
     public void setLogEnabled(Boolean logEnabled) {
         this.logEnabled = logEnabled;
     }
+
 }

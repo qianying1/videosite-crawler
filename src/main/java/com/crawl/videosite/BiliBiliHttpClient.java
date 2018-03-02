@@ -3,10 +3,7 @@ package com.crawl.videosite;
 import com.crawl.Main;
 import com.crawl.core.htmlunit.AbstractHtmlUnit;
 import com.crawl.core.htmlunit.IHtmlUnit;
-import com.crawl.core.util.Config;
-import com.crawl.core.util.Constants;
-import com.crawl.core.util.SimpleThreadPoolExecutor;
-import com.crawl.core.util.ThreadPoolMonitor;
+import com.crawl.core.util.*;
 import com.crawl.proxy.BiliBiliProxyHttpClient;
 import com.crawl.videosite.task.bilibili.BiliBiliDetailListPageTask;
 import com.crawl.videosite.task.bilibili.BiliBiliDetailPageTask;
@@ -14,6 +11,7 @@ import com.gargoylesoftware.htmlunit.WebRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Connection;
@@ -127,9 +125,13 @@ public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
     public void startCrawl() {
         String startUrl = Constants.BILIBILI_INDEX_URL;
         WebRequest request = null;
+        HttpClientParams params=new HttpClientParams();
         try {
-            request = new WebRequest(new URL(startUrl));
+            request = HtmlUnitWebClientUtil.getRequest(startUrl,null,params,null);
         } catch (MalformedURLException e) {
+            e.printStackTrace();
+            logger.error("fail to new WebRequest from uri: " + startUrl, e);
+        }catch (IOException e){
             e.printStackTrace();
             logger.error("fail to new WebRequest from uri: " + startUrl, e);
         }

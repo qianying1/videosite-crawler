@@ -2,10 +2,12 @@ package com.crawl.core.util;
 
 import com.crawl.proxy.entity.Proxy;
 import com.gargoylesoftware.htmlunit.*;
+import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.util.NameValuePair;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHost;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.config.CookieSpecs;
@@ -32,6 +34,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 
 /**
@@ -130,8 +133,41 @@ public class HtmlUnitWebClientUtil {
             webClient.getOptions().setThrowExceptionOnScriptError(params.getThrowExceptionOnScriptError());
         else
             webClient.getOptions().setThrowExceptionOnScriptError(false);
+        if (params.getThrowExceptionOnFailingStatusCode() != null) {
+            webClient.getOptions().setThrowExceptionOnFailingStatusCode(params.getThrowExceptionOnFailingStatusCode());
+        } else
+            webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
         // 设置Ajax异步
         webClient.setAjaxController(new NicelyResynchronizingAjaxController());
+        if (params.getPopupBlockerEnabled() != null) {
+            webClient.getOptions().setPopupBlockerEnabled(params.getPopupBlockerEnabled());
+        }
+        if (params.getLogEnabled() != null) {
+            if (params.getLogEnabled()) {
+                LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.OpLog");
+                java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit")
+                        .setLevel(Level.ALL);
+                java.util.logging.Logger.getLogger("org.apache.commons.httpclient")
+                        .setLevel(Level.ALL);
+            } else {
+                LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
+                java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit")
+                        .setLevel(Level.OFF);
+                java.util.logging.Logger.getLogger("org.apache.commons.httpclient")
+                        .setLevel(Level.OFF);
+            }
+        }
+    }
+
+    /**
+     * 恢复打印log日志
+     */
+    public static void showLog() {
+        LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.OpLog");
+        java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit")
+                .setLevel(Level.ALL);
+        java.util.logging.Logger.getLogger("org.apache.commons.httpclient")
+                .setLevel(Level.ALL);
     }
 
     /**
@@ -180,7 +216,7 @@ public class HtmlUnitWebClientUtil {
      * @return
      */
     private static WebClient getWebClient() {
-        WebClient client = new WebClient(BrowserVersion.CHROME);
+        WebClient client = new WebClient();
         if (client == null)
             client = new WebClient(BrowserVersion.FIREFOX_45);
         if (client == null)
@@ -189,8 +225,12 @@ public class HtmlUnitWebClientUtil {
             client = new WebClient(BrowserVersion.EDGE);
         if (client == null)
             client = new WebClient(BrowserVersion.INTERNET_EXPLORER);
-        if (client == null)
+        if (client == null) {
+            client = new WebClient(BrowserVersion.CHROME);
+        }
+        if (client == null) {
             client = new WebClient(BrowserVersion.getDefault());
+        }
         return client;
     }
 
@@ -208,7 +248,7 @@ public class HtmlUnitWebClientUtil {
      * @return
      * @throws IOException
      */
-    public static String postRequest(String postUrl, Map<String, String> datas, HttpClientParams params, Proxy proxy) throws IOException {
+    public static String requestPost(String postUrl, Map<String, String> datas, HttpClientParams params, Proxy proxy) throws IOException {
         try {
             WebClient webClient = getWebClient();
             initWebClientParams(webClient, params);
@@ -233,7 +273,7 @@ public class HtmlUnitWebClientUtil {
      * @return
      * @throws IOException
      */
-    public static String getRequest(String getUrl, Map<String, String> datas, HttpClientParams params, Proxy proxy) throws IOException {
+    public static String requestGet(String getUrl, Map<String, String> datas, HttpClientParams params, Proxy proxy) throws IOException {
         try {
             WebClient webClient = getWebClient();
             initWebClientParams(webClient, params);
@@ -251,6 +291,26 @@ public class HtmlUnitWebClientUtil {
     }
 
     /**
+     * 通过url发送get请求
+     *
+     * @param getUrl
+     * @param params
+     * @return
+     * @throws IOException
+     */
+    public static WebRequest getRequest(String getUrl, Map<String, String> datas, HttpClientParams params, Proxy proxy) throws IOException {
+        try {
+            WebRequest request = new WebRequest(new URL(getUrl), HttpMethod.GET);
+            initWebRequest(request, params, proxy, datas);
+            return request;
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("fail to get request from url: " + getUrl + " in get method", e);
+            return null;
+        }
+    }
+
+    /**
      * @param encoding 字符编码
      * @return 网页内容
      */
@@ -262,15 +322,16 @@ public class HtmlUnitWebClientUtil {
         }
         WebConnection connection = client.getWebConnection();
         WebResponse response = connection.getResponse(request);
+        DomElement result;
         if (response == null || response.getStatusCode() != 200) {
             if (request.getHttpMethod().equals(HttpMethod.GET)) {
                 request.setHttpMethod(HttpMethod.POST);
             } else if (request.getHttpMethod().equals(HttpMethod.POST)) {
                 request.setHttpMethod(HttpMethod.GET);
             }
-            response = connection.getResponse(request);
         }
-        return response.getContentAsString();
+        result = ((DomElement) client.getPage(request)).getElementsByTagName("body").get(0);
+        return result.asText();
     }
 
     /**
@@ -280,10 +341,11 @@ public class HtmlUnitWebClientUtil {
      * @return
      * @throws IOException
      */
-    public static WebResponse getResponse(WebRequest request) throws IOException {
+    public static WebResponse getResponse(WebRequest request, HttpClientParams params) throws Exception {
         if (request == null)
             return null;
         WebClient client = getWebClient();
+        initWebClientParams(client, params);
         WebConnection connection = client.getWebConnection();
         if (connection == null) {
             return new WebResponse(null, request, 0);
@@ -298,11 +360,11 @@ public class HtmlUnitWebClientUtil {
      * @return
      * @throws IOException
      */
-    public static WebResponse getResponse(String url) throws IOException {
+    public static WebResponse getResponse(String url) throws Exception {
         if (StringUtils.isBlank(url))
             return null;
         WebRequest request = new WebRequest(new URL(url));
-        return getResponse(request);
+        return getResponse(request, null);
     }
 
     /**

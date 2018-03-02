@@ -6,13 +6,11 @@ import com.crawl.proxy.ProxyPool;
 import com.crawl.proxy.entity.Direct;
 import com.crawl.proxy.entity.Proxy;
 import com.crawl.proxy.util.ProxyUtil;
-import com.crawl.videosite.CommonHttpClient;
 import com.crawl.videosite.YoutubeHttpClient;
 import com.crawl.videosite.dao.VideoSiteDao1;
 import com.crawl.videosite.dao.impl.VideoSiteDao1Imp;
 import com.crawl.videosite.entity.Page;
 import com.gargoylesoftware.htmlunit.WebRequest;
-import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,6 +124,17 @@ public abstract class YoutubeAbstractPageTask implements Runnable {
         } catch (InterruptedException e) {
             logger.error("InterruptedException", e);
         } catch (IOException e) {
+            if (currentProxy != null) {
+                /**
+                 * 该代理可用，将该代理继续添加到proxyQueue
+                 */
+                currentProxy.setFailureTimes(currentProxy.getFailureTimes() + 1);
+            }
+            if (!httpClient.getDetailListPageThreadPool().isShutdown()) {
+                retry();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
             if (currentProxy != null) {
                 /**
                  * 该代理可用，将该代理继续添加到proxyQueue

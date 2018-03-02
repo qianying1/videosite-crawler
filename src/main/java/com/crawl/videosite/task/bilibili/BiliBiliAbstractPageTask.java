@@ -1,7 +1,6 @@
 package com.crawl.videosite.task.bilibili;
 
 import com.crawl.core.util.Constants;
-import com.crawl.core.util.HtmlUnitWebClientUtil;
 import com.crawl.core.util.HttpClientParams;
 import com.crawl.core.util.SimpleInvocationHandler;
 import com.crawl.proxy.ProxyPool;
@@ -13,12 +12,10 @@ import com.crawl.videosite.dao.VideoSiteDao1;
 import com.crawl.videosite.dao.impl.VideoSiteDao1Imp;
 import com.crawl.videosite.entity.Page;
 import com.gargoylesoftware.htmlunit.WebRequest;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.net.URL;
 
@@ -93,10 +90,7 @@ public abstract class BiliBiliAbstractPageTask implements Runnable {
                 requestStartTime = System.currentTimeMillis();
                 page = httpClient.getWebPage(request);
             }
-            System.out.println(page.getHtml());
 
-            HtmlPage pageText = HtmlUnitWebClientUtil.getWebPage(page.getUrl(), params, null);
-            System.out.println(pageText.getPage().getDocumentElement());
             long requestEndTime = System.currentTimeMillis();
             page.setProxy(currentProxy != null ? currentProxy : new Proxy("127.0.0.1", 8080, 1000));
             int status = page.getStatusCode();
@@ -120,7 +114,8 @@ public abstract class BiliBiliAbstractPageTask implements Runnable {
             }
         } catch (InterruptedException e) {
             logger.error("InterruptedException", e);
-        } catch (IOException e) {
+        } catch (Exception e) {
+            e.printStackTrace();
             if (currentProxy != null) {
                 /**
                  * 该代理可用，将该代理继续添加到proxyQueue

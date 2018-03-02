@@ -1,14 +1,10 @@
 package com.crawl.core.htmlunit;
 
 import com.crawl.core.util.HtmlUnitWebClientUtil;
-import com.crawl.core.util.HttpClientUtil;
+import com.crawl.core.util.HttpClientParams;
 import com.crawl.videosite.entity.Page;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
-import org.apache.http.client.CookieStore;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,63 +19,41 @@ public abstract class AbstractHtmlUnit {
 
     public InputStream getWebPageInputStream(String url) {
         try {
-            CloseableHttpResponse response = HttpClientUtil.getResponse(url);
-            return response.getEntity().getContent();
-        } catch (IOException e) {
+            WebResponse response = HtmlUnitWebClientUtil.getResponse(url);
+            return response.getContentAsStream();
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public Page getWebPage(String url) throws IOException {
+    public Page getWebPage(String url) throws Exception {
         return getWebPage(url, "UTF-8");
     }
 
-    public Page getWebPage(String url, String charset) throws IOException {
+    public Page getWebPage(String url, String charset) throws Exception {
         Page page = new Page();
-        CloseableHttpResponse response = null;
-        response = HttpClientUtil.getResponse(url);
-        page.setStatusCode(response.getStatusLine().getStatusCode());
+        WebResponse response = null;
+        response = HtmlUnitWebClientUtil.getResponse(url);
+        page.setStatusCode(response.getStatusCode());
         page.setUrl(url);
-        try {
-            if (page.getStatusCode() == 200) {
-                page.setHtml(EntityUtils.toString(response.getEntity(), charset));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                response.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        if (page.getStatusCode() == 200) {
+            page.setHtml(response.getContentAsString());
         }
         return page;
     }
 
-    public Page getWebPage(WebRequest request) throws IOException {
+    public Page getWebPage(WebRequest request) throws Exception {
         WebResponse response = null;
-        response = HtmlUnitWebClientUtil.getResponse(request);
+        HttpClientParams params = new HttpClientParams();
+        response = HtmlUnitWebClientUtil.getResponse(request, params);
         Page page = new Page();
         page.setStatusCode(response.getStatusCode());
-        page.setHtml(response.getContentAsString());
+        page.setHtml(HtmlUnitWebClientUtil.getWebPage(request));
         page.setUrl(request.getUrl().toString());
+        System.out.println(page.getHtml());
+//        HtmlUnitWebClientUtil.showLog();
         return page;
     }
 
-    /**
-     * 反序列化CookiesStore
-     *
-     * @return
-     */
-    public boolean deserializeCookieStore(String path) {
-        try {
-            CookieStore cookieStore = (CookieStore) HttpClientUtil.deserializeObject(path);
-            HttpClientUtil.setCookieStore(cookieStore);
-        } catch (Exception e) {
-            logger.warn("反序列化Cookie失败,没有找到Cookie文件");
-            return false;
-        }
-        return true;
-    }
 }

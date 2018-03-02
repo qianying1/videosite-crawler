@@ -58,4 +58,14 @@ public class Page {
     public int hashCode() {
         return url.hashCode();
     }
+
+    @Override
+    public String toString() {
+        return "Page{" +
+                "url='" + url + '\'' +
+                ", statusCode=" + statusCode +
+                ", html='" + html + '\'' +
+                ", proxy=" + proxy +
+                '}';
+    }
 }
