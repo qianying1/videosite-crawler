@@ -125,7 +125,7 @@ public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
     public void startCrawl() {
         String startUrl = Constants.BILIBILI_INDEX_URL;
         WebRequest request = null;
-        HttpClientParams params=new HttpClientParams();
+        WebRequestParams params=new WebRequestParams();
         try {
             request = HtmlUnitWebClientUtil.getRequest(startUrl,null,params,null);
         } catch (MalformedURLException e) {

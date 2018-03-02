@@ -1,8 +1,8 @@
 package com.crawl.core.util;
 
 import com.crawl.proxy.entity.Proxy;
+import com.crawl.videosite.entity.WebHtmlPage;
 import com.gargoylesoftware.htmlunit.*;
-import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.util.NameValuePair;
 import org.apache.commons.lang3.ObjectUtils;
@@ -84,7 +84,7 @@ public class HtmlUnitWebClientUtil {
      * @return
      * @throws IOException
      */
-    public static HtmlPage getWebPage(String url, HttpClientParams params, Proxy proxy) throws IOException {
+    public static HtmlPage getWebPage(String url, WebClientParams params, Proxy proxy) throws IOException {
         try {
             WebClient webClient = getWebClient();
             initWebClientParams(webClient, params);
@@ -97,7 +97,6 @@ public class HtmlUnitWebClientUtil {
             }
             //获取页面
             HtmlPage page = webClient.getPage(url);
-            webClient.waitForBackgroundJavaScript(Constants.WAITFORBACKGROUNDJAVASCRIPT);
             return page;
         } catch (Exception e) {
             e.printStackTrace();
@@ -112,14 +111,21 @@ public class HtmlUnitWebClientUtil {
      * @param webClient
      * @param params
      */
-    private static void initWebClientParams(WebClient webClient, HttpClientParams params) throws Exception {
+    private static void initWebClientParams(WebClient webClient, WebClientParams params) throws Exception {
         if (params.getJavaScriptEnabled() != null)
             webClient.getOptions().setJavaScriptEnabled(params.getJavaScriptEnabled());
         if (params.getCookieEnable() != null)
             webClient.getCookieManager().setCookiesEnabled(params.getCookieEnable());
         // 启动JS
-        if (params.getJavaScriptEnabled() != null)
+        if (params.getJavaScriptEnabled() != null) {
             webClient.getOptions().setJavaScriptEnabled(params.getJavaScriptEnabled());
+            if (params.getJavaScriptEnabled()) {
+                webClient.waitForBackgroundJavaScript(Constants.WAITFORBACKGROUNDJAVASCRIPT);
+            }
+        }
+        if (params.getTimeout() != 0) {
+            webClient.getOptions().setTimeout(params.getTimeout());
+        }
         //忽略ssl认证
         if (params.getUseInsecureSSL() != null)
             webClient.getOptions().setUseInsecureSSL(params.getUseInsecureSSL());
@@ -177,11 +183,11 @@ public class HtmlUnitWebClientUtil {
      * @param params
      * @param proxy
      */
-    private static void initWebRequest(WebRequest request, HttpClientParams params, Proxy proxy, Map<String, String> datas) {
+    private static void initWebRequest(WebRequest request, WebRequestParams params, Proxy proxy, Map<String, String> datas) {
         if (params.getCharset() != null) {
             request.setCharset(Charset.forName(params.getCharset()));
         } else
-            request.setCharset(Charset.forName("utf-8"));
+            request.setCharset(Charset.forName("UTF-8"));
         if (params.getHeaders() != null && !params.getHeaders().isEmpty())
             request.setAdditionalHeaders(params.getHeaders());
         List<NameValuePair> nameValuePairList = new ArrayList<>();
@@ -234,7 +240,7 @@ public class HtmlUnitWebClientUtil {
         return client;
     }
 
-    public static String getWebPage(WebRequest request) throws IOException {
+    public static WebHtmlPage getWebPage(WebRequest request) throws Exception {
         return getWebPage(request, "utf-8");
     }
 
@@ -248,14 +254,14 @@ public class HtmlUnitWebClientUtil {
      * @return
      * @throws IOException
      */
-    public static String requestPost(String postUrl, Map<String, String> datas, HttpClientParams params, Proxy proxy) throws IOException {
+    public static String requestPost(String postUrl, Map<String, String> datas, WebClientParams params, WebRequestParams requestParams, Proxy proxy) throws IOException {
         try {
             WebClient webClient = getWebClient();
             initWebClientParams(webClient, params);
             WebConnection connection = getWebClient().getWebConnection();
             URL url = new URL(postUrl);
             WebRequest request = new WebRequest(url, HttpMethod.POST);
-            initWebRequest(request, params, proxy, datas);
+            initWebRequest(request, requestParams, proxy, datas);
             WebResponse response = connection.getResponse(request);
             return response.getContentAsString();
         } catch (Exception e) {
@@ -273,14 +279,14 @@ public class HtmlUnitWebClientUtil {
      * @return
      * @throws IOException
      */
-    public static String requestGet(String getUrl, Map<String, String> datas, HttpClientParams params, Proxy proxy) throws IOException {
+    public static String requestGet(String getUrl, Map<String, String> datas, WebClientParams params, WebRequestParams requestParams, Proxy proxy) throws IOException {
         try {
             WebClient webClient = getWebClient();
             initWebClientParams(webClient, params);
             WebConnection connection = getWebClient().getWebConnection();
             URL url = new URL(getUrl);
             WebRequest request = new WebRequest(url, HttpMethod.GET);
-            initWebRequest(request, params, proxy, datas);
+            initWebRequest(request, requestParams, proxy, datas);
             WebResponse response = connection.getResponse(request);
             return response.getContentAsString();
         } catch (Exception e) {
@@ -298,7 +304,7 @@ public class HtmlUnitWebClientUtil {
      * @return
      * @throws IOException
      */
-    public static WebRequest getRequest(String getUrl, Map<String, String> datas, HttpClientParams params, Proxy proxy) throws IOException {
+    public static WebRequest getRequest(String getUrl, Map<String, String> datas, WebRequestParams params, Proxy proxy) throws IOException {
         try {
             WebRequest request = new WebRequest(new URL(getUrl), HttpMethod.GET);
             initWebRequest(request, params, proxy, datas);
@@ -314,24 +320,16 @@ public class HtmlUnitWebClientUtil {
      * @param encoding 字符编码
      * @return 网页内容
      */
-    public static String getWebPage(WebRequest request
-            , String encoding) throws IOException {
+    public static WebHtmlPage getWebPage(WebRequest request
+            , String encoding) throws Exception {
         WebClient client = getWebClient();
         if (StringUtils.isNotBlank(encoding)) {
             request.setCharset(Charset.forName(encoding));
         }
-        WebConnection connection = client.getWebConnection();
-        WebResponse response = connection.getResponse(request);
-        DomElement result;
-        if (response == null || response.getStatusCode() != 200) {
-            if (request.getHttpMethod().equals(HttpMethod.GET)) {
-                request.setHttpMethod(HttpMethod.POST);
-            } else if (request.getHttpMethod().equals(HttpMethod.POST)) {
-                request.setHttpMethod(HttpMethod.GET);
-            }
-        }
-        result = ((DomElement) client.getPage(request)).getElementsByTagName("body").get(0);
-        return result.asText();
+        WebClientParams webClientParams = new WebClientParams();
+        initWebClientParams(client, webClientParams);
+        HtmlPage page = client.getPage(request);
+        return new WebHtmlPage(request.getUrl().toString(), page.getWebResponse().getStatusCode(), page, new Proxy(request.getProxyHost(), request.getProxyPort(), 0));
     }
 
     /**
@@ -341,7 +339,7 @@ public class HtmlUnitWebClientUtil {
      * @return
      * @throws IOException
      */
-    public static WebResponse getResponse(WebRequest request, HttpClientParams params) throws Exception {
+    public static WebResponse getResponse(WebRequest request, WebClientParams params) throws Exception {
         if (request == null)
             return null;
         WebClient client = getWebClient();

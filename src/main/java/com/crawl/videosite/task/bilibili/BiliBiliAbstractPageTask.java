@@ -1,8 +1,9 @@
 package com.crawl.videosite.task.bilibili;
 
 import com.crawl.core.util.Constants;
-import com.crawl.core.util.HttpClientParams;
+import com.crawl.core.util.HtmlUnitWebClientUtil;
 import com.crawl.core.util.SimpleInvocationHandler;
+import com.crawl.core.util.WebRequestParams;
 import com.crawl.proxy.ProxyPool;
 import com.crawl.proxy.entity.Direct;
 import com.crawl.proxy.entity.Proxy;
@@ -11,13 +12,14 @@ import com.crawl.videosite.BiliBiliHttpClient;
 import com.crawl.videosite.dao.VideoSiteDao1;
 import com.crawl.videosite.dao.impl.VideoSiteDao1Imp;
 import com.crawl.videosite.entity.Page;
+import com.crawl.videosite.entity.WebHtmlPage;
 import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.html.DomElement;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationHandler;
-import java.net.URL;
 
 
 /**
@@ -34,7 +36,7 @@ public abstract class BiliBiliAbstractPageTask implements Runnable {
     protected boolean proxyFlag;//是否通过代理下载
     protected Proxy currentProxy;//当前线程使用的代理
     protected static VideoSiteDao1 videoSiteDao1;
-    protected static HttpClientParams params;
+    protected static WebRequestParams params;
     protected static BiliBiliHttpClient httpClient = BiliBiliHttpClient.getInstance();
 
     static {
@@ -60,13 +62,13 @@ public abstract class BiliBiliAbstractPageTask implements Runnable {
     public void run() {
         long requestStartTime = 0l;
         WebRequest tempRequest = null;
-        params = new HttpClientParams();
+        params = new WebRequestParams();
         try {
-            Page page = null;
+            WebHtmlPage page = null;
             if (url != null) {
                 if (proxyFlag) {
-                    tempRequest = new WebRequest(new URL(url));
                     currentProxy = ProxyPool.biliBiliProxyQueue.take();
+                    tempRequest = HtmlUnitWebClientUtil.getRequest(url, null, params, currentProxy);
                     if (!(currentProxy instanceof Direct)) {
                         tempRequest.setSocksProxy(true);
                         tempRequest.setProxyHost(currentProxy.getIp());
@@ -88,7 +90,13 @@ public abstract class BiliBiliAbstractPageTask implements Runnable {
                     }
                 }
                 requestStartTime = System.currentTimeMillis();
-                page = httpClient.getWebPage(request);
+                try {
+                    page = httpClient.getWebPage(request);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                DomElement domElement = page.getHtmlPage().getElementsByTagName("body").get(0);
+                System.out.println(domElement.asText());
             }
 
             long requestEndTime = System.currentTimeMillis();
@@ -115,7 +123,6 @@ public abstract class BiliBiliAbstractPageTask implements Runnable {
         } catch (InterruptedException e) {
             logger.error("InterruptedException", e);
         } catch (Exception e) {
-            e.printStackTrace();
             if (currentProxy != null) {
                 /**
                  * 该代理可用，将该代理继续添加到proxyQueue
@@ -130,6 +137,7 @@ public abstract class BiliBiliAbstractPageTask implements Runnable {
                 currentProxy.setTimeInterval(Constants.TIME_INTERVAL);
                 ProxyPool.biliBiliProxyQueue.add(currentProxy);
             }
+            HtmlUnitWebClientUtil.showLog();
         }
     }
 

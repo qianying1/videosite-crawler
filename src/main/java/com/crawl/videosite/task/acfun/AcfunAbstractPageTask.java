@@ -10,6 +10,7 @@ import com.crawl.videosite.AcfunHttpClient;
 import com.crawl.videosite.dao.VideoSiteDao1;
 import com.crawl.videosite.dao.impl.VideoSiteDao1Imp;
 import com.crawl.videosite.entity.Page;
+import com.crawl.videosite.entity.WebHtmlPage;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
@@ -57,7 +58,7 @@ public abstract class AcfunAbstractPageTask implements Runnable {
         long requestStartTime = 0l;
         WebRequest tempRequest = null;
         try {
-            Page page = null;
+            WebHtmlPage page = null;
             if (url != null) {
                 if (proxyFlag) {
                     tempRequest = new WebRequest(new URL(url));
@@ -93,7 +94,7 @@ public abstract class AcfunAbstractPageTask implements Runnable {
                     "  executing request " + page.getUrl() + " response statusCode:" + status +
                     "  request cost time:" + (requestEndTime - requestStartTime) + "ms";
             if (status == HttpStatus.SC_OK) {
-                if (page.getHtml().contains("videosite") && !page.getHtml().contains("安全验证")) {
+                /*if (page.getHtml().contains("videosite") && !page.getHtml().contains("安全验证")) {
                     logger.debug(logStr);
                     currentProxy.setSuccessfulTimes(currentProxy.getSuccessfulTimes() + 1);
                     currentProxy.setSuccessfulTotalTime(currentProxy.getSuccessfulTotalTime() + (requestEndTime - requestStartTime));
@@ -102,11 +103,11 @@ public abstract class AcfunAbstractPageTask implements Runnable {
                     currentProxy.setLastSuccessfulTime(System.currentTimeMillis());
                     handle(page);
                 } else {
-                    /**
+                    *//**
                      * 代理异常，没有正确返回目标url
-                     */
+                     *//*
                     logger.warn("proxy exception:" + currentProxy.toString());
-                }
+                }*/
 
             }
             /**
