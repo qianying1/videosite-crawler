@@ -14,7 +14,6 @@ import com.crawl.videosite.dao.impl.VideoSiteDao1Imp;
 import com.crawl.videosite.entity.Page;
 import com.crawl.videosite.entity.WebHtmlPage;
 import com.gargoylesoftware.htmlunit.WebRequest;
-import com.gargoylesoftware.htmlunit.html.DomElement;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +63,7 @@ public abstract class BiliBiliAbstractPageTask implements Runnable {
         WebRequest tempRequest = null;
         params = new WebRequestParams();
         try {
+            HtmlUnitWebClientUtil.showOrHiddenLog(false);
             WebHtmlPage page = null;
             if (url != null) {
                 if (proxyFlag) {
@@ -95,8 +95,7 @@ public abstract class BiliBiliAbstractPageTask implements Runnable {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                DomElement domElement = page.getHtmlPage().getElementsByTagName("body").get(0);
-                System.out.println(domElement.asText());
+                System.out.println(page.getBodyContent());
             }
 
             long requestEndTime = System.currentTimeMillis();
@@ -137,7 +136,7 @@ public abstract class BiliBiliAbstractPageTask implements Runnable {
                 currentProxy.setTimeInterval(Constants.TIME_INTERVAL);
                 ProxyPool.biliBiliProxyQueue.add(currentProxy);
             }
-            HtmlUnitWebClientUtil.showLog();
+//            HtmlUnitWebClientUtil.showOrHiddenLog(true);
         }
     }
 

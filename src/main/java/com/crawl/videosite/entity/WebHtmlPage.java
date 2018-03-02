@@ -11,6 +11,10 @@ public class WebHtmlPage {
     private String url;
     private int statusCode;//响应状态码
     private HtmlPage htmlPage;//response content
+    /**
+     * 网页的body部分
+     */
+    private String bodyContent;
     private Proxy proxy;
 
     public WebHtmlPage(String url, int statusCode, HtmlPage htmlPage, Proxy proxy) {
@@ -18,6 +22,17 @@ public class WebHtmlPage {
         this.statusCode = statusCode;
         this.htmlPage = htmlPage;
         this.proxy = proxy;
+    }
+
+    /**
+     * 设置bodyContent
+     *
+     * @param bodyContent
+     * @return
+     */
+    public WebHtmlPage bodyContent(String bodyContent) {
+        this.bodyContent = bodyContent;
+        return this;
     }
 
     public String getUrl() {
@@ -60,6 +75,14 @@ public class WebHtmlPage {
         WebHtmlPage page = (WebHtmlPage) o;
 
         return url.equals(page.url);
+    }
+
+    public String getBodyContent() {
+        return bodyContent;
+    }
+
+    public void setBodyContent(String bodyContent) {
+        this.bodyContent = bodyContent;
     }
 
     @Override

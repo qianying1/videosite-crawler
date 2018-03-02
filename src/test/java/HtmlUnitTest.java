@@ -75,7 +75,7 @@ public class HtmlUnitTest {
         try{
             page = wc.getPage(request);
         }catch (Exception e){
-            e.printStackTrace();
+//            e.printStackTrace();
         }
         if(page==null)
         {

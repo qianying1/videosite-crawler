@@ -21,6 +21,7 @@ import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContexts;
+import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -148,32 +149,29 @@ public class HtmlUnitWebClientUtil {
         if (params.getPopupBlockerEnabled() != null) {
             webClient.getOptions().setPopupBlockerEnabled(params.getPopupBlockerEnabled());
         }
-        if (params.getLogEnabled() != null) {
-            if (params.getLogEnabled()) {
-                LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.OpLog");
-                java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit")
-                        .setLevel(Level.ALL);
-                java.util.logging.Logger.getLogger("org.apache.commons.httpclient")
-                        .setLevel(Level.ALL);
-            } else {
-                LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
-                java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit")
-                        .setLevel(Level.OFF);
-                java.util.logging.Logger.getLogger("org.apache.commons.httpclient")
-                        .setLevel(Level.OFF);
-            }
-        }
     }
 
     /**
-     * 恢复打印log日志
+     * 操作是否显示打印log日志
+     *
+     * @param isShow
      */
-    public static void showLog() {
-        LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.OpLog");
-        java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit")
-                .setLevel(Level.ALL);
-        java.util.logging.Logger.getLogger("org.apache.commons.httpclient")
-                .setLevel(Level.ALL);
+    public static void showOrHiddenLog(Boolean isShow) {
+        if (isShow) {
+            LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.OpLog");
+            java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit")
+                    .setLevel(Level.ALL);
+            java.util.logging.Logger.getLogger("org.apache.commons.httpclient")
+                    .setLevel(Level.ALL);
+        } else {
+            LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
+
+            java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit")
+                    .setLevel(Level.OFF);
+
+            java.util.logging.Logger.getLogger("org.apache.commons.httpclient")
+                    .setLevel(Level.OFF);
+        }
     }
 
     /**
@@ -329,7 +327,7 @@ public class HtmlUnitWebClientUtil {
         WebClientParams webClientParams = new WebClientParams();
         initWebClientParams(client, webClientParams);
         HtmlPage page = client.getPage(request);
-        return new WebHtmlPage(request.getUrl().toString(), page.getWebResponse().getStatusCode(), page, new Proxy(request.getProxyHost(), request.getProxyPort(), 0));
+        return new WebHtmlPage(request.getUrl().toString(), page.getWebResponse().getStatusCode(), page, new Proxy(request.getProxyHost(), request.getProxyPort(), 0)).bodyContent(Jsoup.parse(page.getBody().asXml()).toString());
     }
 
     /**
