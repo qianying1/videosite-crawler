@@ -6,7 +6,7 @@ import com.crawl.core.util.Config;
 import com.crawl.core.util.SimpleInvocationHandler;
 import com.crawl.videosite.CommonHttpClient;
 import com.crawl.videosite.entity.Page;
-import com.crawl.videosite.entity.User;
+import com.crawl.videosite.domain.User;
 import com.crawl.videosite.parser.VideoSiteNewUserDetailPageParser;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;

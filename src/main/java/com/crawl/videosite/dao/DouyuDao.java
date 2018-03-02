@@ -1,7 +1,7 @@
 package com.crawl.videosite.dao;
 
 
-import com.crawl.videosite.entity.User;
+import com.crawl.videosite.domain.User;
 
 import java.sql.Connection;
 import java.sql.SQLException;

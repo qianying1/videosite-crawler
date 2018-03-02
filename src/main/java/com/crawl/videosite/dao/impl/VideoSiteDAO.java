@@ -1,7 +1,7 @@
 package com.crawl.videosite.dao.impl;
 
 import com.crawl.core.dao.ConnectionManager;
-import com.crawl.videosite.entity.User;
+import com.crawl.videosite.domain.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

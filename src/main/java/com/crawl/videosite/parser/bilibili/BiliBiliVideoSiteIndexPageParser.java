@@ -4,10 +4,9 @@ package com.crawl.videosite.parser.bilibili;
 import com.crawl.core.parser.ListPageParser;
 import com.crawl.videosite.CommonHttpClient;
 import com.crawl.videosite.entity.Page;
-import com.crawl.videosite.entity.User;
-import com.crawl.videosite.entity.Video;
+import com.crawl.videosite.domain.User;
+import com.crawl.videosite.domain.Video;
 import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 
 import java.lang.reflect.Field;

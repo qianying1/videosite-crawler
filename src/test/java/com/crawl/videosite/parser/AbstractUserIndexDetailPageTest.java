@@ -3,7 +3,7 @@ package com.crawl.videosite.parser;
 
 import com.crawl.core.parser.DetailPageParser;
 import com.crawl.videosite.entity.Page;
-import com.crawl.videosite.entity.User;
+import com.crawl.videosite.domain.User;
 import com.crawl.videosite.CommonHttpClient;
 
 import java.io.IOException;

@@ -2,7 +2,7 @@ package com.crawl.videosite.parser;
 
 import com.crawl.core.parser.DetailPageParser;
 import com.crawl.videosite.entity.Page;
-import com.crawl.videosite.entity.User;
+import com.crawl.videosite.domain.User;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

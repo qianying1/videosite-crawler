@@ -1,4 +1,4 @@
-package com.crawl.videosite.entity;
+package com.crawl.videosite.domain;
 
 /**
  * 知乎用户资料

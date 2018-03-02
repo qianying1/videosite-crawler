@@ -1,4 +1,4 @@
-package com.crawl.videosite.entity;
+package com.crawl.videosite.domain;
 
 import java.io.Serializable;
 import java.util.List;
