@@ -10,9 +10,15 @@ public class VideoListJsonTask extends AbstractVideoListTask {
     /**
      * 目标地址
      */
-    private final String target= BiliBiliParams.listDomain+"&rid=1&ps=50&pn=1";;
+    private final String target = BiliBiliParams.listDomain + "&rid=1&ps=50&pn=1";
+    ;
 
-    public VideoListJsonTask(String target){
+    public VideoListJsonTask(String target) {
         super(target);
+    }
+
+    @Override
+    public void handle() {
+
     }
 }
