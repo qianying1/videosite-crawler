@@ -4,14 +4,13 @@ package com.crawl.videosite.dao.impl;
 import com.crawl.core.dao.ConnectionManager;
 import com.crawl.videosite.dao.BiliBiliDao;
 import com.crawl.videosite.domain.Style;
-import com.crawl.videosite.domain.User;
 import com.crawl.videosite.domain.VideoAuthor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.sql.*;
-import java.util.Properties;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
     private static Logger logger = LoggerFactory.getLogger(BiliBiliDaoImp.class);
@@ -46,7 +45,6 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
      * @return
      */
     public boolean isExistAuthor(Connection conn, Long mid) {
-//        String isContainSql = "select count(*) from video_author where biliBili_mid=" + mid;
         try {
             if (isExistRecord(conn, "video_author", "biliBili_mid", mid)) {
                 return true;
@@ -67,7 +65,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
     public boolean isExistVideoType(Connection cn, Long rid) {
 //        String isContainSql = "select count(*) from style where biliBili_rid=" + rid;
         try {
-            if (isExistRecord(cn,"style","biliBili_rid",rid)) {
+            if (isExistRecord(cn, "style", "biliBili_rid", rid)) {
                 return true;
             }
         } catch (SQLException e) {
@@ -126,8 +124,19 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
      * @return
      */
     @Override
-    public boolean insertAuthor(VideoAuthor author){
-        return insertAuthor(ConnectionManager.getConnection(),author);
+    public boolean insertAuthor(VideoAuthor author) {
+        return insertAuthor(ConnectionManager.getConnection(), author);
+    }
+
+    /**
+     * 更新视频作者信息
+     *
+     * @param author
+     * @return
+     */
+    @Override
+    public boolean updateAuthor(VideoAuthor author){
+
     }
 
     /**
@@ -138,24 +147,30 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
      * @return
      */
     @Override
-    public boolean insertAuthor(Connection conn,VideoAuthor author){
+    public boolean insertAuthor(Connection conn, VideoAuthor author) {
         try {
-            VideoAuthor updateAuthor=selectAuthorByMid(conn,author.getBiliBili_mid());
-            if (isExistAuthor(conn, author.getBiliBili_mid())) {
-                logger.info("更新数据库成功---" +updateAuthor.getName());
-            }else {
-                String column = "biliBili_mid,name,indexHref,styleName,parent";
-                String values = "?,?,?";
-                String sql = "insert into video_author (" + column + ") values(" + values + ")";
-                PreparedStatement pstmt;
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setLong(1, author.getBiliBili_rid());
-                pstmt.setString(2, type.getStyleName());
-                pstmt.setLong(3, type.getParent() != null ? type.getParent().getId() : null);
-                pstmt.executeUpdate();
-                pstmt.close();
+            String column = "biliBili_mid,name,indexHref,signature,videoCount,attentionCount,audienceCount,logo,createDate";
+            String values = "?,?,?,?,?,?,?,?,?";
+            String sql = "insert into video_author (" + column + ") values(" + values + ")";
+            PreparedStatement pstmt;
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, author.getBiliBili_mid());
+            pstmt.setString(2, author.getName());
+            pstmt.setString(3, author.getIndexHref());
+            pstmt.setString(4, author.getSignature());
+            pstmt.setInt(5, author.getVideoCount());
+            pstmt.setInt(6, author.getAttentionCount());
+            pstmt.setInt(7, author.getAudienceCount());
+            pstmt.setString(8, author.getLogo());
+            pstmt.setDate(9, (Date) author.getCreateDate());
+            int columns = pstmt.executeUpdate();
+            if (columns > 0) {
                 logger.info("插入数据库成功---" + author.getName());
+            } else {
+                logger.error("插入数据失败" + author.getName());
+                return false;
             }
+            pstmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -172,19 +187,34 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
      * @return
      */
     @Override
-    public VideoAuthor selectAuthorByMid(Connection conn,Long mid){
-        String sql="select * from video_author where biliBili_mid= ?";
-        VideoAuthor author;
+    public VideoAuthor selectAuthorByMid(Connection conn, Long mid) {
+        String sql = "select * from video_author where biliBili_mid= ?";
+        List<VideoAuthor> authors = new ArrayList<>();
         try {
-            PreparedStatement pstmt=conn.prepareStatement(sql);
-            pstmt.setLong(1,mid);
+            VideoAuthor author;
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, mid);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
-
+                author = new VideoAuthor();
+                author.setId(Long.valueOf(rs.getString("id")));
+                author.setBiliBili_mid(Long.valueOf(rs.getString("biliBili_mid")));
+                author.setName(rs.getString("name"));
+                author.setIndexHref(rs.getString("indexHref"));
+                author.setSignature(rs.getString("signature"));
+                author.setVideoCount(Integer.valueOf(rs.getString("videoCount")));
+                author.setAttentionCount(Integer.valueOf(rs.getString("attentionCount")));
+                author.setAudienceCount(Integer.valueOf(rs.getString("audienceCount")));
+                author.setLogo(rs.getString("logo"));
+                author.setCreateDate(new java.util.Date(rs.getString("createDate")));
+                authors.add(author);
             }
-        }catch (SQLException e){
-
+        } catch (SQLException e) {
+            logger.error("fail to search data from video author table", e);
         }
+        if (authors.isEmpty())
+            return null;
+        return authors.get(0);
     }
 
     /*@Override

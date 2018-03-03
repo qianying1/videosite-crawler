@@ -24,6 +24,8 @@ public interface BiliBiliDao extends Dao {
 
     boolean insertAuthor(VideoAuthor author);
 
+    boolean updateAuthor(VideoAuthor author);
+
     boolean insertAuthor(Connection conn,VideoAuthor author);
 
     VideoAuthor selectAuthorByMid(Connection conn,Long mid);

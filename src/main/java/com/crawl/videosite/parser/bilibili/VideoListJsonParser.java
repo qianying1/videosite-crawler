@@ -106,6 +106,8 @@ public class VideoListJsonParser extends AbstractVideoListParser {
         boolean authorExsist=dao.isExistAuthor(author.getBiliBili_mid());
         if(!authorExsist){
             dao.insertAuthor(author);
+        }else {
+            dao.updateAuthor(author);
         }
     }
 
