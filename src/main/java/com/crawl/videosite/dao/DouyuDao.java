@@ -6,7 +6,7 @@ import com.crawl.videosite.domain.User;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public interface DouyuDao {
+public interface DouyuDao extends Dao {
 
     boolean isExistRecord(String sql) throws SQLException;
 
@@ -22,6 +22,7 @@ public interface DouyuDao {
 
     /**
      * 插入url,插入成功返回true，若已存在该url则返回false
+     *
      * @param cn
      * @param md5Url
      * @return

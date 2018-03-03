@@ -5,15 +5,17 @@ import com.crawl.core.htmlunit.AbstractHtmlUnit;
 import com.crawl.core.htmlunit.IHtmlUnit;
 import com.crawl.core.util.*;
 import com.crawl.proxy.BiliBiliProxyHttpClient;
+import com.crawl.videosite.entity.VideoSitePersistence;
 import com.crawl.videosite.task.bilibili.BiliBiliDetailListPageTask;
 import com.crawl.videosite.task.bilibili.BiliBiliDetailPageTask;
+import com.crawl.videosite.task.bilibili.VideoListJsonTask;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.sql.Connection;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -125,17 +127,29 @@ public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
     public void startCrawl() {
         String startUrl = Constants.BILIBILI_INDEX_URL;
         WebRequest request = null;
-        WebRequestParams params=new WebRequestParams();
+        WebRequestParams params = new WebRequestParams();
         try {
-            request = HtmlUnitWebClientUtil.getRequest(startUrl,null,params,null);
+            request = HtmlUnitWebClientUtil.getRequest(startUrl, null, params, null);
         } catch (MalformedURLException e) {
             e.printStackTrace();
             logger.error("fail to new WebRequest from uri: " + startUrl, e);
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
             logger.error("fail to new WebRequest from uri: " + startUrl, e);
         }
-        detailListPageThreadPool.execute(new BiliBiliDetailListPageTask(request, Config.bilibiliIsProxy));
+        VideoSitePersistence persistence = null;
+        try {
+            persistence = (VideoSitePersistence) HttpClientUtil.deserializeObject(Config.biliBiliDataSerialPath);
+        }catch (FileNotFoundException e){
+        }catch (Exception e) {
+            logger.error("fail to deserialize object from url: "+Config.biliBiliDataSerialPath,e);
+        }
+//        detailListPageThreadPool.execute(new BiliBiliDetailListPageTask(request, Config.bilibiliIsProxy));
+        if (persistence != null) {
+            detailListPageThreadPool.execute(new VideoListJsonTask(persistence.getBiliBili_rid(), persistence.getBiliBili_original(), persistence.getBiliBili_pn()));
+        } else {
+            detailListPageThreadPool.execute(new VideoListJsonTask(1l, 0l, 1));
+        }
         manageHttpClient();
     }
 

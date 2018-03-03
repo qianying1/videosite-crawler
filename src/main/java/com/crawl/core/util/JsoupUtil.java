@@ -1,5 +1,6 @@
 package com.crawl.core.util;
 
+import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -40,6 +41,19 @@ public class JsoupUtil {
 
     public static void url(String url) {
         conn = Jsoup.connect(url);
+    }
+
+    public static String getJsonFromApi(String url) throws IOException {
+        Document doc = Jsoup
+                .connect(url)
+                .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
+                .header("Accept-Encoding", "gzip, deflate")
+                .header("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3")
+                .ignoreContentType(true)
+                .header("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:48.0) Gecko/20100101 Firefox/48.0")
+                .timeout(10000).get();
+        Element body = doc.body();
+        return body.text();
     }
 
     /**

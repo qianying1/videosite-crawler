@@ -1157,6 +1157,10 @@ public class Config {
      * 是否忽略ssl认证
      */
     public static Boolean sohuUseInsecureSSL;
+    /**
+     * b站序列化数据保存路径
+     */
+    public static String biliBiliDataSerialPath;
 
     static {
         Properties p = new Properties();
@@ -1405,6 +1409,8 @@ public class Config {
         tudouCssEnabled = Boolean.valueOf(p.getProperty("tudouCssEnabled"));
         youkuCssEnabled = Boolean.valueOf(p.getProperty("youkuCssEnabled"));
         youtubeCssEnabled = Boolean.valueOf(p.getProperty("youtubeCssEnabled"));
+
+        biliBiliDataSerialPath=p.getProperty("biliBiliDataSerialPath");
         if (dbEnable) {
             dbName = p.getProperty("db.name");
             dbHost = p.getProperty("db.host");

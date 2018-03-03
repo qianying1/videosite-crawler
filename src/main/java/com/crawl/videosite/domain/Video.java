@@ -21,6 +21,14 @@ public class Video extends BaseEntity implements Serializable {
      */
     private Long biliBili_rid;
     /**
+     * b站的videos属性
+     */
+    private Integer biliBili_videos;
+    /**
+     * b站的copyright属性
+     */
+    private Integer biliBili_copyright;
+    /**
      * 指向的链接
      */
     private String href;
@@ -108,6 +116,30 @@ public class Video extends BaseEntity implements Serializable {
      * 视频描述
      */
     private String desc;
+    /**
+     * b站中的不知道是什么的东西（状况，资格）
+     */
+    private Integer state;
+    /**
+     * b站中的不知道是什么的东西（属性，贡献）
+     */
+    private Long attribute;
+    /**
+     * 时间(按分钟计算)
+     */
+    private Integer duration;
+    /**
+     * 权限(json存储)
+     */
+    private String rights;
+    /**
+     * 现在等级
+     */
+    private Integer now_rank;
+    /**
+     * 历史等级
+     */
+    private Integer his_rank;
 
 
     public Long getBiliBili_mid() {
@@ -304,5 +336,69 @@ public class Video extends BaseEntity implements Serializable {
 
     public void setDesc(String desc) {
         this.desc = desc;
+    }
+
+    public Integer getBiliBili_videos() {
+        return biliBili_videos;
+    }
+
+    public void setBiliBili_videos(Integer biliBili_videos) {
+        this.biliBili_videos = biliBili_videos;
+    }
+
+    public Integer getBiliBili_copyright() {
+        return biliBili_copyright;
+    }
+
+    public void setBiliBili_copyright(Integer biliBili_copyright) {
+        this.biliBili_copyright = biliBili_copyright;
+    }
+
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
+    }
+
+    public Long getAttribute() {
+        return attribute;
+    }
+
+    public void setAttribute(Long attribute) {
+        this.attribute = attribute;
+    }
+
+    public Integer getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Integer duration) {
+        this.duration = duration;
+    }
+
+    public String getRights() {
+        return rights;
+    }
+
+    public void setRights(String rights) {
+        this.rights = rights;
+    }
+
+    public Integer getNow_rank() {
+        return now_rank;
+    }
+
+    public void setNow_rank(Integer now_rank) {
+        this.now_rank = now_rank;
+    }
+
+    public Integer getHis_rank() {
+        return his_rank;
+    }
+
+    public void setHis_rank(Integer his_rank) {
+        this.his_rank = his_rank;
     }
 }
