@@ -9,6 +9,10 @@ import java.util.List;
 public class VideoAuthor extends BaseEntity implements Serializable {
 	private static final long serialVersionUID = -2043979559882919440L;
 	/**
+	 * b站作者id
+	 */
+	private Long biliBili_mid;
+	/**
 	 * 作者名称
 	 */
 	private String name;
@@ -107,5 +111,13 @@ public class VideoAuthor extends BaseEntity implements Serializable {
 
 	public void setVideoNodes(List<Video> videoNodes) {
 		this.videoNodes = videoNodes;
+	}
+
+	public Long getBiliBili_mid() {
+		return biliBili_mid;
+	}
+
+	public void setBiliBili_mid(Long biliBili_mid) {
+		this.biliBili_mid = biliBili_mid;
 	}
 }
