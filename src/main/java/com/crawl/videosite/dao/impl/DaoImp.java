@@ -2,16 +2,21 @@ package com.crawl.videosite.dao.impl;
 
 
 import com.crawl.videosite.dao.Dao;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.math.BigDecimal;
+import java.sql.*;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
+/**
+ * sql执行，dao基层实现
+ */
 public abstract class DaoImp implements Dao {
     private static Logger logger = LoggerFactory.getLogger(DaoImp.class);
 
@@ -81,24 +86,83 @@ public abstract class DaoImp implements Dao {
         PreparedStatement pstmt = conn.prepareStatement(sql.toString());
         for (int i = 0; i < length; i++) {
             Object val = keyVal.get(i);
-            if (val instanceof Long) {
-                pstmt.setLong(i + 1, Long.valueOf(val.toString()));
-            } else if (val instanceof String) {
-                pstmt.setString(i + 1, String.valueOf(val));
-            } else if (val instanceof Integer) {
-                pstmt.setInt(i + 1, Integer.valueOf(val.toString()));
-            } else if (val instanceof Float) {
-                pstmt.setFloat(i + 1, Float.valueOf(val.toString()));
-            } else if (val instanceof Double) {
-                pstmt.setDouble(i + 1, Double.valueOf(val.toString()));
-            } else if (val instanceof Date) {
-                pstmt.setDate(i + 1, (java.sql.Date) val);
-            } else {
-                pstmt.setObject(i + 1, val);
-            }
+            setParam(pstmt, val, i);
         }
         return true;
     }
+
+    /**
+     * 向表中批量插入数据
+     *
+     * @param conn
+     * @param table
+     * @param keys
+     * @param vals
+     * @return
+     */
+    @Override
+    public boolean insertsTable(Connection conn, String table, List<String> keys, List<Object> vals) throws SQLException {
+        if (conn == null || StringUtils.isBlank(table) || keys == null || vals == null || keys.isEmpty() || vals.isEmpty() || (keys.size() > vals.size()) || (keys.size() / vals.size() != 0)) {
+            return false;
+        }
+        StringBuffer sql = new StringBuffer("insert into ").append(table.trim().replace(" ", "")).append(" (");
+        StringBuffer keySql = new StringBuffer("");
+        StringBuffer valSql = new StringBuffer("");
+        int length = 0;
+        for (String key : keys) {
+            keySql.append(key.trim().replace(" ", "")).append(",");
+            length++;
+        }
+        sql.append(keys.toString().substring(0, keys.lastIndexOf(",")));
+        sql.append(")");
+        int depth = vals.size() / length;
+        for (int j = 0; j < depth; j++) {
+            valSql.append("(");
+            for (int k = 0; k < length; k++) {
+                valSql.append("?").append(",");
+            }
+            valSql = new StringBuffer(valSql.substring(0, valSql.lastIndexOf(",")));
+            valSql.append("),");
+        }
+        valSql = new StringBuffer(valSql.substring(0, valSql.lastIndexOf(",")));
+        sql.append(" values").append(valSql);
+        PreparedStatement pstmt = conn.prepareStatement(sql.toString());
+        for (int i = 0; i < vals.size(); i++) {
+            setParam(pstmt, vals.get(i), i);
+        }
+        return true;
+    }
+
+    /**
+     * 向preparedStatement中设置参数值
+     *
+     * @param pstmt
+     * @param val
+     */
+    private void setParam(PreparedStatement pstmt, Object val, int index) throws SQLException {
+        if (val instanceof Long) {
+            pstmt.setLong(index + 1, Long.valueOf(val.toString()));
+        } else if (val instanceof String) {
+            pstmt.setString(index + 1, String.valueOf(val));
+        } else if (val instanceof Integer) {
+            pstmt.setInt(index + 1, Integer.valueOf(val.toString()));
+        } else if (val instanceof Float) {
+            pstmt.setFloat(index + 1, Float.valueOf(val.toString()));
+        } else if (val instanceof Double) {
+            pstmt.setDouble(index + 1, Double.valueOf(val.toString()));
+        } else if (val instanceof Date) {
+            pstmt.setDate(index + 1, (java.sql.Date) val);
+        } else if (val instanceof List) {
+            pstmt.setArray(index + 1, (Array) val);
+        } else if (val instanceof BigDecimal) {
+            pstmt.setBigDecimal(index + 1, BigDecimal.valueOf(Long.valueOf(val.toString())));
+        } else if (val instanceof Boolean) {
+            pstmt.setBoolean(index + 1, (Boolean) val);
+        } else {
+            pstmt.setObject(index + 1, val);
+        }
+    }
+
 
     /*@Override
     public boolean isExistRecord(Connection cn, String sql) throws SQLException {
