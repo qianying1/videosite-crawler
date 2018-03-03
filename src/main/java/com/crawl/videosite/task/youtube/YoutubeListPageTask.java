@@ -47,7 +47,7 @@ public class YoutubeListPageTask extends YoutubeAbstractPageTask {
             return;
         }
 //        boolean existUserFlag = VideoSiteDAO.isExistUser(userToken);
-        boolean existUserFlag = videoSiteDao1.isExistUser(userToken);
+//        boolean existUserFlag = videoSiteDao1.isExistUser(userToken);
         while (httpClient.getDetailPageThreadPool().getQueue().size() > 1000) {
             try {
                 Thread.sleep(3000);
@@ -55,12 +55,12 @@ public class YoutubeListPageTask extends YoutubeAbstractPageTask {
                 e.printStackTrace();
             }
         }
-        if (!existUserFlag || httpClient.getDetailPageThreadPool().getActiveCount() == 0) {
-            /**
+        /*if (!existUserFlag || httpClient.getDetailPageThreadPool().getActiveCount() == 0) {
+            *//**
              * 防止互相等待，导致死锁
-             */
+             *//*
             httpClient.getDetailPageThreadPool().execute(new YoutubeDetailPageTask(url, Config.isProxy));
 
-        }
+        }*/
     }
 }

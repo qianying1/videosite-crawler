@@ -75,7 +75,7 @@ public class LetvDetailListPageTask extends LetvAbstractPageTask {
             logger.info("解析用户成功:" + u.toString());
             if (Config.dbEnable) {
                 Connection cn = getConnection();
-                if (videoSiteDao1.insertUser(cn, u)) {
+                /*if (videoSiteDao1.insertUser(cn, u)) {
                     parseUserCount.incrementAndGet();
                 }
                 for (int j = 0; j < u.getFollowees() / 20; j++) {
@@ -90,7 +90,7 @@ public class LetvDetailListPageTask extends LetvAbstractPageTask {
                         request.setHeader("authorization", "oauth " + CommonHttpClient.getAuthorization());
                         commonHttpClient.getDetailListPageThreadPool().execute(new LetvDetailListPageTask(request, true));
                     }
-                }
+                }*/
             } else if (!Config.dbEnable || commonHttpClient.getDetailListPageThreadPool().getActiveCount() == 1) {
                 parseUserCount.incrementAndGet();
                 for (int j = 0; j < u.getFollowees() / 20; j++) {

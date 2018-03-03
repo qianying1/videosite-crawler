@@ -46,7 +46,7 @@ public class PptvListPageTask extends PptvAbstractPageTask {
             return;
         }
 //        boolean existUserFlag = VideoSiteDAO.isExistUser(userToken);
-        boolean existUserFlag = videoSiteDao1.isExistUser(userToken);
+        /*boolean existUserFlag = videoSiteDao1.isExistUser(userToken);
         while (commonHttpClient.getDetailPageThreadPool().getQueue().size() > 1000) {
             try {
                 Thread.sleep(3000);
@@ -55,11 +55,11 @@ public class PptvListPageTask extends PptvAbstractPageTask {
             }
         }
         if (!existUserFlag || commonHttpClient.getDetailPageThreadPool().getActiveCount() == 0) {
-            /**
+            *//**
              * 防止互相等待，导致死锁
-             */
+             *//*
             commonHttpClient.getDetailPageThreadPool().execute(new PptvDetailPageTask(url, Config.isProxy));
 
-        }
+        }*/
     }
 }

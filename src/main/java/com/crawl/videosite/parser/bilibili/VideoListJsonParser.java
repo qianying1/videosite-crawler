@@ -52,46 +52,61 @@ public class VideoListJsonParser extends AbstractVideoListParser {
         for (Map<String, Object> archive : archives) {
             if (archive == null || archive.isEmpty())
                 continue;
-            Video video = new Video();
-            Style type = new Style();
-            VideoAuthor author = new VideoAuthor();
-            video.setBiliBili_aid(Long.valueOf(archive.get("aid").toString())); //视频id
-            video.setBiliBili_videos(Integer.valueOf(archive.get("videos").toString()));
-            video.setBiliBili_rid(Long.valueOf(archive.get("tid").toString())); //视频类型id
-            type.setBiliBili_rid(Long.valueOf(archive.get("tid").toString()));
-            type.setStyleName(archive.get("tname").toString());     //视频类型名称
-            video.setBiliBili_copyright(Integer.valueOf(archive.get("copyright").toString()));
-            video.setLogo(archive.get("pic").toString());
-            video.setTitle(archive.get("title").toString());
-            video.setPubdate(new Date(Long.parseLong(archive.get("pubdate").toString())));
-            video.setCtime(new Date(Long.parseLong(archive.get("ctime").toString())));
-            video.setDesc(archive.get("desc").toString());
-            video.setState(Integer.valueOf(archive.get("state").toString()));
-            video.setAttribute(Long.valueOf(archive.get("attribute").toString()));
-            video.setDuration(Integer.valueOf(archive.get("duration").toString()));
-            video.setRights(archive.get("rights").toString());
-            Map<String, Object> owner = (Map<String, Object>) archive.get("owner");
-            video.setBiliBili_mid(Long.valueOf(owner.get("mid").toString()));
-            author.setBiliBili_mid(Long.valueOf(owner.get("mid").toString()));
-            author.setName(owner.get("name").toString());
-            author.setLogo(owner.get("face").toString());
-            Map<String, Object> stat = (Map<String, Object>) archive.get("stat");
-            video.setViews(Long.valueOf(stat.get("view").toString()));
-            video.setMasks(Long.valueOf(stat.get("danmaku").toString()));
-            video.setReplay(Long.valueOf(stat.get("reply").toString()));
-            video.setFavorite(Long.valueOf(stat.get("favorite").toString()));
-            video.setCoin(Long.valueOf(stat.get("coin").toString()));
-            video.setShare(Long.valueOf(stat.get("share").toString()));
-            video.setNow_rank(Integer.valueOf(stat.get("now_rank").toString()));
-            video.setHis_rank(Integer.valueOf(stat.get("his_rank").toString()));
-            video.setLike(Long.valueOf(stat.get("like").toString()));
-            video.setDynamic(archive.get("dynamic").toString());
-            boolean typeExsist=dao.isExistVideoType(type.getBiliBili_rid());
-            if(!typeExsist){
-                dao.insertVideoType(type);
-            }
+            parseDataToPersistence(archive);
         }
         System.out.println(jsonObject);
+    }
+
+    /**
+     * 将json数据分析成为持久化数据
+     *
+     * @param archive
+     */
+    private void parseDataToPersistence(Map<String,Object> archive){
+        if (archive==null||archive.isEmpty())
+            return;
+        Video video = new Video();
+        Style type = new Style();
+        VideoAuthor author = new VideoAuthor();
+        video.setBiliBili_aid(Long.valueOf(archive.get("aid").toString())); //视频id
+        video.setBiliBili_videos(Integer.valueOf(archive.get("videos").toString()));
+        video.setBiliBili_rid(Long.valueOf(archive.get("tid").toString())); //视频类型id
+        type.setBiliBili_rid(Long.valueOf(archive.get("tid").toString()));
+        type.setStyleName(archive.get("tname").toString());     //视频类型名称
+        video.setBiliBili_copyright(Integer.valueOf(archive.get("copyright").toString()));
+        video.setLogo(archive.get("pic").toString());
+        video.setTitle(archive.get("title").toString());
+        video.setPubdate(new Date(Long.parseLong(archive.get("pubdate").toString())));
+        video.setCtime(new Date(Long.parseLong(archive.get("ctime").toString())));
+        video.setDesc(archive.get("desc").toString());
+        video.setState(Integer.valueOf(archive.get("state").toString()));
+        video.setAttribute(Long.valueOf(archive.get("attribute").toString()));
+        video.setDuration(Integer.valueOf(archive.get("duration").toString()));
+        video.setRights(archive.get("rights").toString());
+        Map<String, Object> owner = (Map<String, Object>) archive.get("owner");
+        video.setBiliBili_mid(Long.valueOf(owner.get("mid").toString()));
+        author.setBiliBili_mid(Long.valueOf(owner.get("mid").toString()));
+        author.setName(owner.get("name").toString());
+        author.setLogo(owner.get("face").toString());
+        Map<String, Object> stat = (Map<String, Object>) archive.get("stat");
+        video.setViews(Long.valueOf(stat.get("view").toString()));
+        video.setMasks(Long.valueOf(stat.get("danmaku").toString()));
+        video.setReplay(Long.valueOf(stat.get("reply").toString()));
+        video.setFavorite(Long.valueOf(stat.get("favorite").toString()));
+        video.setCoin(Long.valueOf(stat.get("coin").toString()));
+        video.setShare(Long.valueOf(stat.get("share").toString()));
+        video.setNow_rank(Integer.valueOf(stat.get("now_rank").toString()));
+        video.setHis_rank(Integer.valueOf(stat.get("his_rank").toString()));
+        video.setLike(Long.valueOf(stat.get("like").toString()));
+        video.setDynamic(archive.get("dynamic").toString());
+        boolean typeExsist=dao.isExistVideoType(type.getBiliBili_rid());
+        if(!typeExsist){
+            dao.insertVideoType(type);
+        }
+        boolean authorExsist=dao.isExistAuthor(author.getBiliBili_mid());
+        if(!authorExsist){
+            dao.insertAuthor(author);
+        }
     }
 
     public Long getRid() {

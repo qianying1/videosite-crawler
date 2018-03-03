@@ -35,11 +35,11 @@ public class DouyuListPageTask extends DouyuAbstractPageTask {
             if (s == null) {
                 continue;
             }
-            handleUserToken(s);
+//            handleUserToken(s);
         }
     }
 
-    private void handleUserToken(String userToken) {
+    /*private void handleUserToken(String userToken) {
         String url = Constants.BILIBILI_INDEX_URL + "/people/" + userToken + "/following";
         if (!Config.dbEnable) {
             commonHttpClient.getDetailPageThreadPool().execute(new DouyuDetailPageTask(url, Config.isProxy));
@@ -55,11 +55,11 @@ public class DouyuListPageTask extends DouyuAbstractPageTask {
             }
         }
         if (!existUserFlag || commonHttpClient.getDetailPageThreadPool().getActiveCount() == 0) {
-            /**
+            *//**
              * 防止互相等待，导致死锁
-             */
+             *//*
             commonHttpClient.getDetailPageThreadPool().execute(new DouyuDetailPageTask(url, Config.isProxy));
 
         }
-    }
+    }*/
 }

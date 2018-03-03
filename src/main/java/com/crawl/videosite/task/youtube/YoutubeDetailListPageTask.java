@@ -76,7 +76,7 @@ public class YoutubeDetailListPageTask extends YoutubeAbstractPageTask {
             logger.info("解析用户成功:" + u.toString());
             if (Config.dbEnable) {
                 Connection cn = getConnection();
-                if (videoSiteDao1.insertUser(cn, u)) {
+                /*if (videoSiteDao1.insertUser(cn, u)) {
                     parseUserCount.incrementAndGet();
                 }
                 for (int j = 0; j < u.getFollowees() / 20; j++) {
@@ -97,7 +97,7 @@ public class YoutubeDetailListPageTask extends YoutubeAbstractPageTask {
                         request.setAdditionalHeader("authorization", "oauth " + CommonHttpClient.getAuthorization());
                         httpClient.getDetailListPageThreadPool().execute(new YoutubeDetailListPageTask(request, true));
                     }
-                }
+                }*/
             } else if (!Config.dbEnable || httpClient.getDetailListPageThreadPool().getActiveCount() == 1) {
                 parseUserCount.incrementAndGet();
                 for (int j = 0; j < u.getFollowees() / 20; j++) {

@@ -47,7 +47,7 @@ public class IqiyiDetailPageTask extends IqiyiAbstractPageTask {
         logger.info("解析用户成功:" + u.toString());
         if (Config.dbEnable) {
 //            VideoSiteDAO.insertUser(u);
-            videoSiteDao1.insertUser(u);
+//            videoSiteDao1.insertUser(u);
         }
         parseUserCount.incrementAndGet();
         for (int i = 0; i < u.getFollowees() / 20 + 1; i++) {

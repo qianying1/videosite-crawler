@@ -47,7 +47,7 @@ public class SohuListPageTask extends SohuAbstractPageTask {
             return;
         }
 //        boolean existUserFlag = VideoSiteDAO.isExistUser(userToken);
-        boolean existUserFlag = videoSiteDao1.isExistUser(userToken);
+        /*boolean existUserFlag = videoSiteDao1.isExistUser(userToken);
         while (httpClient.getDetailPageThreadPool().getQueue().size() > 1000) {
             try {
                 Thread.sleep(3000);
@@ -56,11 +56,11 @@ public class SohuListPageTask extends SohuAbstractPageTask {
             }
         }
         if (!existUserFlag || httpClient.getDetailPageThreadPool().getActiveCount() == 0) {
-            /**
+            *//**
              * 防止互相等待，导致死锁
-             */
+             *//*
             httpClient.getDetailPageThreadPool().execute(new SohuDetailPageTask(url, Config.isProxy));
 
-        }
+        }*/
     }
 }

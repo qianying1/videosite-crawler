@@ -73,7 +73,7 @@ public class AcfunDetailListPageTask extends AcfunAbstractPageTask {
             logger.info("解析用户成功:" + u.toString());
             if(Config.dbEnable){
                 Connection cn = getConnection();
-                if (videoSiteDao1.insertUser(cn, u)){
+                /*if (videoSiteDao1.insertUser(cn, u)){
                     parseUserCount.incrementAndGet();
                 }
                 for (int j = 0; j < u.getFollowees() / 20; j++){
@@ -88,7 +88,7 @@ public class AcfunDetailListPageTask extends AcfunAbstractPageTask {
                         request.setHeader("authorization", "oauth " + CommonHttpClient.getAuthorization());
 //                        httpClient.getDetailListPageThreadPool().execute(new AcfunDetailListPageTask(request, true));
                     }
-                }
+                }*/
             }
             else if(!Config.dbEnable || httpClient.getDetailListPageThreadPool().getActiveCount() == 1){
                 parseUserCount.incrementAndGet();
