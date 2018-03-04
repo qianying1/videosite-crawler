@@ -48,12 +48,11 @@ public abstract class AbstractVideoListTask implements Runnable {
             try {
                 result = JsoupUtil.getJsonFromApi(getTargetUrl());
             } catch (IOException e) {
-                e.printStackTrace();
                 logger.error("fail to catch json data from url: " + targetUrl, e);
             }
             Map<String, Object> jsonData = (Map<String, Object>) JSON.parse(result);
             if (jsonData.isEmpty()) {
-                throw new JsonDataEmptyException("fail to catch json data from url: " + targetUrl);
+                throw new JsonDataEmptyException("fail to catch data from url: " + targetUrl);
             } else if (Integer.valueOf(jsonData.get("code").toString()) != 0) {
                 emptyCount++;
             }

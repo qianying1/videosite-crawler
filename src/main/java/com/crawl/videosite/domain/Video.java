@@ -23,11 +23,11 @@ public class Video extends BaseEntity implements Serializable {
     /**
      * b站的videos属性
      */
-    private Integer biliBili_videos;
+    private Integer biliBili_videos=-1;
     /**
      * b站的copyright属性
      */
-    private Integer biliBili_copyright;
+    private Integer biliBili_copyright=-1;
     /**
      * 指向的链接
      */
@@ -48,27 +48,27 @@ public class Video extends BaseEntity implements Serializable {
     /**
      * 播放次数
      */
-    private Long views;
+    private Long views=0l;
     /**
      * 评论回复数量
      */
-    private Long replay;
+    private Long replay=0l;
     /**
      * 视频收藏数量
      */
-    private Long favorite;
+    private Long favorite=0l;
     /**
      * 视频投币数量
      */
-    private Long coin;
+    private Long coin=0l;
     /**
      * 视频分享数量
      */
-    private Long share;
+    private Long share=0l;
     /**
      * 视频喜欢数量
      */
-    private Long like;
+    private Long like=0l;
     /**
      * 视频动态
      */
@@ -76,7 +76,7 @@ public class Video extends BaseEntity implements Serializable {
     /**
      * 弹幕数量
      */
-    private Long masks;
+    private Long masks=0l;
     /**
      * 视频长度
      */
@@ -84,12 +84,12 @@ public class Video extends BaseEntity implements Serializable {
     /**
      * 投蕉数
      */
-    private Long bananas;
+    private Long bananas=0l;
 
     /**
      * 评论数量
      */
-    private Long comments;
+    private Long comments=0l;
 
     /**
      * 视频作者

@@ -36,7 +36,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
     @Override
     public boolean isExistVideo(Connection conn, Long aid) {
         try {
-            if (isExistRecord(conn, "video", "biliBili_aid", aid)) {
+            if (isExistRecord(conn, "video", "bili_aid", aid)) {
                 return true;
             }
         } catch (SQLException e) {
@@ -139,12 +139,11 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
             if (isExistVideo(conn, video.getBiliBili_aid())) {
                 return -1l;
             }
-            String column = "biliBili_aid,biliBili_rid,biliBili_mid,biliBili_videos,biliBili_copyright,state," +
+            String column = "bili_aid,biliBili_rid,biliBili_mid,biliBili_videos,biliBili_copyright,state," +
                     "attribute,duration,now_rank,his_rank,rights,description,ctime,pubdate,dynamic,likes,share,coin,favorite," +
                     "replay,href,title,logo,upMan,views,masks,times,bananas,comments,videoAuthor,location,createDate,type";
             String values = "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
-            String sql = "insert into style (" + column + ") values(" + values + ")";
-            System.out.println(column.split(",").length + " " + values.split(",").length);
+            String sql = "insert into video (" + column + ") values(" + values + ")";
             PreparedStatement pstmt;
             pstmt = conn.prepareStatement(sql);
             pstmt.setLong(1, video.getBiliBili_aid());
@@ -167,7 +166,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
             pstmt.setLong(18, video.getCoin());
             pstmt.setLong(19, video.getFavorite());
             pstmt.setLong(20, video.getReplay());
-            pstmt.setString(21, video.getHref());
+            pstmt.setString(21, video.getHref() != null ? video.getHref() : "");
             pstmt.setString(22, video.getTitle());
             pstmt.setString(23, video.getLogo());
             pstmt.setString(24, video.getUpMan() != null ? video.getUpMan() : "");
@@ -333,7 +332,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
      */
     @Override
     public Video selectVideoByAid(Connection conn, Long aid) {
-        String sql = "select * from video where biliBili_aid= ?";
+        String sql = "select * from video where bili_aid= ?";
         List<Video> videos = new ArrayList<>();
         try {
             Video video;
@@ -344,7 +343,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
                 video = new Video();
                 video.setId(rs.getLong("id"));
                 video.setBiliBili_mid(rs.getLong("biliBili_mid"));
-                video.setBiliBili_aid(rs.getLong("biliBili_aid"));
+                video.setBiliBili_aid(rs.getLong("bili_aid"));
                 video.setBiliBili_rid(rs.getLong("biliBili_rid"));
                 video.setBiliBili_videos(rs.getInt("biliBili_videos"));
                 video.setBiliBili_copyright(rs.getInt("biliBili_copyright"));
@@ -438,7 +437,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
             video.setLocation(video.getLocation() != null ? video.getLocation() : origin.getLocation());
             video.setCreateDate(video.getCreateDate() != null ? video.getCreateDate() : origin.getCreateDate());
             video.setStyle(video.getStyle() != null ? video.getStyle() : origin.getStyle());
-            String sql = "update style set biliBili_aid=?,biliBili_rid=?,biliBili_mid=?,biliBili_videos=?,biliBili_copyright=?,state=?,attribute=?" +
+            String sql = "update video set bili_aid=?,biliBili_rid=?,biliBili_mid=?,biliBili_videos=?,biliBili_copyright=?,state=?,attribute=?" +
                     ",duration=?,now_rank=?,his_rank=?,rights=?,description=?,ctime=?,pubdate=?,dynamic=?,likes=?,share=?,coin=?,favorite=?," +
                     "replay=?,href=?,title=?,logo=?,upMan=?,views=?,masks=?,times=?,bananas=?,comments=?,videoAuthor=?,location=?,createDate=?,type=? where" +
                     " id=?";
@@ -456,8 +455,8 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
             pstmt.setInt(10, video.getHis_rank());
             pstmt.setString(11, video.getRights());
             pstmt.setString(12, video.getDesc());
-            pstmt.setDate(13, (Date) video.getCtime());
-            pstmt.setDate(14, (Date) video.getPubdate());
+            pstmt.setDate(13, new Date(video.getCtime().getTime()));
+            pstmt.setDate(14, new Date(video.getPubdate().getTime()));
             pstmt.setString(15, video.getDynamic());
             pstmt.setLong(16, video.getLike());
             pstmt.setLong(17, video.getShare());
@@ -475,7 +474,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
             pstmt.setLong(29, video.getComments());
             pstmt.setLong(30, video.getAuthor() != null ? video.getAuthor().getId() : null);
             pstmt.setString(31, video.getLocation());
-            pstmt.setDate(32, (Date) video.getCreateDate());
+            pstmt.setDate(32, new Date(video.getCreateDate().getTime()));
             pstmt.setLong(33, video.getStyle() != null ? video.getStyle().getId() : null);
             pstmt.setLong(34, video.getId() != null ? video.getId() : origin.getId());
             int columns = pstmt.executeUpdate();
@@ -520,11 +519,11 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
             int columns = pstmt.executeUpdate();
             Long id = -1l;
             if (columns > 0) {
-                logger.info("插入视频作者数据成功---" + author.getName());
                 ResultSet rs = pstmt.getGeneratedKeys();
                 while (rs.next()) {
                     id = rs.getLong(1);
                 }
+                logger.info("插入视频作者数据成功---" + author.getName());
             } else {
                 logger.error("插入作者视频数据失败" + author.getName());
                 return -1l;
