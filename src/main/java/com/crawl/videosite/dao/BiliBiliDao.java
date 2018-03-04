@@ -6,6 +6,7 @@ import com.crawl.videosite.domain.Video;
 import com.crawl.videosite.domain.VideoAuthor;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 public interface BiliBiliDao extends Dao {
 
@@ -99,7 +100,47 @@ public interface BiliBiliDao extends Dao {
      */
     Style selectVideoTypeByRid(Connection conn, Long rid);
 
+    /**
+     * 更新视频类型数据
+     *
+     * @param type
+     * @return
+     */
     Long updateVideoType(Style type);
+
+    /**
+     * 通过视频类型rid获取视频类型id
+     *
+     * @param rid
+     * @return
+     */
+    Long selectVideoTypeIdByRid(Long rid);
+
+    /**
+     * 通过视频类型rid获取视频类型id
+     *
+     * @param conn
+     * @param rid
+     * @return
+     */
+    Long selectVideoTypeIdByRid(Connection conn,Long rid);
+
+    /**
+     * 通过视频作者mid获取视频作者id
+     *
+     * @param mid
+     * @return
+     */
+    Long selectAuthorIdByMid(Long mid);
+
+    /**
+     * 通过视频作者mid获取视频作者id
+     *
+     * @param conn
+     * @param mid
+     * @return
+     */
+    Long selectAuthorIdByMid(Connection conn,Long mid);
 
     /**
      * 更新视频类型数据

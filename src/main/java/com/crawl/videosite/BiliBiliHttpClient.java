@@ -5,17 +5,15 @@ import com.crawl.core.htmlunit.AbstractHtmlUnit;
 import com.crawl.core.htmlunit.IHtmlUnit;
 import com.crawl.core.util.*;
 import com.crawl.proxy.BiliBiliProxyHttpClient;
-import com.crawl.videosite.entity.VideoSitePersistence;
+import com.crawl.videosite.entity.VideoSiteDynamicPersistence;
 import com.crawl.videosite.task.bilibili.BiliBiliDetailListPageTask;
 import com.crawl.videosite.task.bilibili.BiliBiliDetailPageTask;
-import com.crawl.videosite.task.bilibili.VideoListJsonTask;
-import com.gargoylesoftware.htmlunit.WebRequest;
+import com.crawl.videosite.task.bilibili.VideoDynamicListJsonTask;
+import com.crawl.videosite.task.bilibili.VideoRankListJsonTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.sql.Connection;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -125,32 +123,58 @@ public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
      */
     @Override
     public void startCrawl() {
-        String startUrl = Constants.BILIBILI_INDEX_URL;
+        /*String startUrl = Constants.BILIBILI_INDEX_URL;
         WebRequest request = null;
         WebRequestParams params = new WebRequestParams();
         try {
             request = HtmlUnitWebClientUtil.getRequest(startUrl, null, params, null);
         } catch (MalformedURLException e) {
-            e.printStackTrace();
             logger.error("fail to new WebRequest from uri: " + startUrl, e);
         } catch (IOException e) {
-            e.printStackTrace();
             logger.error("fail to new WebRequest from uri: " + startUrl, e);
-        }
-        VideoSitePersistence persistence = null;
+        }*/
+//        detailListPageThreadPool.execute(new BiliBiliDetailListPageTask(request, Config.bilibiliIsProxy));
+        //活动视频列表
+        dynamicVideoCrawler();
+        //等级视频列表
+//        rankVideoCrawler();
+        manageHttpClient();
+    }
+
+    /**
+     * 爬取活动视频列表api
+     */
+    private void dynamicVideoCrawler(){
+        VideoSiteDynamicPersistence persistence = null;
         try {
-            persistence = (VideoSitePersistence) HttpClientUtil.deserializeObject(Config.biliBiliDataSerialPath);
+            persistence = (VideoSiteDynamicPersistence) HttpClientUtil.deserializeObject(Config.biliBiliDataSerialPath);
         }catch (FileNotFoundException e){
         }catch (Exception e) {
             logger.error("fail to deserialize object from url: "+Config.biliBiliDataSerialPath,e);
         }
-//        detailListPageThreadPool.execute(new BiliBiliDetailListPageTask(request, Config.bilibiliIsProxy));
         if (persistence != null) {
-            detailListPageThreadPool.execute(new VideoListJsonTask(persistence.getBiliBili_rid(), persistence.getBiliBili_original(), persistence.getBiliBili_pn()));
+            detailListPageThreadPool.execute(new VideoDynamicListJsonTask(persistence.getBiliBili_rid(), persistence.getBiliBili_original(), persistence.getBiliBili_pn()));
         } else {
-            detailListPageThreadPool.execute(new VideoListJsonTask(1l, 0l, 1));
+            detailListPageThreadPool.execute(new VideoDynamicListJsonTask(1l, 0l, 1));
         }
-        manageHttpClient();
+    }
+
+    /**
+     * 爬取等级视频列表api
+     */
+    private void rankVideoCrawler(){
+        VideoSiteDynamicPersistence persistence = null;
+        try {
+            persistence = (VideoSiteDynamicPersistence) HttpClientUtil.deserializeObject(Config.biliBiliDataSerialPath);
+        }catch (FileNotFoundException e){
+        }catch (Exception e) {
+            logger.error("fail to deserialize object from url: "+Config.biliBiliDataSerialPath,e);
+        }
+        if (persistence != null) {
+            detailListPageThreadPool.execute(new VideoRankListJsonTask(persistence.getBiliBili_rid(), persistence.getBiliBili_original(), persistence.getBiliBili_pn()));
+        } else {
+            detailListPageThreadPool.execute(new VideoRankListJsonTask(1l, 0l, 1));
+        }
     }
 
     /**

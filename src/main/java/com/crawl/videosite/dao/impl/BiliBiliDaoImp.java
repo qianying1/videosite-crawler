@@ -620,6 +620,77 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
     }
 
     /**
+     * 通过视频类型rid获取视频类型id
+     *
+     * @param rid
+     * @return
+     */
+    @Override
+    public Long selectVideoTypeIdByRid(Long rid) {
+        return selectVideoTypeIdByRid(ConnectionManager.getConnection(), rid);
+    }
+
+    /**
+     * 通过视频类型rid获取视频类型id
+     *
+     * @param conn
+     * @param rid
+     * @return
+     */
+    public Long selectVideoTypeIdByRid(Connection conn, Long rid) {
+        String sql = "select id from style where biliBili_rid=?";
+        PreparedStatement pstmt;
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, rid);
+            ResultSet rs = pstmt.executeQuery();
+            Long id = -1l;
+            while (rs.next()) {
+                id = rs.getLong("id");
+            }
+            return id;
+        } catch (SQLException e) {
+            logger.error("执行视频类型查询时sql语句错误", e);
+            return -1l;
+        }
+    }
+
+    /**
+     * 通过视频作者mid获取视频作者id
+     *
+     * @param mid
+     * @return
+     */
+    public Long selectAuthorIdByMid(Long mid) {
+        return selectAuthorIdByMid(ConnectionManager.getConnection(), mid);
+    }
+
+    /**
+     * 通过视频作者mid获取视频作者id
+     *
+     * @param conn
+     * @param mid
+     * @return
+     */
+    public Long selectAuthorIdByMid(Connection conn, Long mid) {
+        String sql = "select id from video_author where biliBili_mid=?";
+        PreparedStatement pstmt;
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, mid);
+            ResultSet rs = pstmt.executeQuery();
+            Long id = -1l;
+            while (rs.next()) {
+                id = rs.getLong("id");
+            }
+            return id;
+        } catch (SQLException e) {
+            logger.error("执行查询视频作者sql语句错误", e);
+            return -1l;
+        }
+    }
+
+    /**
      * 更新视频类型数据
      *
      * @param type

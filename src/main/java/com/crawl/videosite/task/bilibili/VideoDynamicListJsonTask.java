@@ -2,18 +2,18 @@ package com.crawl.videosite.task.bilibili;
 
 import com.alibaba.fastjson.JSONObject;
 import com.crawl.videosite.entity.BiliBiliParams;
-import com.crawl.videosite.parser.bilibili.AbstractVideoListParser;
-import com.crawl.videosite.parser.bilibili.VideoListJsonParser;
+import com.crawl.videosite.parser.bilibili.AbstractVideoDynamicListParser;
+import com.crawl.videosite.parser.bilibili.VideoDynamicListJsonParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
 /**
- * 视频列表Json数据抓取任务
+ * 活动视频列表Json数据抓取任务
  */
-public class VideoListJsonTask extends AbstractVideoListTask {
-    private static Logger logger = LoggerFactory.getLogger(VideoListJsonTask.class);
+public class VideoDynamicListJsonTask extends AbstractVideoDynamicListTask {
+    private static Logger logger = LoggerFactory.getLogger(VideoDynamicListJsonTask.class);
     /**
      * 目标地址
      */
@@ -25,11 +25,11 @@ public class VideoListJsonTask extends AbstractVideoListTask {
     /**
      * 视频类型id
      */
-    private static Long rid = 1l;
+    public static Long rid = 0l;
     /**
      * 视频大类型(属于假设)
      */
-    private static Long original = 0l;
+    public static Long original = 0l;
     /**
      * original最大值为8
      */
@@ -45,21 +45,20 @@ public class VideoListJsonTask extends AbstractVideoListTask {
     /**
      * 页码
      */
-    private Integer pn = 1;
+    public static Integer pn = 1;
     /**
      * 视频列表分析器
      */
-    private AbstractVideoListParser videoListParser;
+    private AbstractVideoDynamicListParser videoListParser;
 
-    public VideoListJsonTask(String target) {
+    public VideoDynamicListJsonTask(String target) {
         super(target);
     }
 
-    public VideoListJsonTask(Long rid, Long original, Integer pn) {
+    public VideoDynamicListJsonTask(Long rid, Long original, Integer pn) {
         super(getTargetUrl(BiliBiliParams.listDomain, rid, original, 50, pn));
         this.target = getTargetUrl(BiliBiliParams.listDomain, rid, original, 50, pn);
-        System.out.println(target);
-        videoListParser = new VideoListJsonParser();
+        videoListParser = new VideoDynamicListJsonParser();
     }
 
     /**
@@ -73,39 +72,33 @@ public class VideoListJsonTask extends AbstractVideoListTask {
             return;
         }
         if (Integer.valueOf(jsonObject.get("code").toString()) != 0) {
-            logger.error("fail to catch json data from url: " + this.target);
+            logger.warn("fail to catch json data from url: " + this.target);
+            rid++;
+            setTargetUrl(getTargetUrl(targetDomain, rid, original, getPs(), getPn()));
             return;
         } else {
-            videoListParser.parseJson(jsonObject, getRid(), original);
+            videoListParser.parseJson(jsonObject, rid, original);
         }
         Map<String, Object> page = (Map<String, Object>) ((Map<String, Object>) jsonObject.get("data")).get("page");
         setPn(Integer.valueOf(page.get("num").toString()));
         setPs(Integer.valueOf(page.get("size").toString()));
         count = Integer.valueOf(page.get("count").toString());
         if (getPn() * getPs() >= count) {
-            setRid(getRid() + 1);
+            rid++;
             setPn(1);
             setPs(50);
-        }else {
+        } else {
             setPn(getPn() + 1);
             setPs(getPs());
         }
-        if (getEmptyCount()>MAXEMPTYCOUNT&&original <= MAXORIGINAL){
+        if (getEmptyCount() > MAXEMPTYCOUNT && original <= MAXORIGINAL) {
             original++;
             setEmptyCount(0);
-            setRid(1l);
+            rid = 1l;
             setPn(1);
             setPs(50);
         }
-        setTargetUrl(getTargetUrl(targetDomain, getRid(), original, getPs(), getPn()));
-    }
-
-    public Long getRid() {
-        return rid;
-    }
-
-    public void setRid(Long rid) {
-        this.rid = rid;
+        setTargetUrl(getTargetUrl(targetDomain, rid, original, getPs(), getPn()));
     }
 
     public Integer getPs() {

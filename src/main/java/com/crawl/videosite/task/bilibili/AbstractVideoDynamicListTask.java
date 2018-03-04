@@ -2,9 +2,11 @@ package com.crawl.videosite.task.bilibili;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.crawl.core.util.Config;
+import com.crawl.core.util.HttpClientUtil;
 import com.crawl.core.util.JsoupUtil;
 import com.crawl.videosite.BiliBiliHttpClient;
-import com.crawl.videosite.exception.JsonDataEmptyException;
+import com.crawl.videosite.entity.VideoSiteDynamicPersistence;
 import com.sun.istack.internal.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,48 +15,68 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * 视频列表json数据任务
+ * 活动视频列表json数据任务
  */
-public abstract class AbstractVideoListTask implements Runnable {
-    private static Logger logger = LoggerFactory.getLogger(AbstractVideoListTask.class);
+public abstract class AbstractVideoDynamicListTask implements Runnable {
+    private static Logger logger = LoggerFactory.getLogger(AbstractVideoDynamicListTask.class);
     protected static BiliBiliHttpClient httpClient = BiliBiliHttpClient.getInstance();
     /**
      * 目标地址
      */
-    private String targetUrl;
+    private static String targetUrl;
     /**
      * 返回空数据的计数器
      */
     private static Integer emptyCount = 0;
     /**
+     * 爬取次数
+     */
+    private static Integer crawlerCount = 0;
+    /**
      * 返回空数据的最大次数不超过100次
      */
     protected static final Integer MAXEMPTYCOUNT = 100;
 
-    public AbstractVideoListTask(String target) {
+    public AbstractVideoDynamicListTask(String target) {
         this.targetUrl = target;
     }
 
-    public AbstractVideoListTask() {
+    public AbstractVideoDynamicListTask() {
     }
 
     @Override
     public void run() {
         while (true) {
-            if (emptyCount > MAXEMPTYCOUNT) {
-                break;
+            crawlerCount++;
+            if (crawlerCount > 1000) {
+                VideoSiteDynamicPersistence persistence = new VideoSiteDynamicPersistence();
+                persistence.setBiliBili_original(VideoDynamicListJsonTask.original);
+                persistence.setBiliBili_pn(VideoDynamicListJsonTask.pn);
+                persistence.setBiliBili_rid(VideoDynamicListJsonTask.rid);
+                persistence.setBiliBili_aid(0l);
+                persistence.setBiliBili_day(1);
+                persistence.setBiliBili_mid(0l);
+                HttpClientUtil.serializeObject(persistence, Config.biliBiliDataSerialPath);
             }
-            String result = null;
+            if (emptyCount > MAXEMPTYCOUNT) {
+                emptyCount = 0;
+                VideoDynamicListJsonTask.rid = 0l;
+                VideoDynamicListJsonTask.original = 0l;
+                VideoDynamicListJsonTask.pn = 0;
+            }
+            String result;
             try {
                 result = JsoupUtil.getJsonFromApi(getTargetUrl());
             } catch (IOException e) {
-                logger.error("fail to catch json data from url: " + targetUrl, e);
+                logger.error("running fail to catch json data from url: " + getTargetUrl(), e);
+                break;
             }
             Map<String, Object> jsonData = (Map<String, Object>) JSON.parse(result);
-            if (jsonData.isEmpty()) {
-                throw new JsonDataEmptyException("fail to catch data from url: " + targetUrl);
-            } else if (Integer.valueOf(jsonData.get("code").toString()) != 0) {
+            if (jsonData.isEmpty() || Integer.valueOf(jsonData.get("code").toString()) != 0) {
+                logger.warn("running fail to catch data from url: " + targetUrl);
                 emptyCount++;
+            } else {
+                emptyCount = 1;
             }
             JSONObject jsonObject = JSON.parseObject(result);
             handle(jsonObject);
@@ -105,6 +127,6 @@ public abstract class AbstractVideoListTask implements Runnable {
     }
 
     protected static void setEmptyCount(Integer emptyCount) {
-        AbstractVideoListTask.emptyCount = emptyCount;
+        AbstractVideoDynamicListTask.emptyCount = emptyCount;
     }
 }

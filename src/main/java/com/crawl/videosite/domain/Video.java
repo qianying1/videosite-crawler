@@ -37,6 +37,10 @@ public class Video extends BaseEntity implements Serializable {
      */
     private String title;
     /**
+     * 子标题
+     */
+    private String subtitle;
+    /**
      * logo图片
      */
     private String logo;
@@ -44,7 +48,10 @@ public class Video extends BaseEntity implements Serializable {
      * up主名称
      */
     private String upMan;
-
+    /**
+     * 评论次数
+     */
+    private Long review=0l;
     /**
      * 播放次数
      */
@@ -66,6 +73,10 @@ public class Video extends BaseEntity implements Serializable {
      */
     private Long share=0l;
     /**
+     * b站中不知道是什么的东西
+     */
+    private Long pts=0l;
+    /**
      * 视频喜欢数量
      */
     private Long like=0l;
@@ -85,9 +96,8 @@ public class Video extends BaseEntity implements Serializable {
      * 投蕉数
      */
     private Long bananas=0l;
-
     /**
-     * 评论数量
+     * 视频评论数量
      */
     private Long comments=0l;
 
@@ -119,15 +129,19 @@ public class Video extends BaseEntity implements Serializable {
     /**
      * b站中的不知道是什么的东西（状况，资格）
      */
-    private Integer state;
+    private Integer state=0;
     /**
      * b站中的不知道是什么的东西（属性，贡献）
      */
-    private Long attribute;
+    private Long attribute=0l;
+    /**
+     * b站中不知道是什么的东西(badge象征，徽章，标志)
+     */
+    private Integer badgepay=0;
     /**
      * 时间(按分钟计算)
      */
-    private Integer duration;
+    private Integer duration=0;
     /**
      * 权限(json存储)
      */
@@ -135,11 +149,11 @@ public class Video extends BaseEntity implements Serializable {
     /**
      * 现在等级
      */
-    private Integer now_rank;
+    private Integer now_rank=0;
     /**
      * 历史等级
      */
-    private Integer his_rank;
+    private Integer his_rank=0;
 
 
     public Long getBiliBili_mid() {
@@ -400,6 +414,38 @@ public class Video extends BaseEntity implements Serializable {
 
     public void setHis_rank(Integer his_rank) {
         this.his_rank = his_rank;
+    }
+
+    public String getSubtitle() {
+        return subtitle;
+    }
+
+    public void setSubtitle(String subtitle) {
+        this.subtitle = subtitle;
+    }
+
+    public Long getReview() {
+        return review;
+    }
+
+    public void setReview(Long review) {
+        this.review = review;
+    }
+
+    public Integer getBadgepay() {
+        return badgepay;
+    }
+
+    public void setBadgepay(Integer badgepay) {
+        this.badgepay = badgepay;
+    }
+
+    public Long getPts() {
+        return pts;
+    }
+
+    public void setPts(Long pts) {
+        this.pts = pts;
     }
 
     @Override

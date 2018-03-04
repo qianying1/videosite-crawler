@@ -1,10 +1,11 @@
 package com.crawl.videosite.parser.bilibili;
 
 import com.alibaba.fastjson.JSONObject;
+import com.crawl.core.util.Constants;
 import com.crawl.videosite.domain.Style;
 import com.crawl.videosite.domain.Video;
 import com.crawl.videosite.domain.VideoAuthor;
-import com.crawl.videosite.entity.VideoSitePersistence;
+import com.crawl.videosite.entity.VideoSiteDynamicPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,9 +17,9 @@ import java.util.Map;
 /**
  * 视频列表Json数据抓取任务
  */
-public class VideoListJsonParser extends AbstractVideoListParser {
+public class VideoDynamicListJsonParser extends AbstractVideoDynamicListParser {
 
-    Logger logger = LoggerFactory.getLogger(VideoListJsonParser.class);
+    Logger logger = LoggerFactory.getLogger(VideoDynamicListJsonParser.class);
 
     /**
      * 视频类型id
@@ -46,7 +47,7 @@ public class VideoListJsonParser extends AbstractVideoListParser {
         Map<String, Object> data = (Map<String, Object>) jsonObject.get("data");
         Map<String, Object> page = (Map<String, Object>) data.get("page");
         List<Map<String, Object>> archives = (List<Map<String, Object>>) data.get("archives");
-        VideoSitePersistence persistence = new VideoSitePersistence();
+        VideoSiteDynamicPersistence persistence = new VideoSiteDynamicPersistence();
         persistence.setBiliBili_pn(Integer.valueOf(page.get("num").toString()));
         persistence.setBiliBili_rid(rid);
         persistence.setBiliBili_original(original);
@@ -86,8 +87,14 @@ public class VideoListJsonParser extends AbstractVideoListParser {
         video.setPubdate(new Date(Long.parseLong(archive.get("pubdate").toString())));
         video.setCtime(new Date(Long.parseLong(archive.get("ctime").toString())));
         video.setDesc(archive.get("desc").toString());
-        video.setState(Integer.valueOf(archive.get("state").toString()));
-        video.setAttribute(Long.valueOf(archive.get("attribute").toString()));
+        if (archive.get("state") != null)
+            video.setState(Integer.valueOf(archive.get("state").toString()));
+        else
+            video.setState(0);
+        if (archive.get("attribute") != null)
+            video.setAttribute(Long.valueOf(archive.get("attribute").toString()));
+        else
+            video.setAttribute(0l);
         video.setDuration(Integer.valueOf(archive.get("duration").toString()));
         video.setRights(archive.get("rights").toString());
         Map<String, Object> owner = (Map<String, Object>) archive.get("owner");
@@ -121,7 +128,8 @@ public class VideoListJsonParser extends AbstractVideoListParser {
                 logger.error("插入视频数据失败: " + video.getTitle());
             }
         } else {
-            dao.updateVideo(video);
+            if (Constants.isUpdateVideo_biliBili)
+                dao.updateVideo(video);
         }
     }
 
@@ -136,7 +144,12 @@ public class VideoListJsonParser extends AbstractVideoListParser {
                 logger.error("插入视频类型数据失败: " + type.getStyleName());
             }
         } else {
-            Long id = dao.updateVideoType(type);
+            Long id;
+            if (Constants.isUpdateVideoType_biliBili) {
+                id = dao.updateVideoType(type);
+            } else {
+                id = dao.selectVideoTypeIdByRid(type.getBiliBili_rid());
+            }
             type.setId(id);
             video.setStyle(type);
         }
@@ -153,7 +166,12 @@ public class VideoListJsonParser extends AbstractVideoListParser {
                 logger.error("插入视频作者数据失败: " + author.getName());
             }
         } else {
-            Long id = dao.updateAuthor(author);
+            Long id;
+            if (Constants.isUpdateVideoAuthor_biliBili) {
+                id = dao.updateAuthor(author);
+            } else {
+                id = dao.selectAuthorIdByMid(author.getBiliBili_mid());
+            }
             if (id != -1) {
                 author.setId(id);
             }

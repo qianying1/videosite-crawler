@@ -202,9 +202,9 @@ public class HttpClientUtil {
             fos.close();
             oos.close();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            logger.error("找不到文件错误!", e);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("读写数据错误!", e);
         }
     }
 

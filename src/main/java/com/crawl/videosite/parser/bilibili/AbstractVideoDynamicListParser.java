@@ -8,11 +8,11 @@ import com.sun.istack.internal.NotNull;
 /**
  * 视频列表json数据任务
  */
-public abstract class AbstractVideoListParser {
+public abstract class AbstractVideoDynamicListParser {
 
     protected BiliBiliDao dao;
 
-    protected AbstractVideoListParser() {
+    protected AbstractVideoDynamicListParser() {
         dao = new BiliBiliDaoImp();
     }
 

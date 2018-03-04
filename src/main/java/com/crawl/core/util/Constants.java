@@ -7,6 +7,18 @@ public class Constants {
     public final static int TIMEOUT = 10000;
     public final static int WAITFORBACKGROUNDJAVASCRIPT = 10000;
     /**
+     * b站是否开启更新视频类型
+     */
+    public final static boolean isUpdateVideoType_biliBili=false;
+    /**
+     * b站是否开启更新视频作者
+     */
+    public final static boolean isUpdateVideoAuthor_biliBili=false;
+    /**
+     * b站是否开启更新视频
+     */
+    public final static boolean isUpdateVideo_biliBili=true;
+    /**
      * 单个ip请求间隔，单位ms
      */
     public final static long TIME_INTERVAL = 1000;
