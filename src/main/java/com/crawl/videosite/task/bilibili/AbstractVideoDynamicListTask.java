@@ -33,6 +33,10 @@ public abstract class AbstractVideoDynamicListTask implements Runnable {
      */
     private static Integer crawlerCount = 0;
     /**
+     * 爬取次数
+     */
+    private static Integer crawlerCountToSleep = 0;
+    /**
      * 返回空数据的最大次数不超过100次
      */
     protected static final Integer MAXEMPTYCOUNT = 100;
@@ -48,6 +52,7 @@ public abstract class AbstractVideoDynamicListTask implements Runnable {
     public void run() {
         while (true) {
             crawlerCount++;
+            crawlerCountToSleep++;
             if (crawlerCount > 1000) {
                 VideoSiteDynamicPersistence persistence = new VideoSiteDynamicPersistence();
                 persistence.setBiliBili_original(VideoDynamicListJsonTask.original);
@@ -57,6 +62,15 @@ public abstract class AbstractVideoDynamicListTask implements Runnable {
                 persistence.setBiliBili_day(1);
                 persistence.setBiliBili_mid(0l);
                 HttpClientUtil.serializeObject(persistence, Config.biliBiliDataSerialPath);
+                crawlerCount=0;
+            }
+            if (crawlerCountToSleep>=5000){
+                //每爬取5000次就休息30分钟
+                try {
+                    Thread.sleep(1000*60*30);
+                }catch (InterruptedException e){
+                    logger.error("当前线程被中断执行",e);
+                }
             }
             if (emptyCount > MAXEMPTYCOUNT) {
                 emptyCount = 0;
@@ -81,7 +95,7 @@ public abstract class AbstractVideoDynamicListTask implements Runnable {
             JSONObject jsonObject = JSON.parseObject(result);
             handle(jsonObject);
             try {
-                Thread.sleep(1000);
+                Thread.sleep(2000);
             } catch (InterruptedException e) {
                 logger.error("InterruptedException", e);
             }
