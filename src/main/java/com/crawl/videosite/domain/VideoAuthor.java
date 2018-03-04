@@ -27,15 +27,15 @@ public class VideoAuthor extends BaseEntity implements Serializable {
 	/**
 	 * 拥有视频数量
 	 */
-	private Integer videoCount;
+	private Integer videoCount=0;
 	/**
 	 * 受关注度
 	 */
-	private Integer attentionCount;
+	private Integer attentionCount=0;
 	/**
 	 * 粉丝数量
 	 */
-	private Integer audienceCount;
+	private Integer audienceCount=0;
 	/**
 	 * 作者头像
 	 */

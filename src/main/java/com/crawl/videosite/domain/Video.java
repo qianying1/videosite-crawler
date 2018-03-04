@@ -401,4 +401,42 @@ public class Video extends BaseEntity implements Serializable {
     public void setHis_rank(Integer his_rank) {
         this.his_rank = his_rank;
     }
+
+    @Override
+    public String toString() {
+        return "Video{" +
+                "biliBili_aid=" + biliBili_aid +
+                ", biliBili_mid=" + biliBili_mid +
+                ", biliBili_rid=" + biliBili_rid +
+                ", biliBili_videos=" + biliBili_videos +
+                ", biliBili_copyright=" + biliBili_copyright +
+                ", href='" + href + '\'' +
+                ", title='" + title + '\'' +
+                ", logo='" + logo + '\'' +
+                ", upMan='" + upMan + '\'' +
+                ", views=" + views +
+                ", replay=" + replay +
+                ", favorite=" + favorite +
+                ", coin=" + coin +
+                ", share=" + share +
+                ", like=" + like +
+                ", dynamic='" + dynamic + '\'' +
+                ", masks=" + masks +
+                ", times='" + times + '\'' +
+                ", bananas=" + bananas +
+                ", comments=" + comments +
+                ", author=" + author +
+                ", location='" + location + '\'' +
+                ", style=" + style +
+                ", pubdate=" + pubdate +
+                ", ctime=" + ctime +
+                ", desc='" + desc + '\'' +
+                ", state=" + state +
+                ", attribute=" + attribute +
+                ", duration=" + duration +
+                ", rights='" + rights + '\'' +
+                ", now_rank=" + now_rank +
+                ", his_rank=" + his_rank +
+                '}';
+    }
 }
