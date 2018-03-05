@@ -1,4 +1,4 @@
-package com.crawl.videosite.parser.bilibili;
+package com.crawl.videosite.parser.bilibili.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.crawl.core.util.Constants;
@@ -90,10 +90,18 @@ public class VideoRankListJsonParser extends AbstractVideoRankListParser {
     }
 
     private void insertVideo(Video video) {
-        boolean videoExsist = dao.isExistVideo(video.getBiliBili_aid());
-        if (videoExsist) {
-            if (Constants.isUpdateVideo_biliBili)
+        if (Constants.isUpdateVideo_biliBili) {
+            boolean videoExsist = dao.isExistVideo(video.getBiliBili_aid());
+            if (videoExsist)
                 dao.updateVideo(video);
+            else {
+                Long id = dao.insertVideo(video);
+                if (id != -1) {
+                    video.setId(id);
+                } else {
+                    logger.error("插入视频数据失败: " + video.getTitle());
+                }
+            }
         } else {
             Long id = dao.insertVideo(video);
             if (id != -1) {
@@ -105,40 +113,50 @@ public class VideoRankListJsonParser extends AbstractVideoRankListParser {
     }
 
     private void insertType(Style type, Video video) {
-        boolean typeExsist = dao.isExistVideoTypeByName(type.getStyleName());
-        if (typeExsist) {
-            Long id;
-            if (Constants.isUpdateVideoType_biliBili) {
-                id = dao.updateVideoType(type);
-            } else {
-                id = dao.selectVideoTypeIdByName(type.getStyleName());
-            }
-            type.setId(id);
-            video.setStyle(type);
-        } else {
-            Long id = dao.insertVideoType(type);
-            if (id != -1) {
+        if (Constants.isUpdateVideoType_biliBili) {
+            boolean typeExsist = dao.isExistVideoTypeByName(type.getStyleName());
+            if (typeExsist) {
+//                Long id = dao.updateVideoType(type);
+                Long id = dao.selectVideoTypeIdByName(type.getStyleName());
                 type.setId(id);
                 video.setStyle(type);
             } else {
-                logger.error("插入视频类型数据失败: " + type.getStyleName());
+                Long id = dao.insertVideoType(type);
+                if (id != -1) {
+                    type.setId(id);
+                    video.setStyle(type);
+                } else {
+                    logger.error("插入视频类型数据失败===============================: " + type.getStyleName());
+                }
+            }
+        } else {
+            Long id = dao.insertVideoType(type);
+            if (id != -1l) {
+                type.setId(id);
+                video.setStyle(type);
+            } else {
+                logger.error("插入视频类型数据失败------------------------: " + type.getStyleName());
             }
         }
     }
 
     private void insertAuthor(VideoAuthor author, Video video) {
-        boolean authorExsist = dao.isExistAuthor(author.getBiliBili_mid());
-        if (authorExsist) {
-            Long id;
-            if (Constants.isUpdateVideoAuthor_biliBili) {
-                id = dao.updateAuthor(author);
-            } else {
-                id = dao.selectAuthorIdByMid(author.getBiliBili_mid());
-            }
-            if (id != -1) {
+        if (Constants.isUpdateVideoAuthor_biliBili) {
+            boolean authorExsist = dao.isExistAuthor(author.getBiliBili_mid());
+            if (authorExsist) {
+//                Long id = dao.updateAuthor(author);
+                Long id = dao.selectAuthorIdByMid(author.getBiliBili_mid());
                 author.setId(id);
+                video.setAuthor(author);
+            } else {
+                Long id = dao.insertAuthor(author);
+                if (id != -1) {
+                    author.setId(id);
+                    video.setAuthor(author);
+                } else {
+                    logger.error("插入视频作者数据失败: " + author.getName());
+                }
             }
-            video.setAuthor(author);
         } else {
             Long id = dao.insertAuthor(author);
             if (id != -1) {

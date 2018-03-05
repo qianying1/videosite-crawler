@@ -1,4 +1,4 @@
-package com.crawl.videosite.parser.bilibili;
+package com.crawl.videosite.parser.bilibili.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.crawl.core.util.Constants;
@@ -114,64 +114,78 @@ public class VideoDynamicListJsonParser extends AbstractVideoDynamicListParser {
     }
 
     private void insertVideo(Video video) {
-        boolean videoExsist = dao.isExistVideo(video.getBiliBili_aid());
-        if (!videoExsist) {
+        if (Constants.isUpdateVideo_biliBili) {
+            boolean videoExsist = dao.isExistVideo(video.getBiliBili_aid());
+            if (!videoExsist) {
+                Long id = dao.insertVideo(video);
+                if (id != -1l) {
+                    video.setId(id);
+                } else {
+                    logger.error("插入视频数据失败: " + video.getTitle());
+                }
+            } else {
+                dao.updateVideo(video);
+            }
+        } else {
             Long id = dao.insertVideo(video);
-            if (id != -1) {
+            if (id != -1l) {
                 video.setId(id);
             } else {
                 logger.error("插入视频数据失败: " + video.getTitle());
             }
-        } else {
-            if (Constants.isUpdateVideo_biliBili)
-                dao.updateVideo(video);
         }
     }
 
     private void insertType(Style type, Video video) {
-        boolean typeExsist = dao.isExistVideoType(type.getBiliBili_rid());
-        if (!typeExsist) {
+        if (Constants.isUpdateVideoType_biliBili) {
+            boolean isExsit = dao.isExistVideoType(type.getBiliBili_rid());
+            if (!isExsit) {
+//                Long id = dao.insertVideoType(type);
+                Long id = dao.selectVideoTypeIdByRid(type.getBiliBili_rid());
+                if (id != -1) {
+                    type.setId(id);
+                    video.setStyle(type);
+                } else {
+                    logger.error("插入视频类型数据失败================: " + type.getStyleName());
+                }
+            } else {
+                Long id = dao.updateVideoType(type);
+                type.setId(id);
+                video.setStyle(type);
+            }
+        } else {
             Long id = dao.insertVideoType(type);
             if (id != -1) {
                 type.setId(id);
                 video.setStyle(type);
             } else {
-                logger.error("插入视频类型数据失败: " + type.getStyleName());
+                logger.error("插入视频类型数据失败-------------------------: " + type.getStyleName());
             }
-        } else {
-            Long id;
-            if (Constants.isUpdateVideoType_biliBili) {
-                id = dao.updateVideoType(type);
-            } else {
-                id = dao.selectVideoTypeIdByRid(type.getBiliBili_rid());
-            }
-            type.setId(id);
-            video.setStyle(type);
         }
+
     }
 
     private void insertAuthor(VideoAuthor author, Video video) {
-        boolean authorExsist = dao.isExistAuthor(author.getBiliBili_mid());
-        if (!authorExsist) {
-            Long id = dao.insertAuthor(author);
-            if (id != -1) {
-                author.setId(id);
+        if (Constants.isUpdateVideoAuthor_biliBili) {
+            boolean authorExsist = dao.isExistAuthor(author.getBiliBili_mid());
+            if (!authorExsist) {
+                Long id = dao.insertAuthor(author);
+                if (id != -1l) {
+                    author.setId(id);
+                    video.setAuthor(author);
+                } else {
+                    logger.error("插入视频作者数据失败: " + author.getName());
+                }
+            } else {
+//                Long id = dao.updateAuthor(author);
+                Long id = dao.selectAuthorIdByMid(author.getBiliBili_mid());
+                if (id != -1l) {
+                    author.setId(id);
+                }
                 video.setAuthor(author);
-            } else {
-                logger.error("插入视频作者数据失败: " + author.getName());
             }
-        } else {
-            Long id;
-            if (Constants.isUpdateVideoAuthor_biliBili) {
-                id = dao.updateAuthor(author);
-            } else {
-                id = dao.selectAuthorIdByMid(author.getBiliBili_mid());
-            }
-            if (id != -1) {
-                author.setId(id);
-            }
-            video.setAuthor(author);
         }
+
     }
 
     public Long getRid() {

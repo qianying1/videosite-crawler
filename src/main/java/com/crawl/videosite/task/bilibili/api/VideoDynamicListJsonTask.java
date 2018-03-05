@@ -1,9 +1,9 @@
-package com.crawl.videosite.task.bilibili;
+package com.crawl.videosite.task.bilibili.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.crawl.videosite.entity.BiliBiliParams;
-import com.crawl.videosite.parser.bilibili.AbstractVideoDynamicListParser;
-import com.crawl.videosite.parser.bilibili.VideoDynamicListJsonParser;
+import com.crawl.videosite.parser.bilibili.api.AbstractVideoDynamicListParser;
+import com.crawl.videosite.parser.bilibili.api.VideoDynamicListJsonParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

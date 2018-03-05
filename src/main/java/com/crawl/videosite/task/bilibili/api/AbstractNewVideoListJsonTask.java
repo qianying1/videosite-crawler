@@ -1,4 +1,4 @@
-package com.crawl.videosite.task.bilibili;
+package com.crawl.videosite.task.bilibili.api;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -9,7 +9,6 @@ import com.crawl.proxy.ProxyPool;
 import com.crawl.proxy.entity.Direct;
 import com.crawl.proxy.entity.Proxy;
 import com.crawl.videosite.BiliBiliHttpClient;
-import com.crawl.videosite.entity.VideoSiteDynamicPersistence;
 import com.crawl.videosite.entity.VideoSiteRankPersistence;
 import com.sun.istack.internal.NotNull;
 import org.apache.commons.lang3.StringUtils;
@@ -20,9 +19,11 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * 等级视频列表json数据任务
+ * b站新视频列表api抓取任务
+ * <p>
+ * Created by qianhaibin on 2018/3/5.
  */
-public abstract class AbstractVideoRankListTask implements Runnable {
+public abstract class AbstractNewVideoListJsonTask implements Runnable {
     private static Logger logger = LoggerFactory.getLogger(AbstractVideoRankListTask.class);
     protected static BiliBiliHttpClient httpClient = BiliBiliHttpClient.getInstance();
     /**
@@ -50,11 +51,11 @@ public abstract class AbstractVideoRankListTask implements Runnable {
      */
     protected static final Integer MAXEMPTYCOUNT = 100;
 
-    public AbstractVideoRankListTask(String target) {
+    public AbstractNewVideoListJsonTask(String target) {
         this.targetUrl = target;
     }
 
-    public AbstractVideoRankListTask() {
+    public AbstractNewVideoListJsonTask() {
     }
 
     @Override
@@ -68,7 +69,7 @@ public abstract class AbstractVideoRankListTask implements Runnable {
                 persistence.setBiliBili_aid(0l);
                 persistence.setBiliBili_day(1);
                 persistence.setBiliBili_mid(0l);
-                HttpClientUtil.serializeObject(persistence, Config.biliBiliDynamicVideoDataSerialPath);
+                HttpClientUtil.serializeObject(persistence, Config.biliBiliRankVideoDataSerialPath);
                 crawlerCount = 0;
             }
             /*if (crawlerCountToSleep>=5000){
@@ -164,6 +165,6 @@ public abstract class AbstractVideoRankListTask implements Runnable {
     }
 
     protected static void setEmptyCount(Integer emptyCount) {
-        AbstractVideoRankListTask.emptyCount = emptyCount;
+        AbstractNewVideoListJsonTask.emptyCount = emptyCount;
     }
 }

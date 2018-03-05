@@ -1,4 +1,4 @@
-package com.crawl.videosite.task.bilibili;
+package com.crawl.videosite.task.bilibili.api;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -19,11 +19,9 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * b站新视频列表api抓取任务
- * <p>
- * Created by qianhaibin on 2018/3/5.
+ * 等级视频列表json数据任务
  */
-public abstract class AbstractVideoNewVideoListJsonTask implements Runnable {
+public abstract class AbstractVideoRankListTask implements Runnable {
     private static Logger logger = LoggerFactory.getLogger(AbstractVideoRankListTask.class);
     protected static BiliBiliHttpClient httpClient = BiliBiliHttpClient.getInstance();
     /**
@@ -51,11 +49,11 @@ public abstract class AbstractVideoNewVideoListJsonTask implements Runnable {
      */
     protected static final Integer MAXEMPTYCOUNT = 100;
 
-    public AbstractVideoNewVideoListJsonTask(String target) {
+    public AbstractVideoRankListTask(String target) {
         this.targetUrl = target;
     }
 
-    public AbstractVideoNewVideoListJsonTask() {
+    public AbstractVideoRankListTask() {
     }
 
     @Override
@@ -165,6 +163,6 @@ public abstract class AbstractVideoNewVideoListJsonTask implements Runnable {
     }
 
     protected static void setEmptyCount(Integer emptyCount) {
-        AbstractVideoNewVideoListJsonTask.emptyCount = emptyCount;
+        AbstractVideoRankListTask.emptyCount = emptyCount;
     }
 }

@@ -156,9 +156,9 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
     @Override
     public synchronized Long insertVideo(Connection conn, Video video) {
         try {
-            if (isExistVideo(conn, video.getBiliBili_aid())) {
+            /*if (isExistVideo(conn, video.getBiliBili_aid())) {
                 return -1l;
-            }
+            }*/
             String column = "bili_aid,biliBili_rid,biliBili_mid,biliBili_videos,biliBili_copyright,state," +
                     "attribute,duration,now_rank,his_rank,rights,description,ctime,pubdate,dynamic,likes,share,coin,favorite," +
                     "replay,href,title,logo,upMan,views,masks,times,bananas,comments,videoAuthor,location,createDate,type,subtitle,badgepay,pts";
@@ -229,9 +229,9 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
     @Override
     public synchronized Long insertVideoType(Connection cn, Style type) {
         try {
-            if (isExistVideoType(cn, type.getBiliBili_rid())) {
+            /*if (isExistVideoType(cn, type.getBiliBili_rid())) {
                 return -1l;
-            }
+            }*/
             String column = "biliBili_rid,styleName,parentId,createDate";
             String values = "?,?,?,?";
             String sql = "insert into style (" + column + ") values(" + values + ")";

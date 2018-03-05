@@ -1,4 +1,4 @@
-package com.crawl.videosite.parser.bilibili;
+package com.crawl.videosite.parser.bilibili.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.crawl.videosite.dao.BiliBiliDao;

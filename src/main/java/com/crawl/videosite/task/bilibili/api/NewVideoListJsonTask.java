@@ -1,26 +1,23 @@
-package com.crawl.videosite.task.bilibili;
+package com.crawl.videosite.task.bilibili.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.crawl.videosite.entity.BiliBiliParams;
-import com.crawl.videosite.parser.bilibili.AbstractVideoDynamicListParser;
-import com.crawl.videosite.parser.bilibili.AbstractVideoRankListParser;
-import com.crawl.videosite.parser.bilibili.VideoDynamicListJsonParser;
-import com.crawl.videosite.parser.bilibili.VideoRankListJsonParser;
+import com.crawl.videosite.parser.bilibili.api.AbstractVideoRankListParser;
+import com.crawl.videosite.parser.bilibili.api.VideoRankListJsonParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Map;
-
 /**
- * 等级视频列表Json数据抓取任务
+ * b站新视频列表api抓取任务
+ * <p>
+ * Created by qianhaibin on 2018/3/5.
  */
-public class VideoRankListJsonTask extends AbstractVideoRankListTask {
+public class NewVideoListJsonTask extends AbstractNewVideoListJsonTask {
     private static Logger logger = LoggerFactory.getLogger(VideoRankListJsonTask.class);
     /**
      * 目标地址
      */
-    private final String targetDomain = BiliBiliParams.rankDomain;  // + "&rid=1&ps=50&pn=1"
+    private final String targetDomain = BiliBiliParams.newListDomain;  // + "&rid=1&ps=50&pn=1"
     /**
      * 目标地址
      */
@@ -34,11 +31,11 @@ public class VideoRankListJsonTask extends AbstractVideoRankListTask {
      */
     private AbstractVideoRankListParser videoListParser;
 
-    public VideoRankListJsonTask(String target) {
+    public NewVideoListJsonTask(String target) {
         super(target);
     }
 
-    public VideoRankListJsonTask(Long rid) {
+    public NewVideoListJsonTask(Long rid) {
         super(getTargetUrl(BiliBiliParams.rankDomain, rid));
         this.target = getTargetUrl(BiliBiliParams.rankDomain, rid);
         videoListParser = new VideoRankListJsonParser();

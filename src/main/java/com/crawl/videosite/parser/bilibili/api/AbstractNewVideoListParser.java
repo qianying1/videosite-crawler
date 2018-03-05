@@ -1,4 +1,4 @@
-package com.crawl.videosite.parser.bilibili;
+package com.crawl.videosite.parser.bilibili.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.crawl.videosite.dao.BiliBiliDao;
@@ -8,11 +8,11 @@ import com.sun.istack.internal.NotNull;
 /**
  * 视频列表json数据任务
  */
-public abstract class AbstractVideoRankListParser {
+public abstract class AbstractNewVideoListParser {
 
     protected BiliBiliDao dao;
 
-    protected AbstractVideoRankListParser() {
+    protected AbstractNewVideoListParser() {
         dao = new BiliBiliDaoImp();
     }
 

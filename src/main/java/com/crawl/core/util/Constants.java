@@ -9,15 +9,15 @@ public class Constants {
     /**
      * b站是否开启更新视频类型
      */
-    public final static boolean isUpdateVideoType_biliBili=false;
+    public final static boolean isUpdateVideoType_biliBili = true;
     /**
      * b站是否开启更新视频作者
      */
-    public final static boolean isUpdateVideoAuthor_biliBili=false;
+    public final static boolean isUpdateVideoAuthor_biliBili = true;
     /**
      * b站是否开启更新视频
      */
-    public final static boolean isUpdateVideo_biliBili=true;
+    public final static boolean isUpdateVideo_biliBili = true;
     /**
      * 单个ip请求间隔，单位ms
      */
