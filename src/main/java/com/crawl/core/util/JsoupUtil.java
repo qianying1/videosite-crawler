@@ -68,7 +68,7 @@ public class JsoupUtil {
      * @return
      */
     public static String getJsonFromApiByProxy(String href, String ip, int port) {
-        logger.info("正在使用代理爬取========: " + href);
+        logger.info("正在使用代理" + ip + ":" + port + "爬取========: " + href);
         try {
             Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(ip, port));
             URL url = new URL(href);

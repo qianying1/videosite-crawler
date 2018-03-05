@@ -9,7 +9,6 @@ import com.crawl.videosite.entity.VideoSiteDynamicPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -51,15 +50,11 @@ public class VideoDynamicListJsonParser extends AbstractVideoDynamicListParser {
         persistence.setBiliBili_pn(Integer.valueOf(page.get("num").toString()));
         persistence.setBiliBili_rid(rid);
         persistence.setBiliBili_original(original);
-        List<Video> videos = new ArrayList<>();
-        List<Style> styles = new ArrayList<>();
-        List<VideoAuthor> videoAuthors = new ArrayList<>();
         for (Map<String, Object> archive : archives) {
             if (archive == null || archive.isEmpty())
                 continue;
             parseDataToPersistence(archive);
         }
-        System.out.println(jsonObject);
     }
 
     /**

@@ -2,8 +2,6 @@ package com.crawl.videosite.dao.impl;
 
 
 import com.crawl.videosite.dao.Dao;
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +41,7 @@ public abstract class DaoImp implements Dao {
         if (token instanceof Long) {
             pstmt.setLong(1, Long.valueOf(token.toString()));
         } else if (token instanceof String) {
-            pstmt.setString(2, String.valueOf(token));
+            pstmt.setString(1, String.valueOf(token));
         }
         ResultSet rs = pstmt.executeQuery();
         while (rs.next()) {

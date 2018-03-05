@@ -13,6 +13,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * b站dao层
+ */
 public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
     private static Logger logger = LoggerFactory.getLogger(BiliBiliDaoImp.class);
 
@@ -34,7 +37,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
      * @return
      */
     @Override
-    public boolean isExistVideo(Connection conn, Long aid) {
+    public synchronized boolean isExistVideo(Connection conn, Long aid) {
         try {
             if (isExistRecord(conn, "video", "bili_aid", aid)) {
                 return true;
@@ -74,7 +77,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
      * @param mid
      * @return
      */
-    public boolean isExistAuthor(Connection conn, Long mid) {
+    public synchronized boolean isExistAuthor(Connection conn, Long mid) {
         try {
             if (isExistRecord(conn, "video_author", "biliBili_mid", mid)) {
                 return true;
@@ -92,7 +95,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
      * @param rid
      * @return
      */
-    public boolean isExistVideoType(Connection cn, Long rid) {
+    public synchronized boolean isExistVideoType(Connection cn, Long rid) {
 //        String isContainSql = "select count(*) from style where biliBili_rid=" + rid;
         try {
             if (isExistRecord(cn, "style", "biliBili_rid", rid)) {
@@ -100,6 +103,23 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
             }
         } catch (SQLException e) {
             logger.error("通过视频类型id查询视频类型数据失败: " + rid);
+        }
+        return false;
+    }
+
+    /**
+     * 通过视屏类型名称判断是否存在视频类型
+     *
+     * @param typeName
+     * @return
+     */
+    public synchronized boolean isExistVideoTypeByName(String typeName) {
+        try {
+            if (isExistRecord(ConnectionManager.getConnection(), "style", "styleName", typeName)) {
+                return true;
+            }
+        } catch (SQLException e) {
+            logger.error("通过视频类型名称查询视频类型数据失败: " + typeName, e);
         }
         return false;
     }
@@ -134,15 +154,15 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
      * @return
      */
     @Override
-    public Long insertVideo(Connection conn, Video video) {
+    public synchronized Long insertVideo(Connection conn, Video video) {
         try {
             if (isExistVideo(conn, video.getBiliBili_aid())) {
                 return -1l;
             }
             String column = "bili_aid,biliBili_rid,biliBili_mid,biliBili_videos,biliBili_copyright,state," +
                     "attribute,duration,now_rank,his_rank,rights,description,ctime,pubdate,dynamic,likes,share,coin,favorite," +
-                    "replay,href,title,logo,upMan,views,masks,times,bananas,comments,videoAuthor,location,createDate,type";
-            String values = "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
+                    "replay,href,title,logo,upMan,views,masks,times,bananas,comments,videoAuthor,location,createDate,type,subtitle,badgepay,pts";
+            String values = "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
             String sql = "insert into video (" + column + ") values(" + values + ")";
             PreparedStatement pstmt;
             pstmt = conn.prepareStatement(sql);
@@ -179,6 +199,10 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
             pstmt.setString(31, video.getLocation() != null ? video.getLocation() : "");
             pstmt.setDate(32, new Date(video.getCreateDate().getTime()));
             pstmt.setLong(33, (video.getStyle() != null ? video.getStyle().getId() : -1));
+
+            pstmt.setString(34, (video.getSubtitle() != null ? video.getSubtitle() : ""));
+            pstmt.setInt(35, (video.getBadgepay() != null ? video.getBadgepay() : -1));
+            pstmt.setLong(36, (video.getPts() != null ? video.getPts() : -1));
             pstmt.executeUpdate();
             ResultSet rs = pstmt.getGeneratedKeys();
             Long id = -1l;
@@ -203,7 +227,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
      * @return
      */
     @Override
-    public Long insertVideoType(Connection cn, Style type) {
+    public synchronized Long insertVideoType(Connection cn, Style type) {
         try {
             if (isExistVideoType(cn, type.getBiliBili_rid())) {
                 return -1l;
@@ -263,7 +287,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
      * @return
      */
     @Override
-    public Long updateAuthor(Connection conn, VideoAuthor author) {
+    public synchronized Long updateAuthor(Connection conn, VideoAuthor author) {
         Long mid = author.getBiliBili_mid();
         VideoAuthor origin = selectAuthorByMid(ConnectionManager.getConnection(), mid);
         if (origin == null) {
@@ -324,6 +348,31 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
     }
 
     /**
+     * 通过视频类型名称获取视频类型的id
+     *
+     * @param typeName
+     * @return
+     */
+    public Long selectVideoTypeIdByName(String typeName) {
+        Connection conn = ConnectionManager.getConnection();
+        String sql = "select id from style where styleName=?";
+        PreparedStatement pstmt;
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, typeName);
+            ResultSet rs = pstmt.executeQuery();
+            Long id = -1l;
+            while (rs.next()) {
+                id = rs.getLong("id");
+            }
+            return id;
+        } catch (SQLException e) {
+            logger.error("通过视频类型名称查询视频类型id出现错误: " + typeName, e);
+            return -1l;
+        }
+    }
+
+    /**
      * 通过视频id查找视频数据
      *
      * @param conn
@@ -331,7 +380,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
      * @return
      */
     @Override
-    public Video selectVideoByAid(Connection conn, Long aid) {
+    public synchronized Video selectVideoByAid(Connection conn, Long aid) {
         String sql = "select * from video where bili_aid= ?";
         List<Video> videos = new ArrayList<>();
         try {
@@ -371,6 +420,9 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
                 video.setTimes(rs.getString("times"));
                 video.setBananas(rs.getLong("bananas"));
                 video.setComments(rs.getLong("comments"));
+                video.setBadgepay(rs.getInt("badgepay"));
+                video.setPts(rs.getLong("pts"));
+                video.setReview(rs.getLong("review"));
                 VideoAuthor author = new VideoAuthor();
                 author.setId(rs.getLong("videoAuthor"));
                 video.setAuthor(author);
@@ -397,7 +449,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
      * @param video
      * @return
      */
-    public boolean updateVideo(Connection conn, Video video) {
+    public synchronized boolean updateVideo(Connection conn, Video video) {
         try {
             Long aid = video.getBiliBili_aid();
             Video origin = selectVideoByAid(ConnectionManager.getConnection(), aid);
@@ -437,9 +489,12 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
             video.setLocation(video.getLocation() != null ? video.getLocation() : origin.getLocation());
             video.setCreateDate(video.getCreateDate() != null ? video.getCreateDate() : origin.getCreateDate());
             video.setStyle(video.getStyle() != null ? video.getStyle() : origin.getStyle());
+            video.setBadgepay(video.getBadgepay() > 0 ? video.getBadgepay() : origin.getBadgepay());
+            video.setReview(video.getReview() > 0 ? video.getReview() : origin.getReview());
+            video.setPts(video.getPts() > 0 ? video.getPts() : origin.getPts());
             String sql = "update video set bili_aid=?,biliBili_rid=?,biliBili_mid=?,biliBili_videos=?,biliBili_copyright=?,state=?,attribute=?" +
                     ",duration=?,now_rank=?,his_rank=?,rights=?,description=?,ctime=?,pubdate=?,dynamic=?,likes=?,share=?,coin=?,favorite=?," +
-                    "replay=?,href=?,title=?,logo=?,upMan=?,views=?,masks=?,times=?,bananas=?,comments=?,videoAuthor=?,location=?,createDate=?,type=? where" +
+                    "replay=?,href=?,title=?,logo=?,upMan=?,views=?,masks=?,times=?,bananas=?,comments=?,videoAuthor=?,location=?,createDate=?,type=?,badgepay=?,review=?,pts=? where" +
                     " id=?";
             PreparedStatement pstmt;
             pstmt = conn.prepareStatement(sql);
@@ -477,6 +532,9 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
             pstmt.setDate(32, new Date(video.getCreateDate().getTime()));
             pstmt.setLong(33, video.getStyle() != null ? video.getStyle().getId() : null);
             pstmt.setLong(34, video.getId() != null ? video.getId() : origin.getId());
+            pstmt.setInt(35, video.getBadgepay());
+            pstmt.setLong(36, video.getReview());
+            pstmt.setLong(37, video.getPts());
             int columns = pstmt.executeUpdate();
             if (columns <= 0) {
                 return false;
@@ -500,7 +558,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
      * @return
      */
     @Override
-    public Long insertAuthor(Connection conn, VideoAuthor author) {
+    public synchronized Long insertAuthor(Connection conn, VideoAuthor author) {
         try {
             String column = "biliBili_mid,name,indexHref,signature,videoCount,attentionCount,audienceCount,logo,createDate";
             String values = "?,?,?,?,?,?,?,?,?";
@@ -546,7 +604,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
      * @return
      */
     @Override
-    public VideoAuthor selectAuthorByMid(Connection conn, Long mid) {
+    public synchronized VideoAuthor selectAuthorByMid(Connection conn, Long mid) {
         String sql = "select * from video_author where biliBili_mid= ?";
         List<VideoAuthor> authors = new ArrayList<>();
         try {
@@ -584,7 +642,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
      * @return
      */
     @Override
-    public Style selectVideoTypeByRid(Connection conn, Long rid) {
+    public synchronized Style selectVideoTypeByRid(Connection conn, Long rid) {
         String sql = "select * from style where biliBili_rid= ?";
         List<Style> types = new ArrayList<>();
         try {
@@ -637,7 +695,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
      * @param rid
      * @return
      */
-    public Long selectVideoTypeIdByRid(Connection conn, Long rid) {
+    public synchronized Long selectVideoTypeIdByRid(Connection conn, Long rid) {
         String sql = "select id from style where biliBili_rid=?";
         PreparedStatement pstmt;
         try {
@@ -672,7 +730,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
      * @param mid
      * @return
      */
-    public Long selectAuthorIdByMid(Connection conn, Long mid) {
+    public synchronized Long selectAuthorIdByMid(Connection conn, Long mid) {
         String sql = "select id from video_author where biliBili_mid=?";
         PreparedStatement pstmt;
         try {
@@ -697,7 +755,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
      * @return
      */
     @Override
-    public Long updateVideoType(Connection conn, Style type) {
+    public synchronized Long updateVideoType(Connection conn, Style type) {
         Long rid = type.getBiliBili_rid();
         Style origin = selectVideoTypeByRid(ConnectionManager.getConnection(), rid);
         if (origin == null) {

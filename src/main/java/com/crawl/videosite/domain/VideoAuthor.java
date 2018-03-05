@@ -11,7 +11,7 @@ public class VideoAuthor extends BaseEntity implements Serializable {
 	/**
 	 * b站作者id
 	 */
-	private Long biliBili_mid;
+	private Long biliBili_mid=-1l;
 	/**
 	 * 作者名称
 	 */

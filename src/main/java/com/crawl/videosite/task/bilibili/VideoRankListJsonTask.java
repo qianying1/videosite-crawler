@@ -9,6 +9,7 @@ import com.crawl.videosite.parser.bilibili.VideoRankListJsonParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,26 +30,6 @@ public class VideoRankListJsonTask extends AbstractVideoRankListTask {
      */
     public static Long rid = 0l;
     /**
-     * 视频大类型(属于假设)
-     */
-    public static Long original = 0l;
-    /**
-     * original最大值为8
-     */
-    private static final Integer MAXORIGINAL = 8;
-    /**
-     * 数据量
-     */
-    private static Integer count = 0;
-    /**
-     * 页面大小
-     */
-    private Integer ps = 50;
-    /**
-     * 页码
-     */
-    public static Integer pn = 1;
-    /**
      * 视频列表分析器
      */
     private AbstractVideoRankListParser videoListParser;
@@ -57,7 +38,7 @@ public class VideoRankListJsonTask extends AbstractVideoRankListTask {
         super(target);
     }
 
-    public VideoRankListJsonTask(Long rid, Long original, Integer pn) {
+    public VideoRankListJsonTask(Long rid) {
         super(getTargetUrl(BiliBiliParams.rankDomain, rid));
         this.target = getTargetUrl(BiliBiliParams.rankDomain, rid);
         videoListParser = new VideoRankListJsonParser();
@@ -81,24 +62,11 @@ public class VideoRankListJsonTask extends AbstractVideoRankListTask {
         } else {
             videoListParser.parseJson(jsonObject, rid);
         }
-        rid++;
+        if (getEmptyCount() > MAXEMPTYCOUNT) {
+            setEmptyCount(0);
+            rid = 1l;
+        }
         setTargetUrl(getTargetUrl(targetDomain, rid));
-    }
-
-    public Integer getPs() {
-        return ps;
-    }
-
-    public void setPs(Integer ps) {
-        this.ps = ps;
-    }
-
-    public Integer getPn() {
-        return pn;
-    }
-
-    public void setPn(Integer pn) {
-        this.pn = pn;
     }
 
     public String getTarget() {

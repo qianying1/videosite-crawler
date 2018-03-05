@@ -11,23 +11,23 @@ public class Video extends BaseEntity implements Serializable {
     /**
      * b站视频id
      */
-    private Long biliBili_aid;
+    private Long biliBili_aid = -1l;
     /**
      * b站作者id
      */
-    private Long biliBili_mid;
+    private Long biliBili_mid = -1l;
     /**
      * b站视频分类id
      */
-    private Long biliBili_rid;
+    private Long biliBili_rid = -1l;
     /**
      * b站的videos属性
      */
-    private Integer biliBili_videos=-1;
+    private Integer biliBili_videos = -1;
     /**
      * b站的copyright属性
      */
-    private Integer biliBili_copyright=-1;
+    private Integer biliBili_copyright = -1;
     /**
      * 指向的链接
      */
@@ -51,35 +51,35 @@ public class Video extends BaseEntity implements Serializable {
     /**
      * 评论次数
      */
-    private Long review=0l;
+    private Long review = 0l;
     /**
      * 播放次数
      */
-    private Long views=0l;
+    private Long views = 0l;
     /**
      * 评论回复数量
      */
-    private Long replay=0l;
+    private Long replay = 0l;
     /**
      * 视频收藏数量
      */
-    private Long favorite=0l;
+    private Long favorite = 0l;
     /**
      * 视频投币数量
      */
-    private Long coin=0l;
+    private Long coin = 0l;
     /**
      * 视频分享数量
      */
-    private Long share=0l;
+    private Long share = 0l;
     /**
      * b站中不知道是什么的东西
      */
-    private Long pts=0l;
+    private Long pts = 0l;
     /**
      * 视频喜欢数量
      */
-    private Long like=0l;
+    private Long like = 0l;
     /**
      * 视频动态
      */
@@ -87,7 +87,7 @@ public class Video extends BaseEntity implements Serializable {
     /**
      * 弹幕数量
      */
-    private Long masks=0l;
+    private Long masks = 0l;
     /**
      * 视频长度
      */
@@ -95,11 +95,11 @@ public class Video extends BaseEntity implements Serializable {
     /**
      * 投蕉数
      */
-    private Long bananas=0l;
+    private Long bananas = 0l;
     /**
      * 视频评论数量
      */
-    private Long comments=0l;
+    private Long comments = 0l;
 
     /**
      * 视频作者
@@ -129,19 +129,19 @@ public class Video extends BaseEntity implements Serializable {
     /**
      * b站中的不知道是什么的东西（状况，资格）
      */
-    private Integer state=0;
+    private Integer state = 0;
     /**
      * b站中的不知道是什么的东西（属性，贡献）
      */
-    private Long attribute=0l;
+    private Long attribute = 0l;
     /**
      * b站中不知道是什么的东西(badge象征，徽章，标志)
      */
-    private Integer badgepay=0;
+    private Integer badgepay = 0;
     /**
      * 时间(按分钟计算)
      */
-    private Integer duration=0;
+    private Integer duration = 0;
     /**
      * 权限(json存储)
      */
@@ -149,11 +149,11 @@ public class Video extends BaseEntity implements Serializable {
     /**
      * 现在等级
      */
-    private Integer now_rank=0;
+    private Integer now_rank = 0;
     /**
      * 历史等级
      */
-    private Integer his_rank=0;
+    private Integer his_rank = 0;
 
 
     public Long getBiliBili_mid() {

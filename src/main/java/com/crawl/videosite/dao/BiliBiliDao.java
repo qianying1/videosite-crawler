@@ -76,6 +76,12 @@ public interface BiliBiliDao extends Dao {
      */
     boolean updateVideo(Connection conn,Video video);
 
+    /**
+     * 更新视频作者数据
+     *
+     * @param author
+     * @return
+     */
     Long updateAuthor(VideoAuthor author);
 
     /**
@@ -107,6 +113,22 @@ public interface BiliBiliDao extends Dao {
      * @return
      */
     Long updateVideoType(Style type);
+
+    /**
+     * 通过视屏类型名称判断是否存在视频类型
+     *
+     * @param typeName
+     * @return
+     */
+    boolean isExistVideoTypeByName(String typeName);
+
+    /**
+     * 通过视频类型名称获取视频类型的id
+     *
+     * @param typeName
+     * @return
+     */
+    Long selectVideoTypeIdByName(String typeName);
 
     /**
      * 通过视频类型rid获取视频类型id

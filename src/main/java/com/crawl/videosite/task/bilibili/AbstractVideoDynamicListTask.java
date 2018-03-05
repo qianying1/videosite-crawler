@@ -69,7 +69,7 @@ public abstract class AbstractVideoDynamicListTask implements Runnable {
                 persistence.setBiliBili_aid(0l);
                 persistence.setBiliBili_day(1);
                 persistence.setBiliBili_mid(0l);
-                HttpClientUtil.serializeObject(persistence, Config.biliBiliDataSerialPath);
+                HttpClientUtil.serializeObject(persistence, Config.biliBiliDynamicVideoDataSerialPath);
                 crawlerCount = 0;
             }
             /*if (crawlerCountToSleep>=5000){
@@ -113,6 +113,11 @@ public abstract class AbstractVideoDynamicListTask implements Runnable {
                     continue;
                 }
             }
+            if (StringUtils.isBlank(result)) {
+                logger.info("爬取目标链接地址时返回的数据为空: " + targetUrl);
+                emptyCount++;
+                continue;
+            }
             Map<String, Object> jsonData = (Map<String, Object>) JSON.parse(result);
             if (jsonData.isEmpty() || Integer.valueOf(jsonData.get("code").toString()) != 0) {
                 logger.warn("running fail to catch data from url: " + targetUrl);
@@ -126,7 +131,7 @@ public abstract class AbstractVideoDynamicListTask implements Runnable {
 //                Thread.sleep(2000);
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                logger.error("当前爬取目标地址时线程被中断: "+getTargetUrl(), e);
+                logger.error("当前爬取目标地址时线程被中断: " + getTargetUrl(), e);
             }
         }
     }

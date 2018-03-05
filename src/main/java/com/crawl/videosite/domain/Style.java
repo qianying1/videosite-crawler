@@ -10,7 +10,7 @@ public class Style extends BaseEntity implements Serializable {
 	/**
 	 * b站视频分类id
 	 */
-	private Long biliBili_rid;
+	private Long biliBili_rid=-1l;
 	/**
 	 * 分类名称
 	 */

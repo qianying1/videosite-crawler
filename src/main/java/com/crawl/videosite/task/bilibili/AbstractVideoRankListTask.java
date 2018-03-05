@@ -5,9 +5,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.crawl.core.util.Config;
 import com.crawl.core.util.HttpClientUtil;
 import com.crawl.core.util.JsoupUtil;
+import com.crawl.proxy.ProxyPool;
+import com.crawl.proxy.entity.Direct;
+import com.crawl.proxy.entity.Proxy;
 import com.crawl.videosite.BiliBiliHttpClient;
 import com.crawl.videosite.entity.VideoSiteDynamicPersistence;
+import com.crawl.videosite.entity.VideoSiteRankPersistence;
 import com.sun.istack.internal.NotNull;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +38,14 @@ public abstract class AbstractVideoRankListTask implements Runnable {
      */
     private static Integer crawlerCount = 0;
     /**
+     * 当前线程使用的代理
+     */
+    protected Proxy currentProxy;
+    /**
+     * 爬取次数
+     */
+    private static Integer crawlerCountToSleep = 0;
+    /**
      * 返回空数据的最大次数不超过100次
      */
     protected static final Integer MAXEMPTYCOUNT = 100;
@@ -48,30 +61,62 @@ public abstract class AbstractVideoRankListTask implements Runnable {
     public void run() {
         while (true) {
             crawlerCount++;
+            crawlerCountToSleep++;
             if (crawlerCount > 1000) {
-                /*VideoSiteDynamicPersistence persistence = new VideoSiteDynamicPersistence();
-                persistence.setBiliBili_original(VideoDynamicListJsonTask.original);
-                persistence.setBiliBili_pn(VideoDynamicListJsonTask.pn);
+                VideoSiteRankPersistence persistence = new VideoSiteRankPersistence();
                 persistence.setBiliBili_rid(VideoDynamicListJsonTask.rid);
                 persistence.setBiliBili_aid(0l);
                 persistence.setBiliBili_day(1);
                 persistence.setBiliBili_mid(0l);
-                HttpClientUtil.serializeObject(persistence, Config.biliBiliDataSerialPath);*/
+                HttpClientUtil.serializeObject(persistence, Config.biliBiliDynamicVideoDataSerialPath);
+                crawlerCount = 0;
             }
+            /*if (crawlerCountToSleep>=5000){
+                //每爬取5000次就休息30分钟
+                try {
+                    Thread.sleep(1000*60*30);
+                }catch (InterruptedException e){
+                    logger.error("当前线程被中断执行",e);
+                }
+            }*/
             if (emptyCount > MAXEMPTYCOUNT) {
                 emptyCount = 0;
                 VideoDynamicListJsonTask.rid = 0l;
             }
             String result;
             try {
-                result = JsoupUtil.getJsonFromApi(getTargetUrl());
+                if (Config.bilibiliIsProxy) {
+                    currentProxy = ProxyPool.biliBiliProxyQueue.take();
+                    if (!(currentProxy instanceof Direct)) {
+                        result = JsoupUtil.getJsonFromApiByProxy(getTargetUrl(), currentProxy.getIp(), currentProxy.getPort());
+                    } else {
+                        result = JsoupUtil.getJsonFromApi(getTargetUrl());
+                    }
+                    if (StringUtils.isBlank(result)) {
+                        result = JsoupUtil.getJsonFromApi(getTargetUrl());
+                    }
+                } else {
+                    result = JsoupUtil.getJsonFromApi(getTargetUrl());
+                }
             } catch (IOException e) {
-                logger.error("running fail to catch json data from url: " + getTargetUrl(), e);
-                break;
+                logger.warn("正在爬取目标链接时产生io读写错误: " + getTargetUrl());
+                continue;
+            } catch (InterruptedException e) {
+                logger.error("当前代理线程已被中断: " + getTargetUrl(), e);
+                try {
+                    result = JsoupUtil.getJsonFromApi(getTargetUrl());
+                } catch (IOException e1) {
+                    logger.error("从链接获取json数据失败: " + getTargetUrl(), e1);
+                    continue;
+                }
+            }
+            if (StringUtils.isBlank(result)) {
+                logger.info("爬取目标链接地址时返回的数据为空: " + targetUrl);
+                emptyCount++;
+                continue;
             }
             Map<String, Object> jsonData = (Map<String, Object>) JSON.parse(result);
             if (jsonData.isEmpty() || Integer.valueOf(jsonData.get("code").toString()) != 0) {
-                VideoDynamicListJsonTask.rid++;
                 logger.warn("running fail to catch data from url: " + targetUrl);
                 emptyCount++;
             } else {
@@ -80,9 +125,10 @@ public abstract class AbstractVideoRankListTask implements Runnable {
             JSONObject jsonObject = JSON.parseObject(result);
             handle(jsonObject);
             try {
+//                Thread.sleep(2000);
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                logger.error("InterruptedException", e);
+                logger.error("当前爬取目标地址时线程被中断: " + getTargetUrl(), e);
             }
         }
     }
