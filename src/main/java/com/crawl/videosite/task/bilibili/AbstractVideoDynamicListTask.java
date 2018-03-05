@@ -102,7 +102,7 @@ public abstract class AbstractVideoDynamicListTask implements Runnable {
                     result = JsoupUtil.getJsonFromApi(getTargetUrl());
                 }
             } catch (IOException e) {
-                logger.error("running fail to catch json data from url: " + getTargetUrl(), e);
+                logger.warn("正在爬取目标链接时产生io读写错误: " + getTargetUrl());
                 continue;
             } catch (InterruptedException e) {
                 logger.error("当前代理线程已被中断: " + getTargetUrl(), e);
@@ -126,7 +126,7 @@ public abstract class AbstractVideoDynamicListTask implements Runnable {
 //                Thread.sleep(2000);
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                logger.error("InterruptedException", e);
+                logger.error("当前爬取目标地址时线程被中断: "+getTargetUrl(), e);
             }
         }
     }
