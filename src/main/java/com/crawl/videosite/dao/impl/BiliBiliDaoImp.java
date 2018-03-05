@@ -161,8 +161,8 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
             }*/
             String column = "bili_aid,biliBili_rid,biliBili_mid,biliBili_videos,biliBili_copyright,state," +
                     "attribute,duration,now_rank,his_rank,rights,description,ctime,pubdate,dynamic,likes,share,coin,favorite," +
-                    "replay,href,title,logo,upMan,views,masks,times,bananas,comments,videoAuthor,location,createDate,type,subtitle,badgepay,pts";
-            String values = "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
+                    "replay,href,title,logo,upMan,views,masks,times,bananas,comments,videoAuthor,location,createDate,type,subtitle,badgepay,pts,review";
+            String values = "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
             String sql = "insert into video (" + column + ") values(" + values + ")";
             PreparedStatement pstmt;
             pstmt = conn.prepareStatement(sql);
@@ -203,6 +203,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
             pstmt.setString(34, (video.getSubtitle() != null ? video.getSubtitle() : ""));
             pstmt.setInt(35, (video.getBadgepay() != null ? video.getBadgepay() : -1));
             pstmt.setLong(36, (video.getPts() != null ? video.getPts() : -1));
+            pstmt.setLong(37, video.getReview() != null ? video.getReview() : -1);
             pstmt.executeUpdate();
             ResultSet rs = pstmt.getGeneratedKeys();
             Long id = -1l;
