@@ -24,7 +24,7 @@ public class BiliBiliParams {
     /**
      * 新视频列表api
      */
-    public static final String newListDomain="https://api.bilibili.com/x/web-interface/newlist?rid=20&type=0&pn=1&ps=20&jsonp=jsonp&_=1519996521648";
+    public static final String newListDomain="https://api.bilibili.com/x/web-interface/newlist?jsonp=jsonp";
     /**
      * 在线用户统计api
      */

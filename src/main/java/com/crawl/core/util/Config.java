@@ -1165,6 +1165,10 @@ public class Config {
      * b站序列化等级视频数据保存路径
      */
     public static String biliBiliRankVideoDataSerialPath;
+    /**
+     * b站新视频列表数据保存路径
+     */
+    public static String biliBiliNewVideoDataSerialPath;
 
     static {
         Properties p = new Properties();
@@ -1416,6 +1420,7 @@ public class Config {
 
         biliBiliDynamicVideoDataSerialPath=p.getProperty("biliBiliDynamicVideoDataSerialPath");
         biliBiliRankVideoDataSerialPath=p.getProperty("biliBiliRankVideoDataSerialPath");
+        biliBiliNewVideoDataSerialPath=p.getProperty("biliBiliNewVideoDataSerialPath");
         if (dbEnable) {
             dbName = p.getProperty("db.name");
             dbHost = p.getProperty("db.host");

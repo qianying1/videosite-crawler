@@ -10,10 +10,7 @@ import com.crawl.core.util.ThreadPoolMonitor;
 import com.crawl.proxy.BiliBiliProxyHttpClient;
 import com.crawl.videosite.entity.VideoSiteDynamicPersistence;
 import com.crawl.videosite.entity.VideoSiteRankPersistence;
-import com.crawl.videosite.task.bilibili.BiliBiliDetailListPageTask;
-import com.crawl.videosite.task.bilibili.BiliBiliDetailPageTask;
-import com.crawl.videosite.task.bilibili.VideoDynamicListJsonTask;
-import com.crawl.videosite.task.bilibili.VideoRankListJsonTask;
+import com.crawl.videosite.task.bilibili.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -142,6 +139,9 @@ public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
         dynamicVideoCrawler();
         //等级视频列表
         rankVideoCrawler();
+        //新视频列表
+        newVideoListCrawler();
+
         manageHttpClient();
     }
 
@@ -178,6 +178,24 @@ public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
             detailListPageThreadPool.execute(new VideoRankListJsonTask(persistence.getBiliBili_rid()));
         } else {
             detailListPageThreadPool.execute(new VideoRankListJsonTask(1l));
+        }
+    }
+
+    /**
+     * 爬取新视频列表api
+     */
+    private void newVideoListCrawler() {
+        VideoSiteRankPersistence persistence = null;
+        try {
+            persistence = (VideoSiteRankPersistence) HttpClientUtil.deserializeObject(Config.biliBiliNewVideoDataSerialPath);
+        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
+            logger.error("fail to deserialize object from url: " + Config.biliBiliNewVideoDataSerialPath, e);
+        }
+        if (persistence != null) {
+            detailListPageThreadPool.execute(new VideoNewVideoListJsonTask(persistence.getBiliBili_rid()));
+        } else {
+            detailListPageThreadPool.execute(new VideoNewVideoListJsonTask(1l));
         }
     }
 
