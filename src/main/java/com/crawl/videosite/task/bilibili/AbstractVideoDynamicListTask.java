@@ -5,9 +5,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.crawl.core.util.Config;
 import com.crawl.core.util.HttpClientUtil;
 import com.crawl.core.util.JsoupUtil;
+import com.crawl.proxy.ProxyPool;
+import com.crawl.proxy.entity.Direct;
+import com.crawl.proxy.entity.Proxy;
 import com.crawl.videosite.BiliBiliHttpClient;
 import com.crawl.videosite.entity.VideoSiteDynamicPersistence;
 import com.sun.istack.internal.NotNull;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +36,10 @@ public abstract class AbstractVideoDynamicListTask implements Runnable {
      * 爬取次数
      */
     private static Integer crawlerCount = 0;
+    /**
+     * 当前线程使用的代理
+     */
+    protected Proxy currentProxy;
     /**
      * 爬取次数
      */
@@ -62,16 +70,16 @@ public abstract class AbstractVideoDynamicListTask implements Runnable {
                 persistence.setBiliBili_day(1);
                 persistence.setBiliBili_mid(0l);
                 HttpClientUtil.serializeObject(persistence, Config.biliBiliDataSerialPath);
-                crawlerCount=0;
+                crawlerCount = 0;
             }
-            if (crawlerCountToSleep>=5000){
+            /*if (crawlerCountToSleep>=5000){
                 //每爬取5000次就休息30分钟
                 try {
                     Thread.sleep(1000*60*30);
                 }catch (InterruptedException e){
                     logger.error("当前线程被中断执行",e);
                 }
-            }
+            }*/
             if (emptyCount > MAXEMPTYCOUNT) {
                 emptyCount = 0;
                 VideoDynamicListJsonTask.rid = 0l;
@@ -80,10 +88,30 @@ public abstract class AbstractVideoDynamicListTask implements Runnable {
             }
             String result;
             try {
-                result = JsoupUtil.getJsonFromApi(getTargetUrl());
+                if (Config.bilibiliIsProxy) {
+                    currentProxy = ProxyPool.biliBiliProxyQueue.take();
+                    if (!(currentProxy instanceof Direct)) {
+                        result = JsoupUtil.getJsonFromApiByProxy(getTargetUrl(), currentProxy.getIp(), currentProxy.getPort());
+                    } else {
+                        result = JsoupUtil.getJsonFromApi(getTargetUrl());
+                    }
+                    if (StringUtils.isBlank(result)) {
+                        result = JsoupUtil.getJsonFromApi(getTargetUrl());
+                    }
+                } else {
+                    result = JsoupUtil.getJsonFromApi(getTargetUrl());
+                }
             } catch (IOException e) {
                 logger.error("running fail to catch json data from url: " + getTargetUrl(), e);
-                break;
+                continue;
+            } catch (InterruptedException e) {
+                logger.error("当前代理线程已被中断: " + getTargetUrl(), e);
+                try {
+                    result = JsoupUtil.getJsonFromApi(getTargetUrl());
+                } catch (IOException e1) {
+                    logger.error("从链接获取json数据失败: " + getTargetUrl(), e1);
+                    continue;
+                }
             }
             Map<String, Object> jsonData = (Map<String, Object>) JSON.parse(result);
             if (jsonData.isEmpty() || Integer.valueOf(jsonData.get("code").toString()) != 0) {
@@ -95,7 +123,8 @@ public abstract class AbstractVideoDynamicListTask implements Runnable {
             JSONObject jsonObject = JSON.parseObject(result);
             handle(jsonObject);
             try {
-                Thread.sleep(2000);
+//                Thread.sleep(2000);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 logger.error("InterruptedException", e);
             }

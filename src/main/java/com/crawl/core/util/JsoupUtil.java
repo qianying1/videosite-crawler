@@ -1,6 +1,5 @@
 package com.crawl.core.util;
 
-import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -11,8 +10,11 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.URL;
 import java.util.Map;
 import java.util.Random;
@@ -52,8 +54,40 @@ public class JsoupUtil {
                 .ignoreContentType(true)
                 .header("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:48.0) Gecko/20100101 Firefox/48.0")
                 .timeout(10000).get();
+        logger.info("正在直连爬取========: " + url);
         Element body = doc.body();
         return body.text();
+    }
+
+    /**
+     * 通过代理进行数据爬取
+     *
+     * @param href
+     * @param ip
+     * @param port
+     * @return
+     */
+    public static String getJsonFromApiByProxy(String href, String ip, int port) {
+        logger.info("正在使用代理爬取========: " + href);
+        try {
+            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(ip, port));
+            URL url = new URL(href);
+            HttpsURLConnection urlcon = (HttpsURLConnection) url.openConnection(proxy);
+            //获取连接
+            urlcon.connect();
+            InputStream is = urlcon.getInputStream();
+            BufferedReader buffer = new BufferedReader(new InputStreamReader(is));
+            StringBuffer bs = new StringBuffer();
+            String line = null;
+            while ((line = buffer.readLine()) != null) {
+                bs.append(line);
+            }
+            Document doc = Jsoup.parse(bs.toString());
+            return doc.body().text();
+        } catch (IOException e) {
+            logger.warn("爬取目标数据时产生io读写错误: " + href);
+            return "";
+        }
     }
 
     /**

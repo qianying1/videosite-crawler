@@ -74,6 +74,8 @@ public class VideoDynamicListJsonTask extends AbstractVideoDynamicListTask {
         if (Integer.valueOf(jsonObject.get("code").toString()) != 0) {
             logger.warn("fail to catch json data from url: " + this.target);
             rid++;
+            setPn(1);
+            setPs(50);
             setTargetUrl(getTargetUrl(targetDomain, rid, original, getPs(), getPn()));
             return;
         } else {
