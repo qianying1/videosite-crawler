@@ -3,7 +3,6 @@ package com.crawl.videosite.parser.bilibili.api;
 import com.alibaba.fastjson.JSONObject;
 import com.crawl.videosite.dao.BiliBiliDao;
 import com.crawl.videosite.dao.impl.BiliBiliDaoImp;
-import com.sun.istack.internal.NotNull;
 
 /**
  * 视频列表json数据任务
@@ -25,7 +24,7 @@ public abstract class AbstractNewVideoListParser {
      * @param pn
      * @return
      */
-    protected static String getTargetUrl(@NotNull String domain, @NotNull Long rid, Integer ps, Integer pn) {
+    protected static String getTargetUrl(String domain,Long rid, Integer ps, Integer pn) {
         if (ps == null) {
             ps = 50;
         }
@@ -41,5 +40,5 @@ public abstract class AbstractNewVideoListParser {
      * @param jsonObject
      * @param rid
      */
-    public abstract void parseJson(JSONObject jsonObject, Long rid);
+    public abstract void parseJson(JSONObject jsonObject, Long rid, Long original);
 }

@@ -42,6 +42,7 @@ public class VideoRankListJsonParser extends AbstractVideoRankListParser {
     public void parseJson(JSONObject jsonObject, Long rid) {
         if (jsonObject == null || jsonObject.isEmpty())
             return;
+        logger.info("开始分析等级视频列表数据>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         System.out.println(jsonObject);
         List<Map<String, Object>> archives = (List) jsonObject.get("data");
         for (Map<String, Object> archive : archives) {
@@ -72,6 +73,7 @@ public class VideoRankListJsonParser extends AbstractVideoRankListParser {
         video.setViews(Long.valueOf(archive.get("play").toString()));
         video.setComments(Long.valueOf(archive.get("video_review").toString()));
         video.setReplay(Long.valueOf(archive.get("review").toString()));
+        video.setReview(Long.valueOf(archive.get("review").toString()));
         video.setFavorite(Long.valueOf(archive.get("favorites").toString()));
         video.setBiliBili_mid(Long.valueOf(archive.get("mid").toString()));
         author.setBiliBili_mid(Long.valueOf(archive.get("mid").toString()));

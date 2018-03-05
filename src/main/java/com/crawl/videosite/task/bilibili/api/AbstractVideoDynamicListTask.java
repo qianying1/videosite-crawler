@@ -10,7 +10,6 @@ import com.crawl.proxy.entity.Direct;
 import com.crawl.proxy.entity.Proxy;
 import com.crawl.videosite.BiliBiliHttpClient;
 import com.crawl.videosite.entity.VideoSiteDynamicPersistence;
-import com.sun.istack.internal.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -152,7 +151,7 @@ public abstract class AbstractVideoDynamicListTask implements Runnable {
      * @param pn
      * @return
      */
-    protected static String getTargetUrl(@NotNull String domain, @NotNull Long rid, Long original, Integer ps, Integer pn) {
+    protected static String getTargetUrl(String domain,Long rid, Long original, Integer ps, Integer pn) {
         if (ps == null) {
             ps = 50;
         }

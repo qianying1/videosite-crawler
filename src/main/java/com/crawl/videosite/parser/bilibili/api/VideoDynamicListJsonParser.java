@@ -42,14 +42,10 @@ public class VideoDynamicListJsonParser extends AbstractVideoDynamicListParser {
     public void parseJson(JSONObject jsonObject, Long rid, Long original) {
         if (jsonObject == null || jsonObject.isEmpty())
             return;
+        logger.info("开始分析动态视频列表数据>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         System.out.println(jsonObject);
         Map<String, Object> data = (Map<String, Object>) jsonObject.get("data");
-        Map<String, Object> page = (Map<String, Object>) data.get("page");
         List<Map<String, Object>> archives = (List<Map<String, Object>>) data.get("archives");
-        VideoSiteDynamicPersistence persistence = new VideoSiteDynamicPersistence();
-        persistence.setBiliBili_pn(Integer.valueOf(page.get("num").toString()));
-        persistence.setBiliBili_rid(rid);
-        persistence.setBiliBili_original(original);
         for (Map<String, Object> archive : archives) {
             if (archive == null || archive.isEmpty())
                 continue;
@@ -98,7 +94,7 @@ public class VideoDynamicListJsonParser extends AbstractVideoDynamicListParser {
         author.setName(owner.get("name").toString());
         author.setLogo(owner.get("face").toString());
         Map<String, Object> stat = (Map<String, Object>) archive.get("stat");
-        video.setViews(Long.valueOf(stat.get("view").toString()));
+        /*video.setViews(Long.valueOf(stat.get("view").toString()));
         video.setMasks(Long.valueOf(stat.get("danmaku").toString()));
         video.setReplay(Long.valueOf(stat.get("reply").toString()));
         video.setFavorite(Long.valueOf(stat.get("favorite").toString()));
@@ -106,7 +102,7 @@ public class VideoDynamicListJsonParser extends AbstractVideoDynamicListParser {
         video.setShare(Long.valueOf(stat.get("share").toString()));
         video.setNow_rank(Integer.valueOf(stat.get("now_rank").toString()));
         video.setHis_rank(Integer.valueOf(stat.get("his_rank").toString()));
-        video.setLike(Long.valueOf(stat.get("like").toString()));
+        video.setLike(Long.valueOf(stat.get("like").toString()));*/
         video.setDynamic(archive.get("dynamic").toString());
         insertType(type, video);
         insertAuthor(author, video);
@@ -140,8 +136,7 @@ public class VideoDynamicListJsonParser extends AbstractVideoDynamicListParser {
         if (Constants.isUpdateVideoType_biliBili) {
             boolean isExsit = dao.isExistVideoType(type.getBiliBili_rid());
             if (!isExsit) {
-//                Long id = dao.insertVideoType(type);
-                Long id = dao.selectVideoTypeIdByRid(type.getBiliBili_rid());
+                Long id = dao.insertVideoType(type);
                 if (id != -1) {
                     type.setId(id);
                     video.setStyle(type);
@@ -149,7 +144,8 @@ public class VideoDynamicListJsonParser extends AbstractVideoDynamicListParser {
                     logger.error("插入视频类型数据失败================: " + type.getStyleName());
                 }
             } else {
-                Long id = dao.updateVideoType(type);
+//                Long id = dao.updateVideoType(type);
+                Long id = dao.selectVideoTypeIdByRid(type.getBiliBili_rid());
                 type.setId(id);
                 video.setStyle(type);
             }

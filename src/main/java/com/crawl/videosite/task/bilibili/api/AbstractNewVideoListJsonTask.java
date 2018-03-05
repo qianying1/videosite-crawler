@@ -9,8 +9,8 @@ import com.crawl.proxy.ProxyPool;
 import com.crawl.proxy.entity.Direct;
 import com.crawl.proxy.entity.Proxy;
 import com.crawl.videosite.BiliBiliHttpClient;
+import com.crawl.videosite.entity.VideoSiteDynamicPersistence;
 import com.crawl.videosite.entity.VideoSiteRankPersistence;
-import com.sun.istack.internal.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,12 +64,14 @@ public abstract class AbstractNewVideoListJsonTask implements Runnable {
             crawlerCount++;
             crawlerCountToSleep++;
             if (crawlerCount > 1000) {
-                VideoSiteRankPersistence persistence = new VideoSiteRankPersistence();
+                VideoSiteDynamicPersistence persistence = new VideoSiteDynamicPersistence();
+                persistence.setBiliBili_original(VideoDynamicListJsonTask.original);
+                persistence.setBiliBili_pn(VideoDynamicListJsonTask.pn);
                 persistence.setBiliBili_rid(VideoDynamicListJsonTask.rid);
                 persistence.setBiliBili_aid(0l);
                 persistence.setBiliBili_day(1);
                 persistence.setBiliBili_mid(0l);
-                HttpClientUtil.serializeObject(persistence, Config.biliBiliRankVideoDataSerialPath);
+                HttpClientUtil.serializeObject(persistence, Config.biliBiliDynamicVideoDataSerialPath);
                 crawlerCount = 0;
             }
             /*if (crawlerCountToSleep>=5000){
@@ -83,6 +85,8 @@ public abstract class AbstractNewVideoListJsonTask implements Runnable {
             if (emptyCount > MAXEMPTYCOUNT) {
                 emptyCount = 0;
                 VideoDynamicListJsonTask.rid = 0l;
+                VideoDynamicListJsonTask.original = 0l;
+                VideoDynamicListJsonTask.pn = 0;
             }
             String result;
             try {
@@ -146,10 +150,18 @@ public abstract class AbstractNewVideoListJsonTask implements Runnable {
      *
      * @param domain
      * @param rid
+     * @param ps
+     * @param pn
      * @return
      */
-    protected static String getTargetUrl(@NotNull String domain, @NotNull Long rid) {
-        return domain + "&rid=" + rid;
+    protected static String getTargetUrl(String domain,Long rid, Long original, Integer ps, Integer pn) {
+        if (ps == null) {
+            ps = 50;
+        }
+        if (pn == null) {
+            pn = 1;
+        }
+        return domain + "&rid=" + rid + "&pn=" + pn + "&ps=" + ps + "&original=" + original;
     }
 
     public String getTargetUrl() {

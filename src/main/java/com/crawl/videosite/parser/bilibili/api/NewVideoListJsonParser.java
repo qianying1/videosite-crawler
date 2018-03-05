@@ -5,7 +5,6 @@ import com.crawl.core.util.Constants;
 import com.crawl.videosite.domain.Style;
 import com.crawl.videosite.domain.Video;
 import com.crawl.videosite.domain.VideoAuthor;
-import org.apache.http.client.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,11 +38,15 @@ public class NewVideoListJsonParser extends AbstractNewVideoListParser {
      * @param jsonObject
      */
     @Override
-    public void parseJson(JSONObject jsonObject, Long rid) {
+    public void parseJson(JSONObject jsonObject, Long rid, Long original) {
         if (jsonObject == null || jsonObject.isEmpty())
             return;
+        logger.info("开始分析新视频列表数据>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         System.out.println(jsonObject);
-        List<Map<String, Object>> archives = (List) jsonObject.get("data");
+        Map<String, Object> data = (Map<String, Object>) jsonObject.get("data");
+        if (data.isEmpty())
+            return;
+        List<Map<String, Object>> archives = (List<Map<String, Object>>) data.get("archives");
         for (Map<String, Object> archive : archives) {
             if (archive == null || archive.isEmpty())
                 continue;
@@ -66,24 +69,42 @@ public class NewVideoListJsonParser extends AbstractNewVideoListParser {
         type.setCreateDate(new Date());
         author.setCreateDate(new Date());
         video.setBiliBili_aid(Long.valueOf(archive.get("aid").toString())); //视频id
-        type.setStyleName(archive.get("typename").toString());
-        video.setTitle(archive.get("title").toString());
-        video.setSubtitle(archive.get("subtitle").toString());
-        video.setViews(Long.valueOf(archive.get("play").toString()));
-        video.setComments(Long.valueOf(archive.get("video_review").toString()));
-        video.setReplay(Long.valueOf(archive.get("review").toString()));
-        video.setFavorite(Long.valueOf(archive.get("favorites").toString()));
-        video.setBiliBili_mid(Long.valueOf(archive.get("mid").toString()));
-        author.setBiliBili_mid(Long.valueOf(archive.get("mid").toString()));
-        author.setName(archive.get("author").toString());
-        video.setDesc(archive.get("description").toString());
-        video.setCtime(DateUtils.parseDate(archive.get("create").toString() + ":00"));
+        video.setBiliBili_videos(Integer.valueOf(archive.get("videos").toString()));
+        video.setBiliBili_rid(Long.valueOf(archive.get("tid").toString())); //视频类型id
+        type.setBiliBili_rid(Long.valueOf(archive.get("tid").toString()));
+        type.setStyleName(archive.get("tname").toString());     //视频类型名称
+        video.setBiliBili_copyright(Integer.valueOf(archive.get("copyright").toString()));
         video.setLogo(archive.get("pic").toString());
-        video.setCoin(Long.valueOf(archive.get("coins").toString()));
-        String[] times = archive.get("duration").toString().split(":");
-        video.setDuration(Integer.valueOf(times[0]) + (Integer.valueOf(times[1]) - 29 >= 0 ? 1 : 0));
-        video.setBadgepay(Boolean.valueOf(archive.get("badgepay").toString()) == false ? 0 : 1);
-        video.setPts(Long.valueOf(archive.get("pts").toString()));
+        video.setTitle(archive.get("title").toString());
+        video.setPubdate(new Date(Long.parseLong(archive.get("pubdate").toString())));
+        video.setCtime(new Date(Long.parseLong(archive.get("ctime").toString())));
+        video.setDesc(archive.get("desc").toString());
+        if (archive.get("state") != null)
+            video.setState(Integer.valueOf(archive.get("state").toString()));
+        else
+            video.setState(0);
+        if (archive.get("attribute") != null)
+            video.setAttribute(Long.valueOf(archive.get("attribute").toString()));
+        else
+            video.setAttribute(0l);
+        video.setDuration(Integer.valueOf(archive.get("duration").toString()));
+        video.setRights(archive.get("rights").toString());
+        Map<String, Object> owner = (Map<String, Object>) archive.get("owner");
+        video.setBiliBili_mid(Long.valueOf(owner.get("mid").toString()));
+        author.setBiliBili_mid(Long.valueOf(owner.get("mid").toString()));
+        author.setName(owner.get("name").toString());
+        author.setLogo(owner.get("face").toString());
+        Map<String, Object> stat = (Map<String, Object>) archive.get("stat");
+        video.setViews(Long.valueOf(stat.get("view").toString()));
+        video.setMasks(Long.valueOf(stat.get("danmaku").toString()));
+        video.setReplay(Long.valueOf(stat.get("reply").toString()));
+        video.setFavorite(Long.valueOf(stat.get("favorite").toString()));
+        video.setCoin(Long.valueOf(stat.get("coin").toString()));
+        video.setShare(Long.valueOf(stat.get("share").toString()));
+        video.setNow_rank(Integer.valueOf(stat.get("now_rank").toString()));
+        video.setHis_rank(Integer.valueOf(stat.get("his_rank").toString()));
+        video.setLike(Long.valueOf(stat.get("like").toString()));
+        video.setDynamic(archive.get("dynamic").toString());
         insertType(type, video);
         insertAuthor(author, video);
         insertVideo(video);
@@ -92,19 +113,19 @@ public class NewVideoListJsonParser extends AbstractNewVideoListParser {
     private void insertVideo(Video video) {
         if (Constants.isUpdateVideo_biliBili) {
             boolean videoExsist = dao.isExistVideo(video.getBiliBili_aid());
-            if (videoExsist)
-                dao.updateVideo(video);
-            else {
+            if (!videoExsist) {
                 Long id = dao.insertVideo(video);
-                if (id != -1) {
+                if (id != -1l) {
                     video.setId(id);
                 } else {
                     logger.error("插入视频数据失败: " + video.getTitle());
                 }
+            } else {
+                dao.updateVideo(video);
             }
         } else {
             Long id = dao.insertVideo(video);
-            if (id != -1) {
+            if (id != -1l) {
                 video.setId(id);
             } else {
                 logger.error("插入视频数据失败: " + video.getTitle());
@@ -114,56 +135,54 @@ public class NewVideoListJsonParser extends AbstractNewVideoListParser {
 
     private void insertType(Style type, Video video) {
         if (Constants.isUpdateVideoType_biliBili) {
-            boolean typeExsist = dao.isExistVideoTypeByName(type.getStyleName());
-            if (typeExsist) {
-                Long id = dao.updateVideoType(type);
-                type.setId(id);
-                video.setStyle(type);
-            } else {
+            boolean isExsit = dao.isExistVideoType(type.getBiliBili_rid());
+            if (!isExsit) {
                 Long id = dao.insertVideoType(type);
                 if (id != -1) {
                     type.setId(id);
                     video.setStyle(type);
                 } else {
-                    logger.error("插入视频类型数据失败===============================: " + type.getStyleName());
+                    logger.error("插入视频类型数据失败================: " + type.getStyleName());
                 }
+            } else {
+//                Long id = dao.updateVideoType(type);
+                Long id = dao.selectVideoTypeIdByRid(type.getBiliBili_rid());
+                type.setId(id);
+                video.setStyle(type);
             }
         } else {
             Long id = dao.insertVideoType(type);
-            if (id != -1l) {
+            if (id != -1) {
                 type.setId(id);
                 video.setStyle(type);
             } else {
-                logger.error("插入视频类型数据失败------------------------: " + type.getStyleName());
+                logger.error("插入视频类型数据失败-------------------------: " + type.getStyleName());
             }
         }
+
     }
 
     private void insertAuthor(VideoAuthor author, Video video) {
         if (Constants.isUpdateVideoAuthor_biliBili) {
             boolean authorExsist = dao.isExistAuthor(author.getBiliBili_mid());
-            if (authorExsist) {
-                Long id = dao.updateAuthor(author);
-                author.setId(id);
-                video.setAuthor(author);
-            } else {
+            if (!authorExsist) {
                 Long id = dao.insertAuthor(author);
-                if (id != -1) {
+                if (id != -1l) {
                     author.setId(id);
                     video.setAuthor(author);
                 } else {
                     logger.error("插入视频作者数据失败: " + author.getName());
                 }
-            }
-        } else {
-            Long id = dao.insertAuthor(author);
-            if (id != -1) {
-                author.setId(id);
-                video.setAuthor(author);
             } else {
-                logger.error("插入视频作者数据失败: " + author.getName());
+//                Long id = dao.updateAuthor(author);
+                Long id = dao.selectAuthorIdByMid(author.getBiliBili_mid());
+                if (id != -1l) {
+                    author.setId(id);
+                }
+                video.setAuthor(author);
             }
         }
+
     }
 
     public Long getRid() {
