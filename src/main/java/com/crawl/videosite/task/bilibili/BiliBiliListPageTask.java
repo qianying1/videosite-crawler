@@ -8,7 +8,7 @@ import com.gargoylesoftware.htmlunit.WebRequest;
 import org.apache.http.client.methods.HttpRequestBase;
 
 /**
- * 知乎用户关注列表页task
+ * 视频网站用户关注列表页task
  * 下载成功解析出用户token，去重,构造用户详情url，获，添加到DetailPageDownloadThreadPool
  */
 public class BiliBiliListPageTask extends BiliBiliAbstractPageTask {

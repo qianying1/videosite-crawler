@@ -10,7 +10,7 @@ import org.jsoup.nodes.Element;
 /**
  * https://www.zhihu.com/people/.../following
  * following页面解析出用户详细信息
- * 2016.12.28 知乎页面全面更新，该解析器不再使用
+ * 2016.12.28 视频网站页面全面更新，该解析器不再使用
  */
 @Deprecated
 public class VideoSiteUserIndexDetailPageParser implements DetailPageParser {

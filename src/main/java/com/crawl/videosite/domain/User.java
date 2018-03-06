@@ -1,7 +1,7 @@
 package com.crawl.videosite.domain;
 
 /**
- * 知乎用户资料
+ * 视频网站用户资料
  */
 public class User {
     //用户名

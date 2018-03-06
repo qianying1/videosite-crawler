@@ -16,7 +16,7 @@ import java.io.IOException;
 
 /**
  * 代理检测task
- * 通过访问知乎首页，能否正确响应
+ * 通过访问视频网站首页，能否正确响应
  * 将可用代理添加到DelayQueue延时队列中
  */
 public class PptvProxyTestTask implements Runnable{

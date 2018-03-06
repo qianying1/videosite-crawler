@@ -1035,11 +1035,11 @@ public class Config {
      */
     public static String verificationCodePath;
     /**
-     * 知乎注册手机号码或有限
+     * 视频网站注册手机号码或有限
      */
     public static String emailOrPhoneNum;
     /**
-     * 知乎密码
+     * 视频网站密码
      */
     public static String password;
     /**

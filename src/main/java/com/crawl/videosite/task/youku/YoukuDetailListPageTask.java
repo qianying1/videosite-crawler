@@ -26,7 +26,7 @@ import static com.crawl.core.util.Constants.USER_FOLLOWEES_URL;
 import static com.crawl.videosite.CommonHttpClient.parseUserCount;
 
 /**
- * 知乎用户列表详情页task
+ * 视频网站用户列表详情页task
  */
 public class YoukuDetailListPageTask extends YoukuAbstractPageTask {
     private static Logger logger = LoggerFactory.getLogger(YoukuDetailListPageTask.class);

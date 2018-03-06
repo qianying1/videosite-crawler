@@ -178,7 +178,7 @@ public class AcfunHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
     }
 
     /**
-     * 管理知乎客户端
+     * 管理视频网站客户端
      * 关闭整个爬虫
      */
     public void manageHttpClient() {

@@ -26,7 +26,7 @@ import static com.crawl.core.util.Constants.USER_FOLLOWEES_URL;
 import static com.crawl.videosite.CommonHttpClient.parseUserCount;
 
 /**
- * 知乎用户列表详情页task
+ * 视频网站用户列表详情页task
  */
 public class TudouDetailListPageTask extends TudouAbstractPageTask {
     private static Logger logger = LoggerFactory.getLogger(TudouDetailListPageTask.class);

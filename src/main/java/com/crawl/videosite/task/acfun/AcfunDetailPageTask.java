@@ -18,7 +18,7 @@ import java.lang.reflect.Proxy;
 import static com.crawl.videosite.CommonHttpClient.parseUserCount;
 
 /**
- * 知乎用户详情页task
+ * 视频网站用户详情页task
  * 下载成功解析出用户信息并添加到数据库，获取该用户的关注用户list url，添加到ListPageDownloadThreadPool
  */
 public class AcfunDetailPageTask extends AcfunAbstractPageTask {

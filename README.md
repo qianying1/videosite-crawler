@@ -2,9 +2,6 @@
 ====
 videosite-crawler是一个基于Java的爬虫实战项目，主要功能是抓取视频网站数据，如果觉得不错，请给个star。
 ## 爬取结果
-* 下图为爬取117w知乎用户数据的简单统计<br>
-![](https://github.com/wycm/zhihu-crawler/blob/2.0/src/main/resources/img/zhihu-charts.png)
-* 详细统计见 https://www.vwycm.cn/zhihu/charts
 
 ## 工程导入(maven)
 * git clone https://github.com/wycm/zhihu-crawler 克隆项目到本地
@@ -72,22 +69,6 @@ DetailPageThreadPool负责下载用户详情页面，解析出用户基本信息
 * 增加代理序列化。
 * 调整项目结构，大幅度提高爬取速度。不再使用ListPageThreadPool和DetailPageThreadPool的方式。直接下载关注列表页，可以直接获取到用户详细资料。
 
-#### 2017.03.30
-* 知乎api变更，关注列表页不能获取到关注人数，导致线程池任务不能持续下去。抓取模式切换成原来ListPageThreadPool和DetailPageThreadPool的方式。
-
-#### 2017.05.26
-* 修复代理返回错误数据，导致java.lang.reflect.UndeclaredThrowableException异常。
-
-#### 2017.11.05
-* 知乎authorization文件更新，修改authorization获取方式。
-## TODO
-* 优化爬取速度
 
 ## 最后
-* 想要爬取其它数据，如问题、答案等，完全可以在此基础上自己定制。
-* 有问题的请提issue。
-* 欢迎贡献代码。
-* 爬虫交流群：633925314，欢迎交流。
-* 需要数据(117w知乎用户基本信息资料)的，关注公众号即可：lwndso<br>
-![](https://github.com/wycm/zhihu-crawler/blob/2.0/src/main/resources/img/wx.jpg)
 

@@ -12,7 +12,7 @@ import java.util.*;
 
 
 /**
- * 模拟登录知乎
+ * 模拟登录视频网站
  */
 public class ModelLogin {
     private static Logger logger = LoggerFactory.getLogger(ModelLogin.class);
@@ -58,14 +58,14 @@ public class ModelLogin {
         }
         JSONObject jo = (JSONObject) JSONValue.parse(loginState);
         if(jo.get("r").toString().equals("0")){
-            logger.info("登录知乎成功");
+            logger.info("登录视频网站成功");
             /**
              * 序列化Cookies
              */
             HttpClientUtil.serializeObject(HttpClientUtil.getCookieStore(), Config.cookiePath);
             return true;
         }else{
-            logger.info("登录知乎失败");
+            logger.info("登录视频网站失败");
             throw new RuntimeException(HttpClientUtil.decodeUnicode(loginState));
         }
     }

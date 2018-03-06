@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 知乎用户列表详情页task
+ * 视频网站用户列表详情页task
  */
 public class BiliBiliDetailListPageTask extends BiliBiliAbstractPageTask {
     private static Logger logger = LoggerFactory.getLogger(BiliBiliDetailListPageTask.class);

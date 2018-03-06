@@ -7,48 +7,45 @@ import com.gargoylesoftware.htmlunit.html.DomNodeList;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.util.Cookie;
-import org.apache.commons.logging.LogFactory;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Set;
-import java.util.logging.Level;
 
 
 public class HtmlUnitTest {
-    public static void main(String[] args){
-        Document doc=null;
-        try{
-            doc =Jsoup.connect(Constants.BILIBILI_INDEX_URL).userAgent(Constants.userAgentArray[11]).timeout(10000).get();
-        }catch (Exception e){
+    public static void main(String[] args) {
+        Document doc = null;
+        try {
+            doc = Jsoup.connect("" + "1").userAgent(Constants.userAgentArray[11]).timeout(10000).get();
+        } catch (Exception e) {
             e.printStackTrace();
         }
         System.out.println(doc);
         System.out.println("jsoup\n\n\n");
-        String  url=Constants.BILIBILI_INDEX_URL;//想采集的网址
-        String refer="http://baidu.com/";
-        URL link=null;
-        try{
-            link=new URL(url);
-        }catch (Exception e){
+        String url = "" + "1";//想采集的网址
+        String refer = "http://baidu.com/";
+        URL link = null;
+        try {
+            link = new URL(url);
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log",    "org.apache.commons.logging.impl.NoOpLog");
+        /*LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log",    "org.apache.commons.logging.impl.NoOpLog");
 
         java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit")
                 .setLevel(Level.OFF);
 
         java.util.logging.Logger.getLogger("org.apache.commons.httpclient")
-                .setLevel(Level.OFF);
-        WebClient wc=new WebClient();
-        WebRequest request=new WebRequest(link);
+                .setLevel(Level.OFF);*/
+        WebClient wc = new WebClient();
+        WebRequest request = new WebRequest(link);
         request.setCharset(Charset.forName("UTF-8"));
         /*request.setProxyHost("120.120.120.x");
         request.setProxyPort(8080);*/
-        request.setAdditionalHeader("Referer", refer);//设置请求报文头里的refer字段
+//        request.setAdditionalHeader("Referer", refer);//设置请求报文头里的refer字段
         ////设置请求报文头里的User-Agent字段
         request.setAdditionalHeader("User-Agent", "Mozilla/5.0 (Windows NT 5.1; rv:6.0.2) Gecko/20100101 Firefox/6.0.2");
         //wc.addRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 5.1; rv:6.0.2) Gecko/20100101 Firefox/6.0.2");
@@ -63,35 +60,26 @@ public class HtmlUnitTest {
         wc.getOptions().setTimeout(10000);
         // 将探出的页面阻塞住, 防止因为自动弹出页面.
         wc.getOptions().setPopupBlockerEnabled(true);
-        //设置cookie。如果你有cookie，可以在这里设置
-        /*Set<Cookie> cookies=null;
-        Iterator<Cookie> i = cookies.iterator();
-        while (i.hasNext())
-        {
-            wc.getCookieManager().addCookie(i.next());
-        }*/
         //准备工作已经做好了
-        HtmlPage page=null;
-        try{
+        HtmlPage page = null;
+        try {
             page = wc.getPage(request);
-        }catch (Exception e){
+        } catch (Exception e) {
 //            e.printStackTrace();
         }
-        if(page==null)
-        {
-            System.out.println("采集 "+url+" 失败!!!");
-            return ;
+        if (page == null) {
+            System.out.println("采集 " + url + " 失败!!!");
+            return;
         }
-        DomElement element=page.getElementsByTagName("body").get(0);
-        DomNodeList<HtmlElement> urlEls=element.getElementsByTagName("a");
-        String content=element.asText();//网页内容保存在content里
-        if(content==null)
-        {
-            System.out.println("采集 "+url+" 失败!!!");
-            return ;
+        DomElement element = page.getElementsByTagName("body").get(0);
+        DomNodeList<HtmlElement> urlEls = element.getElementsByTagName("a");
+        String content = element.asText();//网页内容保存在content里
+        if (content == null) {
+            System.out.println("采集 " + url + " 失败!!!");
+            return;
         }
         System.out.println(content);
-        for (HtmlElement aEl:urlEls){
+        for (HtmlElement aEl : urlEls) {
             System.out.println(aEl.getAttribute("href"));
         }
         //搞定了
