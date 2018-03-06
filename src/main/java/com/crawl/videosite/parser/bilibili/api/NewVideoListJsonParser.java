@@ -5,6 +5,7 @@ import com.crawl.core.util.Constants;
 import com.crawl.videosite.domain.Style;
 import com.crawl.videosite.domain.Video;
 import com.crawl.videosite.domain.VideoAuthor;
+import com.crawl.videosite.parser.bilibili.api.abstra.AbstractNewVideoListParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

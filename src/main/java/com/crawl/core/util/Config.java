@@ -1157,18 +1157,6 @@ public class Config {
      * 是否忽略ssl认证
      */
     public static Boolean sohuUseInsecureSSL;
-    /**
-     * b站序列化动态视频数据保存路径
-     */
-    public static String biliBiliDynamicVideoDataSerialPath;
-    /**
-     * b站序列化等级视频数据保存路径
-     */
-    public static String biliBiliRankVideoDataSerialPath;
-    /**
-     * b站新视频列表数据保存路径
-     */
-    public static String biliBiliNewVideoDataSerialPath;
 
     static {
         Properties p = new Properties();
@@ -1418,9 +1406,6 @@ public class Config {
         youkuCssEnabled = Boolean.valueOf(p.getProperty("youkuCssEnabled"));
         youtubeCssEnabled = Boolean.valueOf(p.getProperty("youtubeCssEnabled"));
 
-        biliBiliDynamicVideoDataSerialPath=p.getProperty("biliBiliDynamicVideoDataSerialPath");
-        biliBiliRankVideoDataSerialPath=p.getProperty("biliBiliRankVideoDataSerialPath");
-        biliBiliNewVideoDataSerialPath=p.getProperty("biliBiliNewVideoDataSerialPath");
         if (dbEnable) {
             dbName = p.getProperty("db.name");
             dbHost = p.getProperty("db.host");

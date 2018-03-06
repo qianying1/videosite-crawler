@@ -191,7 +191,7 @@ public class HttpClientUtil {
      * @param object
      * @throws Exception
      */
-    public static void serializeObject(Object object, String filePath) {
+    public static synchronized void serializeObject(Object object, String filePath) {
         OutputStream fos = null;
         try {
             fos = new FileOutputStream(filePath, false);
@@ -214,7 +214,7 @@ public class HttpClientUtil {
      * @param path
      * @throws Exception
      */
-    public static Object deserializeObject(String path) throws Exception {
+    public static synchronized Object deserializeObject(String path) throws Exception {
 //		InputStream fis = HttpClientUtil.class.getResourceAsStream(name);
         File file = new File(path);
         InputStream fis = new FileInputStream(file);

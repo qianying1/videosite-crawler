@@ -30,9 +30,9 @@ public class BiliBiliParams {
      */
     public static final String onlineDomain = "https://api.bilibili.com/x/web-interface/online?jsonp=jsonp";
     /**
-     * 国产连载api（获取到的是每天更新的数据）
+     * 国产连载api（获取到的是每天更新的数据）?callback=guochuangRankCallback
      */
-    public static final String seasonDomain = "https://bangumi.bilibili.com/jsonp/season_rank_list/cn/3.ver?callback=guochuangRankCallback";
+    public static final String seasonDomain = "https://bangumi.bilibili.com/jsonp/season_rank_list/cn/3.ver";
     /**
      * bangumi全局api（获取到的是每天更新的数据）
      */

@@ -3,16 +3,15 @@ package com.crawl.videosite;
 import com.crawl.Main;
 import com.crawl.core.htmlunit.AbstractHtmlUnit;
 import com.crawl.core.htmlunit.IHtmlUnit;
-import com.crawl.core.util.Config;
-import com.crawl.core.util.HttpClientUtil;
-import com.crawl.core.util.SimpleThreadPoolExecutor;
-import com.crawl.core.util.ThreadPoolMonitor;
+import com.crawl.core.util.*;
 import com.crawl.proxy.BiliBiliProxyHttpClient;
+import com.crawl.videosite.entity.BangumiGuochanPersistence;
 import com.crawl.videosite.entity.VideoSiteDynamicPersistence;
 import com.crawl.videosite.entity.VideoSiteNewVideoPersistence;
 import com.crawl.videosite.entity.VideoSiteRankPersistence;
 import com.crawl.videosite.task.bilibili.BiliBiliDetailListPageTask;
 import com.crawl.videosite.task.bilibili.BiliBiliDetailPageTask;
+import com.crawl.videosite.task.bilibili.api.BangumiGuochanTask;
 import com.crawl.videosite.task.bilibili.api.NewVideoListJsonTask;
 import com.crawl.videosite.task.bilibili.api.VideoDynamicListJsonTask;
 import com.crawl.videosite.task.bilibili.api.VideoRankListJsonTask;
@@ -146,7 +145,9 @@ public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
         rankVideoCrawler();
         //新视频列表
         newVideoListCrawler();
-
+        //---------------------------------------bangumi begin------------------------------------------------------------------//
+//        bangumiGuochangCrawler();
+        //---------------------------------------bangumi end--------------------------------------------------------------------//
         manageHttpClient();
     }
 
@@ -156,10 +157,10 @@ public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
     private void dynamicVideoCrawler() {
         VideoSiteDynamicPersistence persistence = null;
         try {
-            persistence = (VideoSiteDynamicPersistence) HttpClientUtil.deserializeObject(Config.biliBiliDynamicVideoDataSerialPath);
+            persistence = (VideoSiteDynamicPersistence) HttpClientUtil.deserializeObject(Constants.biliBiliDynamicVideoDataSerialPath);
         } catch (FileNotFoundException e) {
         } catch (Exception e) {
-            logger.error("fail to deserialize object from url: " + Config.biliBiliDynamicVideoDataSerialPath, e);
+            logger.error("fail to deserialize object from url: " + Constants.biliBiliDynamicVideoDataSerialPath, e);
         }
         if (persistence != null) {
             detailListPageThreadPool.execute(new VideoDynamicListJsonTask(persistence.getBiliBili_rid(), persistence.getBiliBili_original(), persistence.getBiliBili_pn()));
@@ -174,10 +175,10 @@ public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
     private void rankVideoCrawler() {
         VideoSiteRankPersistence persistence = null;
         try {
-            persistence = (VideoSiteRankPersistence) HttpClientUtil.deserializeObject(Config.biliBiliRankVideoDataSerialPath);
+            persistence = (VideoSiteRankPersistence) HttpClientUtil.deserializeObject(Constants.biliBiliRankVideoDataSerialPath);
         } catch (FileNotFoundException e) {
         } catch (Exception e) {
-            logger.error("fail to deserialize object from url: " + Config.biliBiliRankVideoDataSerialPath, e);
+            logger.error("fail to deserialize object from url: " + Constants.biliBiliRankVideoDataSerialPath, e);
         }
         if (persistence != null) {
             detailListPageThreadPool.execute(new VideoRankListJsonTask(persistence.getBiliBili_rid()));
@@ -192,16 +193,23 @@ public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
     private void newVideoListCrawler() {
         VideoSiteNewVideoPersistence persistence = null;
         try {
-            persistence = (VideoSiteNewVideoPersistence) HttpClientUtil.deserializeObject(Config.biliBiliNewVideoDataSerialPath);
+            persistence = (VideoSiteNewVideoPersistence) HttpClientUtil.deserializeObject(Constants.biliBiliNewVideoDataSerialPath);
         } catch (FileNotFoundException e) {
         } catch (Exception e) {
-            logger.error("fail to deserialize object from url: " + Config.biliBiliNewVideoDataSerialPath, e);
+            logger.error("fail to deserialize object from url: " + Constants.biliBiliNewVideoDataSerialPath, e);
         }
         if (persistence != null) {
             detailListPageThreadPool.execute(new NewVideoListJsonTask(persistence.getBiliBili_rid(), persistence.getBiliBili_original(), persistence.getBiliBili_pn()));
         } else {
             detailListPageThreadPool.execute(new NewVideoListJsonTask(0l, 0l, 1));
         }
+    }
+
+    /**
+     * 国产连载api（获取到的是每天更新的数据）
+     */
+    private void bangumiGuochangCrawler() {
+        detailListPageThreadPool.execute(new BangumiGuochanTask());
     }
 
     /**

@@ -19,6 +19,10 @@ public class Constants {
      */
     public final static boolean isUpdateVideo_biliBili = true;
     /**
+     * b站是否开启更新电视剧
+     */
+    public static final boolean isUpdateTeleplay_biliBili=true;
+    /**
      * 单个ip请求间隔，单位ms
      */
     public final static long TIME_INTERVAL = 1000;
@@ -42,6 +46,19 @@ public class Constants {
     public final static String YOUKU_INDEX_URL = "http://www.youku.com/";
     //youtube首页
     public final static String YOUTUBE_INDEX_URL = "https://www.youtube.com/";
+
+    /**
+     * b站序列化动态视频数据保存路径
+     */
+    public static String biliBiliDynamicVideoDataSerialPath = "src/main/resources/biliBiliDynamicDatas";
+    /**
+     * b站序列化等级视频数据保存路径
+     */
+    public static String biliBiliRankVideoDataSerialPath = "src/main/resources/biliBiliRankDatas";
+    /**
+     * b站新视频列表数据保存路径
+     */
+    public static String biliBiliNewVideoDataSerialPath = "src/main/resources/biliBiliNewDatas";
 
     /**
      * a站名称

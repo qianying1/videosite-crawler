@@ -117,11 +117,11 @@ public class Video extends BaseEntity implements Serializable {
     /**
      * 视频发布时间
      */
-    private Date pubdate;
+    private Date pubdate=new Date();
     /**
      * 视频创建时间
      */
-    private Date ctime;
+    private Date ctime=new Date();
     /**
      * 视频描述
      */

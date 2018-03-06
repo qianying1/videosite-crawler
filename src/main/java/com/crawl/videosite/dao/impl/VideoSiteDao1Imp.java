@@ -3,12 +3,14 @@ package com.crawl.videosite.dao.impl;
 
 import com.crawl.core.dao.ConnectionManager;
 import com.crawl.videosite.dao.VideoSiteDao1;
-import com.crawl.videosite.domain.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Properties;
 
 public class VideoSiteDao1Imp implements VideoSiteDao1 {
@@ -101,6 +103,16 @@ public class VideoSiteDao1Imp implements VideoSiteDao1 {
                 logger.info("websites表创建成功");
             } else {
                 logger.info("websites表已存在");
+            }
+
+            //teleplay
+            rs = cn.getMetaData().getTables(null, null, "createTeleplayTable", null);
+            if (!rs.next()) {
+                //创建analized_message表
+                st.execute(p.getProperty("createTeleplayTable"));
+                logger.info("teleplay表创建成功");
+            } else {
+                logger.info("teleplay表已存在");
             }
 
             rs = cn.getMetaData().getTables(null, null, "user", null);

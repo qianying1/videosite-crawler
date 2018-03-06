@@ -1,4 +1,4 @@
-package com.crawl.videosite.parser.bilibili.api;
+package com.crawl.videosite.parser.bilibili.api.abstra;
 
 import com.alibaba.fastjson.JSONObject;
 import com.crawl.videosite.dao.BiliBiliDao;
@@ -7,11 +7,11 @@ import com.crawl.videosite.dao.impl.BiliBiliDaoImp;
 /**
  * 视频列表json数据任务
  */
-public abstract class AbstractNewVideoListParser {
+public abstract class AbstractVideoDynamicListParser {
 
     protected BiliBiliDao dao;
 
-    protected AbstractNewVideoListParser() {
+    protected AbstractVideoDynamicListParser() {
         dao = new BiliBiliDaoImp();
     }
 
@@ -38,7 +38,6 @@ public abstract class AbstractNewVideoListParser {
      * 分析json数据
      *
      * @param jsonObject
-     * @param rid
      */
     public abstract void parseJson(JSONObject jsonObject, Long rid, Long original);
 }

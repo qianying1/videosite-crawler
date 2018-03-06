@@ -4,8 +4,10 @@ package com.crawl.videosite.dao.impl;
 import com.crawl.core.dao.ConnectionManager;
 import com.crawl.videosite.dao.BiliBiliDao;
 import com.crawl.videosite.domain.Style;
+import com.crawl.videosite.domain.Teleplay;
 import com.crawl.videosite.domain.Video;
 import com.crawl.videosite.domain.VideoAuthor;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +59,166 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
     @Override
     public boolean isExistVideoType(Long rid) {
         return isExistVideoType(ConnectionManager.getConnection(), rid);
+    }
+
+    /**
+     * 是否存在电视剧
+     *
+     * @param seasonId
+     * @param newestIndex
+     * @return
+     */
+    @Override
+    public boolean isExistTeleplay(Long seasonId, int newestIndex) {
+        return isExistTeleplay(ConnectionManager.getConnection(), seasonId, newestIndex);
+    }
+
+    /**
+     * 插入电视剧数据
+     *
+     * @param teleplay
+     * @return
+     */
+    public Long insertTeleplay(Teleplay teleplay) {
+        return -1l;
+    }
+
+    /**
+     * 更新电视剧数据
+     *
+     * @param teleplay
+     * @return
+     */
+    public Long updateTeleplay(Teleplay teleplay) {
+        return updateTeleplay(ConnectionManager.getConnection(), teleplay);
+    }
+
+    /**
+     * 通过季id和最新集数查询电视剧数据
+     *
+     * @param conn
+     * @param seasonId
+     * @param newestIndex
+     * @return
+     */
+    private Teleplay selectTeleplayBySIdAndNewestIndex(Connection conn, Long seasonId, int newestIndex) {
+        String sql = "select * from teleplay where session_id=? and newest_ep_index=?";
+        PreparedStatement pstmt;
+        List<Teleplay> teleplays = new ArrayList<>();
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, seasonId);
+            pstmt.setInt(2, newestIndex);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                Teleplay teleplay = new Teleplay();
+                teleplay.setTotal_count(rs.getLong("total_count"));
+                teleplay.setTitle(rs.getString("title"));
+                teleplay.setSquate_cover(rs.getString("square_cover"));
+                teleplay.setSeason_status(rs.getShort("season_status"));
+                teleplay.setPts(rs.getLong("pts"));
+                teleplay.setPlay_count(rs.getLong("play_count"));
+                teleplay.setIs_started(rs.getShort("is_started"));
+                teleplay.setIs_finish(rs.getShort("is_finish"));
+                teleplay.setFavorite(rs.getLong("favorite"));
+                teleplay.setDm_count(rs.getLong("dm_count"));
+                teleplay.setCover(rs.getString("cover"));
+                teleplays.add(teleplay);
+            }
+            rs.close();
+            pstmt.close();
+            if (teleplays.isEmpty()) {
+                return null;
+            }
+            logger.info("通过season_id 和newestIndex 查询电视剧数据成功");
+            return teleplays.get(0);
+        } catch (SQLException e) {
+            logger.error("通过season_id 和newestIndex 查询电视剧数据失败: " + seasonId + " " + newestIndex);
+            return null;
+        }
+    }
+
+    private Long updateTeleplay(Connection conn, Teleplay teleplay) {
+        Teleplay origin = selectTeleplayBySIdAndNewestIndex(conn, teleplay.getSeasion_id(), teleplay.getNewest_ep_index());
+        if (teleplay == null) {
+            return -1l;
+        }
+        teleplay.setTotal_count(teleplay.getTotal_count() > 0 ? teleplay.getTotal_count() : origin.getTotal_count());
+        teleplay.setTitle(StringUtils.isNotBlank(teleplay.getTitle()) ? teleplay.getTitle() : origin.getTitle());
+        teleplay.setSquate_cover(StringUtils.isNotBlank(teleplay.getSquate_cover()) ? teleplay.getSquate_cover() : origin.getSquate_cover());
+        teleplay.setSeason_status(teleplay.getSeason_status() > 0 ? teleplay.getSeason_status() : origin.getSeason_status());
+        teleplay.setPts(teleplay.getPts() > 0 ? teleplay.getPts() : origin.getPts());
+        teleplay.setPlay_count(teleplay.getPlay_count() > 0 ? teleplay.getPlay_count() : origin.getPlay_count());
+        teleplay.setIs_started(teleplay.getIs_started() != 0 ? teleplay.getIs_started() : origin.getIs_started());
+        teleplay.setIs_finish(teleplay.getIs_finish() != 0 ? teleplay.getIs_finish() : origin.getIs_finish());
+        teleplay.setFavorite(teleplay.getFavorite() > 0 ? teleplay.getFavorite() : origin.getFavorite());
+        teleplay.setDm_count(teleplay.getDm_count() > 0 ? teleplay.getDm_count() : origin.getDm_count());
+        teleplay.setCover(StringUtils.isNotBlank(teleplay.getCover()) ? teleplay.getCover() : origin.getCover());
+        String sql = "update teleplay set total_count=?,title=?,square_cover=?,season_status=?,pts=?,play_cont=?,is_started=?,is_finish=?,favorite=?,dm_count=?,cover=?";
+        PreparedStatement pstmt;
+        Long id = -1l;
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, teleplay.getTotal_count());
+            pstmt.setString(2, teleplay.getTitle());
+            pstmt.setString(3, teleplay.getSquate_cover());
+            pstmt.setShort(4, teleplay.getSeason_status());
+            pstmt.setLong(5, teleplay.getPts());
+            pstmt.setLong(6, teleplay.getPlay_count());
+            pstmt.setInt(7, teleplay.getIs_started());
+            pstmt.setInt(8, teleplay.getIs_finish());
+            pstmt.setLong(9, teleplay.getFavorite());
+            pstmt.setLong(10, teleplay.getDm_count());
+            pstmt.setString(11, teleplay.getCover());
+            int num = pstmt.executeUpdate();
+            if (num > 0) {
+                ResultSet rs = pstmt.getGeneratedKeys();
+                while (rs.next()) {
+                    id = rs.getLong("id");
+                }
+                rs.close();
+                pstmt.close();
+                logger.info("更新电视剧数据成功: " + teleplay.getTitle());
+            }
+            return id;
+        } catch (SQLException e) {
+            logger.error("插入电视剧数据失败: " + teleplay.getTitle());
+            return -1l;
+        }
+    }
+
+    /**
+     * 是否存在电视剧sql
+     *
+     * @param conn
+     * @param seasonId
+     * @param newestIndex
+     * @return
+     */
+    private boolean isExistTeleplay(Connection conn, Long seasonId, int newestIndex) {
+        String sql = "select count(*) from teleplay where session_id=? and newest_ep_index=?";
+        int num = 0;
+        PreparedStatement pstmt;
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, seasonId);
+            pstmt.setInt(2, newestIndex);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                num = rs.getInt("count(*)");
+            }
+            rs.close();
+            pstmt.close();
+            if (num == 0) {
+                return false;
+            } else {
+                return true;
+            }
+        } catch (SQLException e) {
+            logger.error("通过season_id和newest_index查询电视剧数据错误: " + seasonId + " " + newestIndex);
+            return false;
+        }
     }
 
     /**
@@ -178,8 +340,8 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
             pstmt.setInt(10, video.getHis_rank());
             pstmt.setString(11, video.getRights());
             pstmt.setString(12, video.getDesc());
-            pstmt.setDate(13, new Date(video.getCtime().getTime()));
-            pstmt.setDate(14, new Date(video.getPubdate().getTime()));
+            pstmt.setDate(13, new Date(video.getCtime() != null ? video.getCtime().getTime() : new java.util.Date().getTime()));
+            pstmt.setDate(14, new Date(video.getPubdate() != null ? video.getPubdate().getTime() : new java.util.Date().getTime()));
             pstmt.setString(15, video.getDynamic());
             pstmt.setLong(16, video.getLike());
             pstmt.setLong(17, video.getShare());
@@ -209,6 +371,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
             Long id = -1l;
             while (rs.next())
                 id = rs.getLong(1);
+            rs.close();
             pstmt.close();
             logger.info("插入视频数据库成功---" + video.getTitle());
             return id;
@@ -247,6 +410,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
             Long id = -1l;
             while (rs.next())
                 id = rs.getLong(1);
+            rs.close();
             pstmt.close();
             logger.info("插入视频类型数据成功---" + type.getStyleName());
             return id;
@@ -324,6 +488,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
                     id = rs.getLong("id");
                 }
                 logger.info("更新视频作者数据成功---" + author.getName());
+                rs.close();
                 pstmt.close();
             } else {
                 logger.error("更新视频作者数据失败" + author.getName());
@@ -366,6 +531,8 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
             while (rs.next()) {
                 id = rs.getLong("id");
             }
+            rs.close();
+            pstmt.close();
             return id;
         } catch (SQLException e) {
             logger.error("通过视频类型名称查询视频类型id出现错误: " + typeName, e);
@@ -434,6 +601,8 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
                 video.setStyle(type);
                 videos.add(video);
             }
+            rs.close();
+            pstmt.close();
         } catch (SQLException e) {
             logger.error("fail to search data from video author table", e);
             return null;
@@ -583,6 +752,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
                     id = rs.getLong(1);
                 }
                 logger.info("插入视频作者数据成功---" + author.getName());
+                rs.close();
             } else {
                 logger.error("插入作者视频数据失败" + author.getName());
                 return -1l;
@@ -627,6 +797,8 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
                 author.setCreateDate(rs.getDate("createDate"));
                 authors.add(author);
             }
+            rs.close();
+            pstmt.close();
         } catch (SQLException e) {
             logger.error("fail to search data from video author table", e);
         }
@@ -659,6 +831,8 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
                 type.setCreateDate(rs.getDate("createDate"));
                 types.add(type);
             }
+            rs.close();
+            pstmt.close();
         } catch (SQLException e) {
             logger.error("查询视频类型数据失败", e);
         }
@@ -707,6 +881,8 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
             while (rs.next()) {
                 id = rs.getLong("id");
             }
+            rs.close();
+            pstmt.close();
             return id;
         } catch (SQLException e) {
             logger.error("执行视频类型查询时sql语句错误", e);
@@ -742,6 +918,8 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
             while (rs.next()) {
                 id = rs.getLong("id");
             }
+            rs.close();
+            pstmt.close();
             return id;
         } catch (SQLException e) {
             logger.error("执行查询视频作者sql语句错误", e);
@@ -780,6 +958,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
                 while (rs.next()) {
                     id = rs.getLong("id");
                 }
+                rs.close();
                 logger.info("更新视频类型数据库成功---" + type.getStyleName());
             } else {
                 logger.error("更新视频类型数据失败" + type.getStyleName());

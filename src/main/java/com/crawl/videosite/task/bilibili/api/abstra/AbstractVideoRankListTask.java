@@ -1,15 +1,17 @@
-package com.crawl.videosite.task.bilibili.api;
+package com.crawl.videosite.task.bilibili.api.abstra;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.crawl.core.util.Config;
+import com.crawl.core.util.Constants;
 import com.crawl.core.util.HttpClientUtil;
 import com.crawl.core.util.JsoupUtil;
 import com.crawl.proxy.ProxyPool;
 import com.crawl.proxy.entity.Direct;
 import com.crawl.proxy.entity.Proxy;
 import com.crawl.videosite.BiliBiliHttpClient;
-import com.crawl.videosite.entity.VideoSiteDynamicPersistence;
+import com.crawl.videosite.entity.VideoSiteRankPersistence;
+import com.crawl.videosite.task.bilibili.api.VideoDynamicListJsonTask;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +20,10 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * 活动视频列表json数据任务
+ * 等级视频列表json数据任务
  */
-public abstract class AbstractVideoDynamicListTask implements Runnable {
-    private static Logger logger = LoggerFactory.getLogger(AbstractVideoDynamicListTask.class);
+public abstract class AbstractVideoRankListTask implements Runnable {
+    private static Logger logger = LoggerFactory.getLogger(AbstractVideoRankListTask.class);
     protected static BiliBiliHttpClient httpClient = BiliBiliHttpClient.getInstance();
     /**
      * 目标地址
@@ -48,11 +50,11 @@ public abstract class AbstractVideoDynamicListTask implements Runnable {
      */
     protected static final Integer MAXEMPTYCOUNT = 100;
 
-    public AbstractVideoDynamicListTask(String target) {
+    public AbstractVideoRankListTask(String target) {
         this.targetUrl = target;
     }
 
-    public AbstractVideoDynamicListTask() {
+    public AbstractVideoRankListTask() {
     }
 
     @Override
@@ -61,14 +63,12 @@ public abstract class AbstractVideoDynamicListTask implements Runnable {
             crawlerCount++;
             crawlerCountToSleep++;
             if (crawlerCount > 1000) {
-                VideoSiteDynamicPersistence persistence = new VideoSiteDynamicPersistence();
-                persistence.setBiliBili_original(VideoDynamicListJsonTask.original);
-                persistence.setBiliBili_pn(VideoDynamicListJsonTask.pn);
+                VideoSiteRankPersistence persistence = new VideoSiteRankPersistence();
                 persistence.setBiliBili_rid(VideoDynamicListJsonTask.rid);
                 persistence.setBiliBili_aid(0l);
                 persistence.setBiliBili_day(1);
                 persistence.setBiliBili_mid(0l);
-                HttpClientUtil.serializeObject(persistence, Config.biliBiliDynamicVideoDataSerialPath);
+                HttpClientUtil.serializeObject(persistence, Constants.biliBiliDynamicVideoDataSerialPath);
                 crawlerCount = 0;
             }
             /*if (crawlerCountToSleep>=5000){
@@ -82,8 +82,6 @@ public abstract class AbstractVideoDynamicListTask implements Runnable {
             if (emptyCount > MAXEMPTYCOUNT) {
                 emptyCount = 0;
                 VideoDynamicListJsonTask.rid = 0l;
-                VideoDynamicListJsonTask.original = 0l;
-                VideoDynamicListJsonTask.pn = 0;
             }
             String result;
             try {
@@ -140,25 +138,17 @@ public abstract class AbstractVideoDynamicListTask implements Runnable {
      *
      * @param
      */
-    abstract void handle(JSONObject jsonObject);
+    protected abstract void handle(JSONObject jsonObject);
 
     /**
      * 获取目标地址
      *
      * @param domain
      * @param rid
-     * @param ps
-     * @param pn
      * @return
      */
-    protected static String getTargetUrl(String domain,Long rid, Long original, Integer ps, Integer pn) {
-        if (ps == null) {
-            ps = 50;
-        }
-        if (pn == null) {
-            pn = 1;
-        }
-        return domain + "&rid=" + rid + "&pn=" + pn + "&ps=" + ps + "&original=" + original;
+    protected static String getTargetUrl(String domain,Long rid) {
+        return domain + "&rid=" + rid;
     }
 
     public String getTargetUrl() {
@@ -174,6 +164,6 @@ public abstract class AbstractVideoDynamicListTask implements Runnable {
     }
 
     protected static void setEmptyCount(Integer emptyCount) {
-        AbstractVideoDynamicListTask.emptyCount = emptyCount;
+        AbstractVideoRankListTask.emptyCount = emptyCount;
     }
 }

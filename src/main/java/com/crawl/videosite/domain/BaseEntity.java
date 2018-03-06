@@ -16,7 +16,7 @@ public class BaseEntity implements Serializable{
     /**
      * 产生时间
      */
-    private Date createDate;
+    private Date createDate=new Date();
 
     public Date getCreateDate() {
         return createDate;

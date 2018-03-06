@@ -2,42 +2,40 @@ package com.crawl.videosite.task.bilibili.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.crawl.videosite.entity.BiliBiliParams;
+import com.crawl.videosite.parser.bilibili.api.BangumiGuochanParser;
+import com.crawl.videosite.parser.bilibili.api.abstra.AbstractBangumiGuochanParser;
 import com.crawl.videosite.parser.bilibili.api.abstra.AbstractVideoRankListParser;
 import com.crawl.videosite.parser.bilibili.api.VideoRankListJsonParser;
-import com.crawl.videosite.task.bilibili.api.abstra.AbstractVideoRankListTask;
+import com.crawl.videosite.task.bilibili.api.abstra.AbstractBangumiGuochanTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 等级视频列表Json数据抓取任务
+ * bangumi国产连载视频列表Json数据抓取任务
  */
-public class VideoRankListJsonTask extends AbstractVideoRankListTask {
-    private static Logger logger = LoggerFactory.getLogger(VideoRankListJsonTask.class);
+public class BangumiGuochanTask extends AbstractBangumiGuochanTask {
+    private static Logger logger = LoggerFactory.getLogger(BangumiGuochanTask.class);
     /**
      * 目标地址
      */
-    private final String targetDomain = BiliBiliParams.rankDomain;  // + "&rid=1&ps=50&pn=1"
+    private final String targetDomain = BiliBiliParams.seasonDomain;  // + "&rid=1&ps=50&pn=1"
     /**
      * 目标地址
      */
     private String target;
     /**
-     * 视频类型id
-     */
-    public static Long rid = 0l;
-    /**
      * 视频列表分析器
      */
-    private AbstractVideoRankListParser videoListParser;
+    private AbstractBangumiGuochanParser parser;
 
-    public VideoRankListJsonTask(String target) {
+    public BangumiGuochanTask(String target) {
         super(target);
     }
 
-    public VideoRankListJsonTask(Long rid) {
-        super(getTargetUrl(BiliBiliParams.rankDomain, rid));
-        this.target = getTargetUrl(BiliBiliParams.rankDomain, rid);
-        videoListParser = new VideoRankListJsonParser();
+    public BangumiGuochanTask() {
+        super(getTargetUrl(BiliBiliParams.rankDomain));
+        this.target = getTargetUrl(BiliBiliParams.rankDomain);
+        parser = new BangumiGuochanParser();
     }
 
     /**
@@ -52,17 +50,12 @@ public class VideoRankListJsonTask extends AbstractVideoRankListTask {
         }
         if (Integer.valueOf(jsonObject.get("code").toString()) != 0) {
             logger.warn("fail to catch json data from url: " + this.target);
-            rid++;
-            setTargetUrl(getTargetUrl(targetDomain, rid));
             return;
-        } else {
-            videoListParser.parseJson(jsonObject, rid);
         }
+        parser.parseJson(jsonObject);
         if (getEmptyCount() > MAXEMPTYCOUNT) {
             setEmptyCount(0);
-            rid = 1l;
         }
-        setTargetUrl(getTargetUrl(targetDomain, rid));
     }
 
     public String getTarget() {
