@@ -106,7 +106,7 @@ public class VideoSiteDao1Imp implements VideoSiteDao1 {
             }
 
             //teleplay
-            rs = cn.getMetaData().getTables(null, null, "createTeleplayTable", null);
+            rs = cn.getMetaData().getTables(null, null, "teleplay", null);
             if (!rs.next()) {
                 //创建analized_message表
                 st.execute(p.getProperty("createTeleplayTable"));
