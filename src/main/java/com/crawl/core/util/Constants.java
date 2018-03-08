@@ -59,6 +59,10 @@ public class Constants {
      * b站新视频列表数据保存路径
      */
     public static String biliBiliNewVideoDataSerialPath = "src/main/resources/biliBiliNewDatas";
+    /**
+     * b站视频作者信息数据保存路径
+     */
+    public static String biliBiliVideoAuthorDataSerialPath="src/main/resources/biliBiliAuthorDatas";
 
     /**
      * a站名称

@@ -467,8 +467,12 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
         author.setVideoCount(author.getVideoCount() != 0 ? author.getVideoCount() : origin.getVideoCount());
         author.setCreateDate(author.getCreateDate() != null ? author.getCreateDate() : origin.getCreateDate());
         author.setId(author.getId() != null ? author.getId() : origin.getId());
+        author.setSex(author.getSex() != null ? author.getSex() : origin.getSex());
+        author.setLocation(author.getLocation() != null ? author.getLocation() : origin.getLocation());
+        author.setFollower(author.getFollower() != null ? author.getFollower() : origin.getFollower());
+        author.setArticle(author.getArticle() != null ? author.getArticle() : origin.getArticle());
         try {
-            String sql = "update video_author set name=?,indexHref=?,signature=?,videoCount=?,attentionCount=?,audienceCount=?,logo=?,createDate=? WHERE id=?";
+            String sql = "update video_author set name=?,indexHref=?,signature=?,videoCount=?,attentionCount=?,audienceCount=?,logo=?,createDate=?,sex=?,location=?,follower=?,article=? WHERE id=?";
             PreparedStatement pstmt;
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, author.getName());
@@ -479,7 +483,12 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
             pstmt.setInt(6, author.getAudienceCount());
             pstmt.setString(7, author.getLogo());
             pstmt.setDate(8, new Date(author.getCreateDate().getTime()));
-            pstmt.setLong(9, author.getId());
+            pstmt.setString(9, author.getSex());
+            pstmt.setString(10, author.getLocation());
+            pstmt.setLong(11, author.getFollower());
+            pstmt.setLong(12, author.getArticle());
+            pstmt.setLong(13, author.getId());
+
             int columns = pstmt.executeUpdate();
             Long id = -1l;
             if (columns > 0) {
@@ -730,8 +739,8 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
     @Override
     public synchronized Long insertAuthor(Connection conn, VideoAuthor author) {
         try {
-            String column = "biliBili_mid,name,indexHref,signature,videoCount,attentionCount,audienceCount,logo,createDate";
-            String values = "?,?,?,?,?,?,?,?,?";
+            String column = "biliBili_mid,name,indexHref,signature,videoCount,attentionCount,audienceCount,logo,createDate,sex,location,follower,article";
+            String values = "?,?,?,?,?,?,?,?,?,?,?,?,?";
             String sql = "insert into video_author (" + column + ") values(" + values + ")";
             PreparedStatement pstmt;
             pstmt = conn.prepareStatement(sql);
@@ -744,6 +753,10 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
             pstmt.setInt(7, author.getAudienceCount() != null ? author.getAudienceCount() : 0);
             pstmt.setString(8, author.getLogo());
             pstmt.setDate(9, new Date(author.getCreateDate().getTime()));
+            pstmt.setString(10, author.getSex() != null ? author.getSex() : "");
+            pstmt.setString(11, author.getLocation() != null ? author.getLocation() : "");
+            pstmt.setLong(12, author.getFollower() != null ? author.getFollower() : 0l);
+            pstmt.setLong(13, author.getArticle() != null ? author.getArticle() : 0l);
             int columns = pstmt.executeUpdate();
             Long id = -1l;
             if (columns > 0) {
