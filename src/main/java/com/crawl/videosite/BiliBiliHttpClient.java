@@ -5,7 +5,10 @@ import com.crawl.core.htmlunit.AbstractHtmlUnit;
 import com.crawl.core.htmlunit.IHtmlUnit;
 import com.crawl.core.util.*;
 import com.crawl.proxy.BiliBiliProxyHttpClient;
-import com.crawl.videosite.entity.*;
+import com.crawl.videosite.entity.VideoAuthorPersistence;
+import com.crawl.videosite.entity.VideoSiteDynamicPersistence;
+import com.crawl.videosite.entity.VideoSiteNewVideoPersistence;
+import com.crawl.videosite.entity.VideoSiteRankPersistence;
 import com.crawl.videosite.task.bilibili.BiliBiliDetailListPageTask;
 import com.crawl.videosite.task.bilibili.BiliBiliDetailPageTask;
 import com.crawl.videosite.task.bilibili.api.*;
@@ -142,7 +145,8 @@ public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
         //视频作者信息
         videoAuthorCrawler();
         //---------------------------------------bangumi begin------------------------------------------------------------------//
-//        bangumiGuochangCrawler();
+        //国产连载电视剧
+        bangumiGuochangCrawler();
         //---------------------------------------bangumi end--------------------------------------------------------------------//
         manageHttpClient();
     }
@@ -211,7 +215,7 @@ public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
     /**
      * 作者视频api(获取具体视频作者的详细信息)
      */
-    private void videoAuthorCrawler(){
+    private void videoAuthorCrawler() {
         VideoAuthorPersistence persistence = null;
         try {
             persistence = (VideoAuthorPersistence) HttpClientUtil.deserializeObject(Constants.biliBiliVideoAuthorDataSerialPath);

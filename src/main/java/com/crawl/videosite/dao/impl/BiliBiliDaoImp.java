@@ -80,7 +80,58 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
      * @return
      */
     public Long insertTeleplay(Teleplay teleplay) {
-        return -1l;
+        if (teleplay == null) {
+            return -1l;
+        }
+        return insertTeleplay(ConnectionManager.getConnection(), teleplay);
+    }
+
+    /**
+     * 插入电视剧数据
+     *
+     * @param conn
+     * @param teleplay
+     * @return
+     */
+    private Long insertTeleplay(Connection conn, Teleplay teleplay) {
+        try {
+            /*if (isExistVideo(conn, video.getBiliBili_aid())) {
+                return -1l;
+            }*/
+            String column = "cover,dm_count,favorite,is_finish,is_started,newest_ep_index," +
+                    "play_count,pts,seasion_id,season_status,squate_cover,title,total_count";
+            String values = "?,?,?,?,?,?,?,?,?,?,?,?,?";
+            String sql = "insert into teleplay (" + column + ") values(" + values + ")";
+            PreparedStatement pstmt;
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, teleplay.getCover() != null ? teleplay.getCover() : "");
+            pstmt.setLong(2, teleplay.getDm_count() > 0 ? teleplay.getDm_count() : 0);
+            pstmt.setLong(3, teleplay.getFavorite() > 0 ? teleplay.getFavorite() : 0);
+            pstmt.setInt(4, teleplay.getIs_finish());
+            pstmt.setInt(5, teleplay.getIs_started());
+            pstmt.setInt(6, teleplay.getNewest_ep_index() > 0 ? teleplay.getNewest_ep_index() : 0);
+            pstmt.setLong(7, teleplay.getPlay_count() > 0 ? teleplay.getPlay_count() : 0);
+            pstmt.setLong(8, teleplay.getPts() > 0 ? teleplay.getPts() : 0);
+            pstmt.setLong(9, teleplay.getSeasion_id() > 0 ? teleplay.getSeasion_id() : 0l);
+            pstmt.setInt(10, teleplay.getSeason_status());
+            pstmt.setString(11, teleplay.getSquate_cover() != null ? teleplay.getSquate_cover() : "");
+            pstmt.setString(12, teleplay.getTitle() != null ? teleplay.getTitle() : "");
+            pstmt.setLong(13, teleplay.getTotal_count() > 0 ? teleplay.getTotal_count() : 0l);
+            pstmt.executeUpdate();
+            ResultSet rs = pstmt.getGeneratedKeys();
+            Long id = -1l;
+            while (rs.next())
+                id = rs.getLong(1);
+            rs.close();
+            pstmt.close();
+            logger.info("插入电视剧数据成功---" + teleplay.getTitle());
+            return id;
+        } catch (SQLException e) {
+            logger.error("插入电视剧数据失败: " + teleplay.getTitle(), e);
+            return -1l;
+        } finally {
+//            ConnectionManager.close();
+        }
     }
 
     /**
