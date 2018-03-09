@@ -36,7 +36,7 @@ public interface BiliBiliDao extends Dao {
      * @param newestIndex
      * @return
      */
-    boolean isExistTeleplay(Long seasonId,int newestIndex);
+    boolean isExistTeleplay(Long seasonId,String newestIndex);
 
     /**
      * 插入电视剧数据

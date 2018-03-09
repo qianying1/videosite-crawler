@@ -33,8 +33,8 @@ public class BangumiGuochanTask extends AbstractBangumiGuochanTask {
     }
 
     public BangumiGuochanTask() {
-        super(getTargetUrl(BiliBiliParams.rankDomain));
-        this.target = getTargetUrl(BiliBiliParams.rankDomain);
+        super(getTargetUrl(BiliBiliParams.seasonDomain));
+        this.target = getTargetUrl(BiliBiliParams.seasonDomain);
         parser = new BangumiGuochanParser();
     }
 

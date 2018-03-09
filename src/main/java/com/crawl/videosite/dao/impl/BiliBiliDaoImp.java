@@ -69,7 +69,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
      * @return
      */
     @Override
-    public boolean isExistTeleplay(Long seasonId, int newestIndex) {
+    public boolean isExistTeleplay(Long seasonId, String newestIndex) {
         return isExistTeleplay(ConnectionManager.getConnection(), seasonId, newestIndex);
     }
 
@@ -99,7 +99,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
                 return -1l;
             }*/
             String column = "cover,dm_count,favorite,is_finish,is_started,newest_ep_index," +
-                    "play_count,pts,seasion_id,season_status,squate_cover,title,total_count";
+                    "play_count,pts,season_id,season_status,square_cover,title,total_count";
             String values = "?,?,?,?,?,?,?,?,?,?,?,?,?";
             String sql = "insert into teleplay (" + column + ") values(" + values + ")";
             PreparedStatement pstmt;
@@ -109,12 +109,12 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
             pstmt.setLong(3, teleplay.getFavorite() > 0 ? teleplay.getFavorite() : 0);
             pstmt.setInt(4, teleplay.getIs_finish());
             pstmt.setInt(5, teleplay.getIs_started());
-            pstmt.setInt(6, teleplay.getNewest_ep_index() > 0 ? teleplay.getNewest_ep_index() : 0);
+            pstmt.setString(6, teleplay.getNewest_ep_index() != null ? teleplay.getNewest_ep_index().toString() : "");
             pstmt.setLong(7, teleplay.getPlay_count() > 0 ? teleplay.getPlay_count() : 0);
             pstmt.setLong(8, teleplay.getPts() > 0 ? teleplay.getPts() : 0);
             pstmt.setLong(9, teleplay.getSeasion_id() > 0 ? teleplay.getSeasion_id() : 0l);
             pstmt.setInt(10, teleplay.getSeason_status());
-            pstmt.setString(11, teleplay.getSquate_cover() != null ? teleplay.getSquate_cover() : "");
+            pstmt.setString(11, teleplay.getSquare_cover() != null ? teleplay.getSquare_cover() : "");
             pstmt.setString(12, teleplay.getTitle() != null ? teleplay.getTitle() : "");
             pstmt.setLong(13, teleplay.getTotal_count() > 0 ? teleplay.getTotal_count() : 0l);
             pstmt.executeUpdate();
@@ -152,20 +152,20 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
      * @param newestIndex
      * @return
      */
-    private Teleplay selectTeleplayBySIdAndNewestIndex(Connection conn, Long seasonId, int newestIndex) {
+    private Teleplay selectTeleplayBySIdAndNewestIndex(Connection conn, Long seasonId, String newestIndex) {
         String sql = "select * from teleplay where session_id=? and newest_ep_index=?";
         PreparedStatement pstmt;
         List<Teleplay> teleplays = new ArrayList<>();
         try {
             pstmt = conn.prepareStatement(sql);
             pstmt.setLong(1, seasonId);
-            pstmt.setInt(2, newestIndex);
+            pstmt.setString(2, newestIndex);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 Teleplay teleplay = new Teleplay();
                 teleplay.setTotal_count(rs.getLong("total_count"));
                 teleplay.setTitle(rs.getString("title"));
-                teleplay.setSquate_cover(rs.getString("square_cover"));
+                teleplay.setSquare_cover(rs.getString("square_cover"));
                 teleplay.setSeason_status(rs.getShort("season_status"));
                 teleplay.setPts(rs.getLong("pts"));
                 teleplay.setPlay_count(rs.getLong("play_count"));
@@ -194,9 +194,9 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
         if (teleplay == null) {
             return -1l;
         }
-        teleplay.setTotal_count(teleplay.getTotal_count() > 0 ? teleplay.getTotal_count() : origin.getTotal_count());
+        teleplay.setTotal_count(teleplay.getTotal_count() > 0 ? teleplay.getTotal_count() : (origin.getTotal_count() != null ? origin.getTotal_count() : 0));
         teleplay.setTitle(StringUtils.isNotBlank(teleplay.getTitle()) ? teleplay.getTitle() : origin.getTitle());
-        teleplay.setSquate_cover(StringUtils.isNotBlank(teleplay.getSquate_cover()) ? teleplay.getSquate_cover() : origin.getSquate_cover());
+        teleplay.setSquare_cover(StringUtils.isNotBlank(teleplay.getSquare_cover()) ? teleplay.getSquare_cover() : origin.getSquare_cover());
         teleplay.setSeason_status(teleplay.getSeason_status() > 0 ? teleplay.getSeason_status() : origin.getSeason_status());
         teleplay.setPts(teleplay.getPts() > 0 ? teleplay.getPts() : origin.getPts());
         teleplay.setPlay_count(teleplay.getPlay_count() > 0 ? teleplay.getPlay_count() : origin.getPlay_count());
@@ -212,7 +212,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
             pstmt = conn.prepareStatement(sql);
             pstmt.setLong(1, teleplay.getTotal_count());
             pstmt.setString(2, teleplay.getTitle());
-            pstmt.setString(3, teleplay.getSquate_cover());
+            pstmt.setString(3, teleplay.getSquare_cover());
             pstmt.setShort(4, teleplay.getSeason_status());
             pstmt.setLong(5, teleplay.getPts());
             pstmt.setLong(6, teleplay.getPlay_count());
@@ -246,14 +246,14 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
      * @param newestIndex
      * @return
      */
-    private boolean isExistTeleplay(Connection conn, Long seasonId, int newestIndex) {
-        String sql = "select count(*) from teleplay where session_id=? and newest_ep_index=?";
+    private boolean isExistTeleplay(Connection conn, Long seasonId, String newestIndex) {
+        String sql = "select count(*) from teleplay where season_id=? and newest_ep_index=?";
         int num = 0;
         PreparedStatement pstmt;
         try {
             pstmt = conn.prepareStatement(sql);
             pstmt.setLong(1, seasonId);
-            pstmt.setInt(2, newestIndex);
+            pstmt.setString(2, newestIndex);
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
@@ -267,7 +267,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
                 return true;
             }
         } catch (SQLException e) {
-            logger.error("通过season_id和newest_index查询电视剧数据错误: " + seasonId + " " + newestIndex);
+            logger.error("通过season_id和newest_index查询电视剧数据错误: " + seasonId + " " + newestIndex, e);
             return false;
         }
     }

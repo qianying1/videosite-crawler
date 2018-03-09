@@ -3,15 +3,11 @@ package com.crawl.videosite.task.bilibili.api.abstra;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.crawl.core.util.Config;
-import com.crawl.core.util.Constants;
-import com.crawl.core.util.HttpClientUtil;
 import com.crawl.core.util.JsoupUtil;
 import com.crawl.proxy.ProxyPool;
 import com.crawl.proxy.entity.Direct;
 import com.crawl.proxy.entity.Proxy;
 import com.crawl.videosite.BiliBiliHttpClient;
-import com.crawl.videosite.entity.VideoSiteRankPersistence;
-import com.crawl.videosite.task.bilibili.api.VideoDynamicListJsonTask;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,6 +94,8 @@ public abstract class AbstractBangumiGuochanTask implements Runnable {
                 emptyCount++;
                 continue;
             }
+            result = result.replace("guochuangRankCallback(", "");
+            result = result.substring(0, result.length() - 2);
             Map<String, Object> jsonData = (Map<String, Object>) JSON.parse(result);
             if (jsonData.isEmpty() || Integer.valueOf(jsonData.get("code").toString()) != 0) {
                 logger.warn("running fail to catch data from url: " + targetUrl);
@@ -110,7 +108,7 @@ public abstract class AbstractBangumiGuochanTask implements Runnable {
             try {
 //                Thread.sleep(2000);
                 //每五小时爬取一次
-                Thread.sleep(1000*60*60*5);
+                Thread.sleep(3000);
             } catch (InterruptedException e) {
                 logger.error("当前爬取目标地址时线程被中断: " + getTargetUrl(), e);
             }

@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * 电视剧
  */
-public class Teleplay extends BaseEntity implements Serializable{
+public class Teleplay extends BaseEntity implements Serializable {
     /**
      * 封面
      */
@@ -13,43 +13,43 @@ public class Teleplay extends BaseEntity implements Serializable{
     /**
      * 弹幕数量
      */
-    private Long dm_count=0l;
+    private Long dm_count = 0l;
     /**
      * 收藏人数
      */
-    private Long favorite=0l;
+    private Long favorite = 0l;
     /**
      * 是否已完结
      */
-    private int is_finish=0;
+    private int is_finish = 0;
     /**
      * 是否已开始上线
      */
-    private int is_started=0;
+    private int is_started = 0;
     /**
      * 最新集数
      */
-    private int newest_ep_index=0;
+    private String newest_ep_index;
     /**
      * 播放次数
      */
-    private Long play_count=0l;
+    private Long play_count = 0l;
     /**
      * b站中不知道是什么的字段
      */
-    private Long pts=0l;
+    private Long pts = 0l;
     /**
      * 季id
      */
-    private Long seasion_id=0l;
+    private Long seasion_id = 0l;
     /**
      * 季状态
      */
-    private short season_status=0;
+    private short season_status = 0;
     /**
      * 方形封面
      */
-    private String squate_cover;
+    private String square_cover;
     /**
      * 标题
      */
@@ -57,7 +57,7 @@ public class Teleplay extends BaseEntity implements Serializable{
     /**
      * 总集数
      */
-    private Long total_count=0l;
+    private Long total_count = 0l;
 
     public String getCover() {
         return cover;
@@ -99,11 +99,11 @@ public class Teleplay extends BaseEntity implements Serializable{
         this.is_started = is_started;
     }
 
-    public int getNewest_ep_index() {
+    public String getNewest_ep_index() {
         return newest_ep_index;
     }
 
-    public void setNewest_ep_index(int newest_ep_index) {
+    public void setNewest_ep_index(String newest_ep_index) {
         this.newest_ep_index = newest_ep_index;
     }
 
@@ -139,12 +139,12 @@ public class Teleplay extends BaseEntity implements Serializable{
         this.season_status = season_status;
     }
 
-    public String getSquate_cover() {
-        return squate_cover;
+    public String getSquare_cover() {
+        return square_cover;
     }
 
-    public void setSquate_cover(String squate_cover) {
-        this.squate_cover = squate_cover;
+    public void setSquare_cover(String square_cover) {
+        this.square_cover = square_cover;
     }
 
     public String getTitle() {

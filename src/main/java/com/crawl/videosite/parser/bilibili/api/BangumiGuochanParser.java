@@ -2,16 +2,11 @@ package com.crawl.videosite.parser.bilibili.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.crawl.core.util.Constants;
-import com.crawl.videosite.domain.Style;
 import com.crawl.videosite.domain.Teleplay;
-import com.crawl.videosite.domain.Video;
-import com.crawl.videosite.domain.VideoAuthor;
 import com.crawl.videosite.parser.bilibili.api.abstra.AbstractBangumiGuochanParser;
-import org.apache.http.client.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -69,12 +64,12 @@ public class BangumiGuochanParser extends AbstractBangumiGuochanParser {
         tp.setFavorite(Long.valueOf(teleplay.get("fav").toString()));
         tp.setIs_finish(Integer.valueOf(teleplay.get("is_finish").toString()));
         tp.setIs_started(Integer.valueOf(teleplay.get("is_started").toString()));
-        tp.setNewest_ep_index(Integer.valueOf(teleplay.get("newest_ep_index").toString()));
+        tp.setNewest_ep_index(teleplay.get("newest_ep_index").toString());
         tp.setPlay_count(Long.valueOf(teleplay.get("play_count").toString()));
         tp.setPts(Long.valueOf(teleplay.get("pts").toString()));
         tp.setSeasion_id(Long.valueOf(teleplay.get("season_id").toString()));
         tp.setSeason_status(Short.valueOf(teleplay.get("season_status").toString()));
-        tp.setSquate_cover(teleplay.get("square_cover").toString());
+        tp.setSquare_cover(teleplay.get("square_cover").toString());
         tp.setTitle(teleplay.get("title").toString());
         tp.setTotal_count(Long.valueOf(teleplay.get("total_count").toString()));
         insertTeleplay(tp);
@@ -82,7 +77,7 @@ public class BangumiGuochanParser extends AbstractBangumiGuochanParser {
 
     private void insertTeleplay(Teleplay teleplay) {
         if (Constants.isUpdateTeleplay_biliBili) {
-            boolean teleplayExsist = dao.isExistTeleplay(teleplay.getSeasion_id(),teleplay.getNewest_ep_index());
+            boolean teleplayExsist = dao.isExistTeleplay(teleplay.getSeasion_id(), teleplay.getNewest_ep_index());
             if (teleplayExsist)
                 dao.updateTeleplay(teleplay);
             else {
