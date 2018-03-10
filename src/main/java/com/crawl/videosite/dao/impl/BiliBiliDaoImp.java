@@ -3,8 +3,8 @@ package com.crawl.videosite.dao.impl;
 
 import com.crawl.core.dao.ConnectionManager;
 import com.crawl.videosite.dao.BiliBiliDao;
+import com.crawl.videosite.domain.Fiction;
 import com.crawl.videosite.domain.Style;
-import com.crawl.videosite.domain.Teleplay;
 import com.crawl.videosite.domain.Video;
 import com.crawl.videosite.domain.VideoAuthor;
 import org.apache.commons.lang3.StringUtils;
@@ -62,38 +62,38 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
     }
 
     /**
-     * 是否存在电视剧
+     * 是否存在小说
      *
      * @param seasonId
      * @param newestIndex
      * @return
      */
     @Override
-    public boolean isExistTeleplay(Long seasonId, String newestIndex) {
-        return isExistTeleplay(ConnectionManager.getConnection(), seasonId, newestIndex);
+    public boolean isExistFiction(Long seasonId, String newestIndex) {
+        return isExistFiction(ConnectionManager.getConnection(), seasonId, newestIndex);
     }
 
     /**
-     * 插入电视剧数据
+     * 插入小说数据
      *
-     * @param teleplay
+     * @param fiction
      * @return
      */
-    public Long insertTeleplay(Teleplay teleplay) {
-        if (teleplay == null) {
+    public Long insertFiction(Fiction fiction) {
+        if (fiction == null) {
             return -1l;
         }
-        return insertTeleplay(ConnectionManager.getConnection(), teleplay);
+        return insertFiction(ConnectionManager.getConnection(), fiction);
     }
 
     /**
-     * 插入电视剧数据
+     * 插入小说数据
      *
      * @param conn
-     * @param teleplay
+     * @param fiction
      * @return
      */
-    private Long insertTeleplay(Connection conn, Teleplay teleplay) {
+    private Long insertFiction(Connection conn, Fiction fiction) {
         try {
             /*if (isExistVideo(conn, video.getBiliBili_aid())) {
                 return -1l;
@@ -101,22 +101,22 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
             String column = "cover,dm_count,favorite,is_finish,is_started,newest_ep_index," +
                     "play_count,pts,season_id,season_status,square_cover,title,total_count";
             String values = "?,?,?,?,?,?,?,?,?,?,?,?,?";
-            String sql = "insert into teleplay (" + column + ") values(" + values + ")";
+            String sql = "insert into fiction (" + column + ") values(" + values + ")";
             PreparedStatement pstmt;
             pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, teleplay.getCover() != null ? teleplay.getCover() : "");
-            pstmt.setLong(2, teleplay.getDm_count() > 0 ? teleplay.getDm_count() : 0);
-            pstmt.setLong(3, teleplay.getFavorite() > 0 ? teleplay.getFavorite() : 0);
-            pstmt.setInt(4, teleplay.getIs_finish());
-            pstmt.setInt(5, teleplay.getIs_started());
-            pstmt.setString(6, teleplay.getNewest_ep_index() != null ? teleplay.getNewest_ep_index().toString() : "");
-            pstmt.setLong(7, teleplay.getPlay_count() > 0 ? teleplay.getPlay_count() : 0);
-            pstmt.setLong(8, teleplay.getPts() > 0 ? teleplay.getPts() : 0);
-            pstmt.setLong(9, teleplay.getSeasion_id() > 0 ? teleplay.getSeasion_id() : 0l);
-            pstmt.setInt(10, teleplay.getSeason_status());
-            pstmt.setString(11, teleplay.getSquare_cover() != null ? teleplay.getSquare_cover() : "");
-            pstmt.setString(12, teleplay.getTitle() != null ? teleplay.getTitle() : "");
-            pstmt.setLong(13, teleplay.getTotal_count() > 0 ? teleplay.getTotal_count() : 0l);
+            pstmt.setString(1, fiction.getCover() != null ? fiction.getCover() : "");
+            pstmt.setLong(2, fiction.getDm_count() > 0 ? fiction.getDm_count() : 0);
+            pstmt.setLong(3, fiction.getFavorite() > 0 ? fiction.getFavorite() : 0);
+            pstmt.setInt(4, fiction.getIs_finish());
+            pstmt.setInt(5, fiction.getIs_started());
+            pstmt.setString(6, fiction.getNewest_ep_index() != null ? fiction.getNewest_ep_index().toString() : "");
+            pstmt.setLong(7, fiction.getPlay_count() > 0 ? fiction.getPlay_count() : 0);
+            pstmt.setLong(8, fiction.getPts() > 0 ? fiction.getPts() : 0);
+            pstmt.setLong(9, fiction.getSeasion_id() > 0 ? fiction.getSeasion_id() : 0l);
+            pstmt.setInt(10, fiction.getSeason_status());
+            pstmt.setString(11, fiction.getSquare_cover() != null ? fiction.getSquare_cover() : "");
+            pstmt.setString(12, fiction.getTitle() != null ? fiction.getTitle() : "");
+            pstmt.setLong(13, fiction.getTotal_count() > 0 ? fiction.getTotal_count() : 0l);
             pstmt.executeUpdate();
             ResultSet rs = pstmt.getGeneratedKeys();
             Long id = -1l;
@@ -124,10 +124,10 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
                 id = rs.getLong(1);
             rs.close();
             pstmt.close();
-            logger.info("插入电视剧数据成功---" + teleplay.getTitle());
+            logger.info("插入小说数据成功---" + fiction.getTitle());
             return id;
         } catch (SQLException e) {
-            logger.error("插入电视剧数据失败: " + teleplay.getTitle(), e);
+            logger.error("插入小说数据失败: " + fiction.getTitle(), e);
             return -1l;
         } finally {
 //            ConnectionManager.close();
@@ -135,92 +135,94 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
     }
 
     /**
-     * 更新电视剧数据
+     * 更新小说数据
      *
-     * @param teleplay
+     * @param fiction
      * @return
      */
-    public Long updateTeleplay(Teleplay teleplay) {
-        return updateTeleplay(ConnectionManager.getConnection(), teleplay);
+    public Long updateFiction(Fiction fiction) {
+        return updateFiction(ConnectionManager.getConnection(), fiction);
     }
 
     /**
-     * 通过季id和最新集数查询电视剧数据
+     * 通过季id和最新集数查询小说数据
      *
      * @param conn
      * @param seasonId
      * @param newestIndex
      * @return
      */
-    private Teleplay selectTeleplayBySIdAndNewestIndex(Connection conn, Long seasonId, String newestIndex) {
-        String sql = "select * from teleplay where session_id=? and newest_ep_index=?";
+    private Fiction selectFictionBySIdAndNewestIndex(Connection conn, Long seasonId, String newestIndex) {
+        String sql = "select * from fiction where season_id=? and newest_ep_index=?";
         PreparedStatement pstmt;
-        List<Teleplay> teleplays = new ArrayList<>();
+        List<Fiction> fictions = new ArrayList<>();
         try {
             pstmt = conn.prepareStatement(sql);
             pstmt.setLong(1, seasonId);
             pstmt.setString(2, newestIndex);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
-                Teleplay teleplay = new Teleplay();
-                teleplay.setTotal_count(rs.getLong("total_count"));
-                teleplay.setTitle(rs.getString("title"));
-                teleplay.setSquare_cover(rs.getString("square_cover"));
-                teleplay.setSeason_status(rs.getShort("season_status"));
-                teleplay.setPts(rs.getLong("pts"));
-                teleplay.setPlay_count(rs.getLong("play_count"));
-                teleplay.setIs_started(rs.getShort("is_started"));
-                teleplay.setIs_finish(rs.getShort("is_finish"));
-                teleplay.setFavorite(rs.getLong("favorite"));
-                teleplay.setDm_count(rs.getLong("dm_count"));
-                teleplay.setCover(rs.getString("cover"));
-                teleplays.add(teleplay);
+                Fiction fiction = new Fiction();
+                fiction.setTotal_count(rs.getLong("total_count"));
+                fiction.setTitle(rs.getString("title"));
+                fiction.setSquare_cover(rs.getString("square_cover"));
+                fiction.setSeason_status(rs.getShort("season_status"));
+                fiction.setPts(rs.getLong("pts"));
+                fiction.setPlay_count(rs.getLong("play_count"));
+                fiction.setIs_started(rs.getShort("is_started"));
+                fiction.setIs_finish(rs.getShort("is_finish"));
+                fiction.setFavorite(rs.getLong("favorite"));
+                fiction.setDm_count(rs.getLong("dm_count"));
+                fiction.setCover(rs.getString("cover"));
+                fictions.add(fiction);
             }
             rs.close();
             pstmt.close();
-            if (teleplays.isEmpty()) {
+            if (fictions.isEmpty()) {
                 return null;
             }
-            logger.info("通过season_id 和newestIndex 查询电视剧数据成功");
-            return teleplays.get(0);
+            logger.info("通过season_id 和newestIndex 查询小说数据成功");
+            return fictions.get(0);
         } catch (SQLException e) {
-            logger.error("通过season_id 和newestIndex 查询电视剧数据失败: " + seasonId + " " + newestIndex);
+            logger.error("通过season_id 和newestIndex 查询小说数据失败: " + seasonId + " " + newestIndex, e);
             return null;
         }
     }
 
-    private Long updateTeleplay(Connection conn, Teleplay teleplay) {
-        Teleplay origin = selectTeleplayBySIdAndNewestIndex(conn, teleplay.getSeasion_id(), teleplay.getNewest_ep_index());
-        if (teleplay == null) {
+    private Long updateFiction(Connection conn, Fiction fiction) {
+        Fiction origin = selectFictionBySIdAndNewestIndex(conn, fiction.getSeasion_id(), fiction.getNewest_ep_index());
+        if (fiction == null) {
             return -1l;
         }
-        teleplay.setTotal_count(teleplay.getTotal_count() > 0 ? teleplay.getTotal_count() : (origin.getTotal_count() != null ? origin.getTotal_count() : 0));
-        teleplay.setTitle(StringUtils.isNotBlank(teleplay.getTitle()) ? teleplay.getTitle() : origin.getTitle());
-        teleplay.setSquare_cover(StringUtils.isNotBlank(teleplay.getSquare_cover()) ? teleplay.getSquare_cover() : origin.getSquare_cover());
-        teleplay.setSeason_status(teleplay.getSeason_status() > 0 ? teleplay.getSeason_status() : origin.getSeason_status());
-        teleplay.setPts(teleplay.getPts() > 0 ? teleplay.getPts() : origin.getPts());
-        teleplay.setPlay_count(teleplay.getPlay_count() > 0 ? teleplay.getPlay_count() : origin.getPlay_count());
-        teleplay.setIs_started(teleplay.getIs_started() != 0 ? teleplay.getIs_started() : origin.getIs_started());
-        teleplay.setIs_finish(teleplay.getIs_finish() != 0 ? teleplay.getIs_finish() : origin.getIs_finish());
-        teleplay.setFavorite(teleplay.getFavorite() > 0 ? teleplay.getFavorite() : origin.getFavorite());
-        teleplay.setDm_count(teleplay.getDm_count() > 0 ? teleplay.getDm_count() : origin.getDm_count());
-        teleplay.setCover(StringUtils.isNotBlank(teleplay.getCover()) ? teleplay.getCover() : origin.getCover());
-        String sql = "update teleplay set total_count=?,title=?,square_cover=?,season_status=?,pts=?,play_cont=?,is_started=?,is_finish=?,favorite=?,dm_count=?,cover=?";
+        fiction.setTotal_count(fiction.getTotal_count() > 0 ? fiction.getTotal_count() : (origin.getTotal_count() != null ? origin.getTotal_count() : 0));
+        fiction.setTitle(StringUtils.isNotBlank(fiction.getTitle()) ? fiction.getTitle() : origin.getTitle());
+        fiction.setSquare_cover(StringUtils.isNotBlank(fiction.getSquare_cover()) ? fiction.getSquare_cover() : origin.getSquare_cover());
+        fiction.setSeason_status(fiction.getSeason_status() > 0 ? fiction.getSeason_status() : origin.getSeason_status());
+        fiction.setPts(fiction.getPts() > 0 ? fiction.getPts() : origin.getPts());
+        fiction.setPlay_count(fiction.getPlay_count() > 0 ? fiction.getPlay_count() : origin.getPlay_count());
+        fiction.setIs_started(fiction.getIs_started() != 0 ? fiction.getIs_started() : origin.getIs_started());
+        fiction.setIs_finish(fiction.getIs_finish() != 0 ? fiction.getIs_finish() : origin.getIs_finish());
+        fiction.setFavorite(fiction.getFavorite() > 0 ? fiction.getFavorite() : origin.getFavorite());
+        fiction.setDm_count(fiction.getDm_count() > 0 ? fiction.getDm_count() : origin.getDm_count());
+        fiction.setCover(StringUtils.isNotBlank(fiction.getCover()) ? fiction.getCover() : origin.getCover());
+        String sql = "update fiction set total_count=?,title=?,square_cover=?,season_status=?,pts=?,play_count=?,is_started=?,is_finish=?,favorite=?,dm_count=?,cover=? where season_id=? and newest_ep_index=?";
         PreparedStatement pstmt;
         Long id = -1l;
         try {
             pstmt = conn.prepareStatement(sql);
-            pstmt.setLong(1, teleplay.getTotal_count());
-            pstmt.setString(2, teleplay.getTitle());
-            pstmt.setString(3, teleplay.getSquare_cover());
-            pstmt.setShort(4, teleplay.getSeason_status());
-            pstmt.setLong(5, teleplay.getPts());
-            pstmt.setLong(6, teleplay.getPlay_count());
-            pstmt.setInt(7, teleplay.getIs_started());
-            pstmt.setInt(8, teleplay.getIs_finish());
-            pstmt.setLong(9, teleplay.getFavorite());
-            pstmt.setLong(10, teleplay.getDm_count());
-            pstmt.setString(11, teleplay.getCover());
+            pstmt.setLong(1, fiction.getTotal_count());
+            pstmt.setString(2, fiction.getTitle());
+            pstmt.setString(3, fiction.getSquare_cover());
+            pstmt.setShort(4, fiction.getSeason_status());
+            pstmt.setLong(5, fiction.getPts());
+            pstmt.setLong(6, fiction.getPlay_count());
+            pstmt.setInt(7, fiction.getIs_started());
+            pstmt.setInt(8, fiction.getIs_finish());
+            pstmt.setLong(9, fiction.getFavorite());
+            pstmt.setLong(10, fiction.getDm_count());
+            pstmt.setString(11, fiction.getCover());
+            pstmt.setLong(12, fiction.getSeasion_id());
+            pstmt.setString(13, fiction.getNewest_ep_index());
             int num = pstmt.executeUpdate();
             if (num > 0) {
                 ResultSet rs = pstmt.getGeneratedKeys();
@@ -229,25 +231,25 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
                 }
                 rs.close();
                 pstmt.close();
-                logger.info("更新电视剧数据成功: " + teleplay.getTitle());
+                logger.info("更新小说数据成功: " + fiction.getTitle());
             }
             return id;
         } catch (SQLException e) {
-            logger.error("插入电视剧数据失败: " + teleplay.getTitle());
+            logger.error("插入小说数据失败: " + fiction.getTitle(), e);
             return -1l;
         }
     }
 
     /**
-     * 是否存在电视剧sql
+     * 是否存在小说sql
      *
      * @param conn
      * @param seasonId
      * @param newestIndex
      * @return
      */
-    private boolean isExistTeleplay(Connection conn, Long seasonId, String newestIndex) {
-        String sql = "select count(*) from teleplay where season_id=? and newest_ep_index=?";
+    private boolean isExistFiction(Connection conn, Long seasonId, String newestIndex) {
+        String sql = "select count(*) from fiction where season_id=? and newest_ep_index=?";
         int num = 0;
         PreparedStatement pstmt;
         try {
@@ -267,7 +269,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
                 return true;
             }
         } catch (SQLException e) {
-            logger.error("通过season_id和newest_index查询电视剧数据错误: " + seasonId + " " + newestIndex, e);
+            logger.error("通过season_id和newest_index查询小说数据错误: " + seasonId + " " + newestIndex, e);
             return false;
         }
     }

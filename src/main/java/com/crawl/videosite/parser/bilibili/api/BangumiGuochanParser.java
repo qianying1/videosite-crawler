@@ -2,7 +2,7 @@ package com.crawl.videosite.parser.bilibili.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.crawl.core.util.Constants;
-import com.crawl.videosite.domain.Teleplay;
+import com.crawl.videosite.domain.Fiction;
 import com.crawl.videosite.parser.bilibili.api.abstra.AbstractBangumiGuochanParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,7 @@ public class BangumiGuochanParser extends AbstractBangumiGuochanParser {
     public void parseJson(JSONObject jsonObject) {
         if (jsonObject == null || jsonObject.isEmpty())
             return;
-        logger.info("开始分析国产视频视频列表数据>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        logger.info("开始分析小说视频列表数据>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         System.out.println(jsonObject);
         Map<String, Object> result = (Map<String, Object>) jsonObject.get("result");
         List<Map<String, Object>> datas = (List<Map<String, Object>>) result.get("list");
@@ -53,47 +53,47 @@ public class BangumiGuochanParser extends AbstractBangumiGuochanParser {
     /**
      * 将json数据分析成为持久化数据
      *
-     * @param teleplay
+     * @param fiction
      */
-    private void parseDataToPersistence(Map<String, Object> teleplay) {
-        if (teleplay == null || teleplay.isEmpty())
+    private void parseDataToPersistence(Map<String, Object> fiction) {
+        if (fiction == null || fiction.isEmpty())
             return;
-        Teleplay tp = new Teleplay();
-        tp.setCover(teleplay.get("cover").toString());
-        tp.setDm_count(Long.valueOf(teleplay.get("dm_count") != null ? teleplay.get("dm_count").toString() : "0"));
-        tp.setFavorite(Long.valueOf(teleplay.get("fav").toString()));
-        tp.setIs_finish(Integer.valueOf(teleplay.get("is_finish").toString()));
-        tp.setIs_started(Integer.valueOf(teleplay.get("is_started").toString()));
-        tp.setNewest_ep_index(teleplay.get("newest_ep_index").toString());
-        tp.setPlay_count(Long.valueOf(teleplay.get("play_count").toString()));
-        tp.setPts(Long.valueOf(teleplay.get("pts").toString()));
-        tp.setSeasion_id(Long.valueOf(teleplay.get("season_id").toString()));
-        tp.setSeason_status(Short.valueOf(teleplay.get("season_status").toString()));
-        tp.setSquare_cover(teleplay.get("square_cover").toString());
-        tp.setTitle(teleplay.get("title").toString());
-        tp.setTotal_count(Long.valueOf(teleplay.get("total_count").toString()));
-        insertTeleplay(tp);
+        Fiction tp = new Fiction();
+        tp.setCover(fiction.get("cover").toString());
+        tp.setDm_count(Long.valueOf(fiction.get("dm_count") != null ? fiction.get("dm_count").toString() : "0"));
+        tp.setFavorite(Long.valueOf(fiction.get("fav").toString()));
+        tp.setIs_finish(Integer.valueOf(fiction.get("is_finish").toString()));
+        tp.setIs_started(Integer.valueOf(fiction.get("is_started").toString()));
+        tp.setNewest_ep_index(fiction.get("newest_ep_index").toString());
+        tp.setPlay_count(Long.valueOf(fiction.get("play_count").toString()));
+        tp.setPts(Long.valueOf(fiction.get("pts").toString()));
+        tp.setSeasion_id(Long.valueOf(fiction.get("season_id").toString()));
+        tp.setSeason_status(Short.valueOf(fiction.get("season_status").toString()));
+        tp.setSquare_cover(fiction.get("square_cover").toString());
+        tp.setTitle(fiction.get("title").toString());
+        tp.setTotal_count(Long.valueOf(fiction.get("total_count").toString()));
+        insertFiction(tp);
     }
 
-    private void insertTeleplay(Teleplay teleplay) {
-        if (Constants.isUpdateTeleplay_biliBili) {
-            boolean teleplayExsist = dao.isExistTeleplay(teleplay.getSeasion_id(), teleplay.getNewest_ep_index());
-            if (teleplayExsist)
-                dao.updateTeleplay(teleplay);
+    private void insertFiction(Fiction fiction) {
+        if (Constants.isUpdateFiction_biliBili) {
+            boolean fictionExsist = dao.isExistFiction(fiction.getSeasion_id(), fiction.getNewest_ep_index());
+            if (fictionExsist)
+                dao.updateFiction(fiction);
             else {
-                Long id = dao.insertTeleplay(teleplay);
+                Long id = dao.insertFiction(fiction);
                 if (id != -1) {
-                    teleplay.setId(id);
+                    fiction.setId(id);
                 } else {
-                    logger.error("插入电视剧数据失败: " + teleplay.getTitle());
+                    logger.error("插入小说数据失败: " + fiction.getTitle());
                 }
             }
         } else {
-            Long id = dao.insertTeleplay(teleplay);
+            Long id = dao.insertFiction(fiction);
             if (id != -1) {
-                teleplay.setId(id);
+                fiction.setId(id);
             } else {
-                logger.error("插入电视剧数据失败: " + teleplay.getTitle());
+                logger.error("插入小说数据失败: " + fiction.getTitle());
             }
         }
     }

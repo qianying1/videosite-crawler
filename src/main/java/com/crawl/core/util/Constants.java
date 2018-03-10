@@ -19,9 +19,9 @@ public class Constants {
      */
     public final static boolean isUpdateVideo_biliBili = true;
     /**
-     * b站是否开启更新电视剧
+     * b站是否开启更新小说
      */
-    public static final boolean isUpdateTeleplay_biliBili=true;
+    public static final boolean isUpdateFiction_biliBili=true;
     /**
      * 单个ip请求间隔，单位ms
      */
@@ -63,6 +63,10 @@ public class Constants {
      * b站视频作者信息数据保存路径
      */
     public static String biliBiliVideoAuthorDataSerialPath="src/main/resources/biliBiliAuthorDatas";
+    /**
+     * b站视频信息保存路径
+     */
+    public static String biliBiliVideoDataSerialPath="src/main/resources/biliBiliVideoDatas";
 
     /**
      * a站名称

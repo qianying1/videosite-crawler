@@ -105,14 +105,14 @@ public class VideoSiteDao1Imp implements VideoSiteDao1 {
                 logger.info("websites表已存在");
             }
 
-            //teleplay
-            rs = cn.getMetaData().getTables(null, null, "teleplay", null);
+            //fiction
+            rs = cn.getMetaData().getTables(null, null, "fiction", null);
             if (!rs.next()) {
                 //创建analized_message表
-                st.execute(p.getProperty("createTeleplayTable"));
-                logger.info("teleplay表创建成功");
+                st.execute(p.getProperty("createFictionTable"));
+                logger.info("fiction表创建成功");
             } else {
-                logger.info("teleplay表已存在");
+                logger.info("fiction表已存在");
             }
 
             rs = cn.getMetaData().getTables(null, null, "user", null);

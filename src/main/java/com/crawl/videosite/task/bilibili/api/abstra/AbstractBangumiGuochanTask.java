@@ -108,7 +108,7 @@ public abstract class AbstractBangumiGuochanTask implements Runnable {
             try {
 //                Thread.sleep(2000);
                 //每五小时爬取一次
-                Thread.sleep(3000);
+                Thread.sleep(1000*60*60*10);
             } catch (InterruptedException e) {
                 logger.error("当前爬取目标地址时线程被中断: " + getTargetUrl(), e);
             }

@@ -5,10 +5,7 @@ import com.crawl.core.htmlunit.AbstractHtmlUnit;
 import com.crawl.core.htmlunit.IHtmlUnit;
 import com.crawl.core.util.*;
 import com.crawl.proxy.BiliBiliProxyHttpClient;
-import com.crawl.videosite.entity.VideoAuthorPersistence;
-import com.crawl.videosite.entity.VideoSiteDynamicPersistence;
-import com.crawl.videosite.entity.VideoSiteNewVideoPersistence;
-import com.crawl.videosite.entity.VideoSiteRankPersistence;
+import com.crawl.videosite.entity.*;
 import com.crawl.videosite.task.bilibili.BiliBiliDetailListPageTask;
 import com.crawl.videosite.task.bilibili.BiliBiliDetailPageTask;
 import com.crawl.videosite.task.bilibili.api.*;
@@ -144,8 +141,9 @@ public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
         newVideoListCrawler();
         //视频作者信息
         videoAuthorCrawler();
+        videoDataCrawler();
         //---------------------------------------bangumi begin------------------------------------------------------------------//
-        //国产连载电视剧
+        //国产连载小说
         bangumiGuochangCrawler();
         //---------------------------------------bangumi end--------------------------------------------------------------------//
         manageHttpClient();
@@ -227,6 +225,24 @@ public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
             detailListPageThreadPool.execute(new AuthorTask(persistence.getMid()));
         } else {
             detailListPageThreadPool.execute(new AuthorTask(0l));
+        }
+    }
+
+    /**
+     * 视频信息直接爬取
+     */
+    private void videoDataCrawler(){
+        VideoPersistence persistence = null;
+        try {
+            persistence = (VideoPersistence) HttpClientUtil.deserializeObject(Constants.biliBiliVideoDataSerialPath);
+        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
+            logger.error("fail to deserialize object from url: " + Constants.biliBiliVideoDataSerialPath, e);
+        }
+        if (persistence != null) {
+            detailListPageThreadPool.execute(new VideoJsonTask(persistence.getBiliBili_aid()));
+        } else {
+            detailListPageThreadPool.execute(new VideoJsonTask(1l));
         }
     }
 

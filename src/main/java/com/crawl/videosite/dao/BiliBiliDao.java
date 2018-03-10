@@ -2,7 +2,7 @@ package com.crawl.videosite.dao;
 
 
 import com.crawl.videosite.domain.Style;
-import com.crawl.videosite.domain.Teleplay;
+import com.crawl.videosite.domain.Fiction;
 import com.crawl.videosite.domain.Video;
 import com.crawl.videosite.domain.VideoAuthor;
 
@@ -30,29 +30,29 @@ public interface BiliBiliDao extends Dao {
     boolean isExistVideoType(Connection cn, Long rid);
 
     /**
-     * 是否存在电视剧
+     * 是否存在小说
      *
      * @param seasonId
      * @param newestIndex
      * @return
      */
-    boolean isExistTeleplay(Long seasonId,String newestIndex);
+    boolean isExistFiction(Long seasonId,String newestIndex);
 
     /**
-     * 插入电视剧数据
+     * 插入小说数据
      *
-     * @param teleplay
+     * @param fiction
      * @return
      */
-    Long insertTeleplay(Teleplay teleplay);
+    Long insertFiction(Fiction fiction);
 
     /**
-     * 更新电视剧数据
+     * 更新小说数据
      *
-     * @param teleplay
+     * @param fiction
      * @return
      */
-    Long updateTeleplay(Teleplay teleplay);
+    Long updateFiction(Fiction fiction);
 
     Long insertVideoType(Style type);
 

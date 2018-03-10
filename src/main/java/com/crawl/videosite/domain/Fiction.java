@@ -3,9 +3,9 @@ package com.crawl.videosite.domain;
 import java.io.Serializable;
 
 /**
- * 电视剧
+ * 小说
  */
-public class Teleplay extends BaseEntity implements Serializable {
+public class Fiction extends BaseEntity implements Serializable {
     /**
      * 封面
      */
