@@ -71,6 +71,7 @@ public class VideoDynamicListJsonParser extends AbstractVideoDynamicListParser {
         video.setBiliBili_videos(Integer.valueOf(archive.get("videos").toString()));
         video.setBiliBili_rid(Long.valueOf(archive.get("tid").toString())); //视频类型id
         type.setBiliBili_rid(Long.valueOf(archive.get("tid").toString()));
+        author.setType_id(Long.valueOf(archive.get("tid").toString()));
         type.setStyleName(archive.get("tname").toString());     //视频类型名称
         video.setBiliBili_copyright(Integer.valueOf(archive.get("copyright").toString()));
         video.setLogo(archive.get("pic").toString());
@@ -104,7 +105,7 @@ public class VideoDynamicListJsonParser extends AbstractVideoDynamicListParser {
         video.setHis_rank(Integer.valueOf(stat.get("his_rank").toString()));
         video.setLike(Long.valueOf(stat.get("like").toString()));*/
         video.setDynamic(archive.get("dynamic").toString());
-        insertType(type, video);
+        insertType(type, video,author);
         insertAuthor(author, video);
         insertVideo(video);
     }
@@ -132,7 +133,7 @@ public class VideoDynamicListJsonParser extends AbstractVideoDynamicListParser {
         }
     }
 
-    private void insertType(Style type, Video video) {
+    private void insertType(Style type, Video video,VideoAuthor author) {
         if (Constants.isUpdateVideoType_biliBili) {
             boolean isExsit = dao.isExistVideoType(type.getBiliBili_rid());
             if (!isExsit) {
@@ -140,6 +141,7 @@ public class VideoDynamicListJsonParser extends AbstractVideoDynamicListParser {
                 if (id != -1) {
                     type.setId(id);
                     video.setStyle(type);
+                    author.setType_id(id);
                 } else {
                     logger.error("插入视频类型数据失败================: " + type.getStyleName());
                 }
@@ -148,12 +150,14 @@ public class VideoDynamicListJsonParser extends AbstractVideoDynamicListParser {
                 Long id = dao.selectVideoTypeIdByRid(type.getBiliBili_rid());
                 type.setId(id);
                 video.setStyle(type);
+                author.setType_id(id);
             }
         } else {
             Long id = dao.insertVideoType(type);
             if (id != -1) {
                 type.setId(id);
                 video.setStyle(type);
+                author.setType_id(id);
             } else {
                 logger.error("插入视频类型数据失败-------------------------: " + type.getStyleName());
             }

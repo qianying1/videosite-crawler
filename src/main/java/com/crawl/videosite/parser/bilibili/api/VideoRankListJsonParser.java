@@ -87,7 +87,7 @@ public class VideoRankListJsonParser extends AbstractVideoRankListParser {
         video.setDuration(Integer.valueOf(times[0]) + (Integer.valueOf(times[1]) - 29 >= 0 ? 1 : 0));
         video.setBadgepay(Boolean.valueOf(archive.get("badgepay").toString()) == false ? 0 : 1);
         video.setPts(Long.valueOf(archive.get("pts").toString()));
-        insertType(type, video);
+        insertType(type, video,author);
         insertAuthor(author, video);
         insertVideo(video);
     }
@@ -115,7 +115,7 @@ public class VideoRankListJsonParser extends AbstractVideoRankListParser {
         }
     }
 
-    private void insertType(Style type, Video video) {
+    private void insertType(Style type, Video video,VideoAuthor author) {
         if (Constants.isUpdateVideoType_biliBili) {
             boolean typeExsist = dao.isExistVideoTypeByName(type.getStyleName());
             if (typeExsist) {
@@ -123,11 +123,13 @@ public class VideoRankListJsonParser extends AbstractVideoRankListParser {
                 Long id = dao.selectVideoTypeIdByName(type.getStyleName());
                 type.setId(id);
                 video.setStyle(type);
+                author.setType_id(id);
             } else {
                 Long id = dao.insertVideoType(type);
                 if (id != -1) {
                     type.setId(id);
                     video.setStyle(type);
+                    author.setType_id(id);
                 } else {
                     logger.error("插入视频类型数据失败===============================: " + type.getStyleName());
                 }
@@ -137,6 +139,7 @@ public class VideoRankListJsonParser extends AbstractVideoRankListParser {
             if (id != -1l) {
                 type.setId(id);
                 video.setStyle(type);
+                author.setType_id(id);
             } else {
                 logger.error("插入视频类型数据失败------------------------: " + type.getStyleName());
             }

@@ -13,6 +13,10 @@ public class VideoAuthor extends BaseEntity implements Serializable {
      */
     private Long biliBili_mid = -1l;
     /**
+     * 作者类型id
+     */
+    private Long type_id = -1l;
+    /**
      * 作者名称
      */
     private String name;
@@ -31,11 +35,11 @@ public class VideoAuthor extends BaseEntity implements Serializable {
     /**
      * 文章数量
      */
-    private Long article=0l;
+    private Long article = 0l;
     /**
      * 追随者数量
      */
-    private Long follower=0l;
+    private Long follower = 0l;
     /**
      * 拥有视频数量
      */
@@ -167,5 +171,13 @@ public class VideoAuthor extends BaseEntity implements Serializable {
 
     public void setBiliBili_mid(Long biliBili_mid) {
         this.biliBili_mid = biliBili_mid;
+    }
+
+    public Long getType_id() {
+        return type_id;
+    }
+
+    public void setType_id(Long type_id) {
+        this.type_id = type_id;
     }
 }

@@ -18,19 +18,6 @@ public class BangumiGuochanParser extends AbstractBangumiGuochanParser {
     Logger logger = LoggerFactory.getLogger(BangumiGuochanParser.class);
 
     /**
-     * 视频类型id
-     */
-    private Long rid = 1l;
-    /**
-     * 页面大小
-     */
-    private Integer ps = 50;
-    /**
-     * 页码
-     */
-    private Integer pn = 1;
-
-    /**
      * 分析json数据
      *
      * @param jsonObject
@@ -96,30 +83,6 @@ public class BangumiGuochanParser extends AbstractBangumiGuochanParser {
                 logger.error("插入小说数据失败: " + fiction.getTitle());
             }
         }
-    }
-
-    public Long getRid() {
-        return rid;
-    }
-
-    public void setRid(Long rid) {
-        this.rid = rid;
-    }
-
-    public Integer getPs() {
-        return ps;
-    }
-
-    public void setPs(Integer ps) {
-        this.ps = ps;
-    }
-
-    public Integer getPn() {
-        return pn;
-    }
-
-    public void setPn(Integer pn) {
-        this.pn = pn;
     }
 
 }
