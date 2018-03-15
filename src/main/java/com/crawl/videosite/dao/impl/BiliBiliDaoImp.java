@@ -369,7 +369,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
      * @return
      */
     @Override
-    public synchronized Long insertVideo(Connection conn, Video video) {
+    public Long insertVideo(Connection conn, Video video) {
         try {
             /*if (isExistVideo(conn, video.getBiliBili_aid())) {
                 return -1l;
@@ -444,7 +444,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
      * @return
      */
     @Override
-    public synchronized Long insertVideoType(Connection cn, Style type) {
+    public Long insertVideoType(Connection cn, Style type) {
         try {
             /*if (isExistVideoType(cn, type.getBiliBili_rid())) {
                 return -1l;
@@ -505,7 +505,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
      * @return
      */
     @Override
-    public synchronized Long updateAuthor(Connection conn, VideoAuthor author) {
+    public Long updateAuthor(Connection conn, VideoAuthor author) {
         Long mid = author.getBiliBili_mid();
         VideoAuthor origin = selectAuthorByMid(ConnectionManager.getConnection(), mid);
         if (origin == null) {
@@ -683,7 +683,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
      * @param video
      * @return
      */
-    public synchronized boolean updateVideo(Connection conn, Video video) {
+    public boolean updateVideo(Connection conn, Video video) {
         try {
             Long aid = video.getBiliBili_aid();
             Video origin = selectVideoByAid(ConnectionManager.getConnection(), aid);
@@ -792,7 +792,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
      * @return
      */
     @Override
-    public synchronized Long insertAuthor(Connection conn, VideoAuthor author) {
+    public Long insertAuthor(Connection conn, VideoAuthor author) {
         try {
             String column = "biliBili_mid,name,indexHref,signature,videoCount,attentionCount,audienceCount,logo,createDate,sex,location,follower,article,type_id";
             String values = "?,?,?,?,?,?,?,?,?,?,?,?,?,?";
@@ -1004,7 +1004,7 @@ public class BiliBiliDaoImp extends DaoImp implements BiliBiliDao {
      * @return
      */
     @Override
-    public synchronized Long updateVideoType(Connection conn, Style type) {
+    public Long updateVideoType(Connection conn, Style type) {
         Long rid = type.getBiliBili_rid();
         Style origin = selectVideoTypeByRid(ConnectionManager.getConnection(), rid);
         if (origin == null) {

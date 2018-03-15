@@ -41,6 +41,7 @@ public class VideoJsonTask extends AbstractVideoTask {
     public VideoJsonTask(Long aid) {
         super(getTargetUrl(BiliBiliParams.videoStatDomain, aid));
         this.target = getTargetUrl(BiliBiliParams.videoStatDomain, aid);
+        VideoJsonTask.aid=aid;
         videoListParser = new VideoJsonParser();
     }
 

@@ -23,11 +23,11 @@ public class Video extends BaseEntity implements Serializable {
     /**
      * b站的videos属性
      */
-    private Integer biliBili_videos = -1;
+    private Integer biliBili_videos = 0;
     /**
      * b站的copyright属性
      */
-    private Integer biliBili_copyright = -1;
+    private Integer biliBili_copyright = 0;
     /**
      * 指向的链接
      */

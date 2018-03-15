@@ -8,8 +8,6 @@ import com.crawl.videosite.task.bilibili.api.abstra.AbstractAuthorTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
-
 /**
  * 视频作者信息爬取任务
  */
@@ -44,6 +42,7 @@ public class AuthorTask extends AbstractAuthorTask {
     public AuthorTask(Long mid) {
         super(getTargetUrl(BiliBiliParams.listDomain, mid));
         this.target = getTargetUrl(BiliBiliParams.listDomain, mid);
+        AuthorTask.mid = mid;
         videoListParser = new AuthorParser();
     }
 
@@ -57,15 +56,18 @@ public class AuthorTask extends AbstractAuthorTask {
         if (jsonObject == null) {
             return;
         }
+        /*if(mid==61926l){
+            mid+=3085l;
+        }*/
         if (Integer.valueOf(jsonObject.get("code").toString()) != 0) {
             logger.warn("fail to catch json data from url: " + this.target);
-            mid++;
+            mid--;
             setTargetUrl(getTargetUrl(targetDomain, mid));
             return;
         } else {
             videoListParser.parseJson(jsonObject, mid);
         }
-        mid++;
+        mid--;
         if (getEmptyCount() > MAXEMPTYCOUNT) {
             setEmptyCount(0);
             mid = 0l;

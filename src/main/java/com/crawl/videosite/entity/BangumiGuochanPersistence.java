@@ -6,6 +6,7 @@ import java.io.Serializable;
  * 国产连载序列化类
  */
 public class BangumiGuochanPersistence implements Serializable {
+    private static final long serialVersionUID = 6836446947871751901L;
 
     /**
      * b站视频id

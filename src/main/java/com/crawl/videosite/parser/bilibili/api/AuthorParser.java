@@ -54,7 +54,7 @@ public class AuthorParser extends AbstractAuthorParser {
             } else {
                 Long id = biliBiliDao.insertAuthor(author);
                 if (id != -1) {
-                    logger.error("插入视频作者数据成功: " + author.getName());
+                    logger.info("插入视频作者数据成功: " + author.getName());
                 }else {
                     logger.error("插入视频作者数据失败: " + author.getName());
                 }

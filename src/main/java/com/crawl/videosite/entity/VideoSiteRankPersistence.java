@@ -8,7 +8,7 @@ import java.io.Serializable;
  * Created by qianhaibin on 2018/3/3.
  */
 public class VideoSiteRankPersistence implements Serializable {
-
+    private static final long serialVersionUID = 6836446947871751901L;
     /**
      * b站视频id
      */

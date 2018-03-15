@@ -94,7 +94,8 @@ public class VideoDynamicListJsonParser extends AbstractVideoDynamicListParser {
         author.setBiliBili_mid(Long.valueOf(owner.get("mid").toString()));
         author.setName(owner.get("name").toString());
         author.setLogo(owner.get("face").toString());
-        Map<String, Object> stat = (Map<String, Object>) archive.get("stat");
+        logger.info("作者中的视频类型id为： " + author.getType_id() + " 名称为: " + author.getName());
+//        Map<String, Object> stat = (Map<String, Object>) archive.get("stat");
         /*video.setViews(Long.valueOf(stat.get("view").toString()));
         video.setMasks(Long.valueOf(stat.get("danmaku").toString()));
         video.setReplay(Long.valueOf(stat.get("reply").toString()));
@@ -105,7 +106,7 @@ public class VideoDynamicListJsonParser extends AbstractVideoDynamicListParser {
         video.setHis_rank(Integer.valueOf(stat.get("his_rank").toString()));
         video.setLike(Long.valueOf(stat.get("like").toString()));*/
         video.setDynamic(archive.get("dynamic").toString());
-        insertType(type, video,author);
+        insertType(type, video, author);
         insertAuthor(author, video);
         insertVideo(video);
     }
@@ -133,7 +134,7 @@ public class VideoDynamicListJsonParser extends AbstractVideoDynamicListParser {
         }
     }
 
-    private void insertType(Style type, Video video,VideoAuthor author) {
+    private void insertType(Style type, Video video, VideoAuthor author) {
         if (Constants.isUpdateVideoType_biliBili) {
             boolean isExsit = dao.isExistVideoType(type.getBiliBili_rid());
             if (!isExsit) {

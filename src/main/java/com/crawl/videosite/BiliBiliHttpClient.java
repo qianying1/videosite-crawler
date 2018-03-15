@@ -224,7 +224,7 @@ public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
         if (persistence != null) {
             detailListPageThreadPool.execute(new AuthorTask(persistence.getMid()));
         } else {
-            detailListPageThreadPool.execute(new AuthorTask(0l));
+            detailListPageThreadPool.execute(new AuthorTask(301316642l));
         }
     }
 
