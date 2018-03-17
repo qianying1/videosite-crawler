@@ -20,22 +20,22 @@ public class AcfunParams {
     /**
      * up主最近时间发布的文章信息uid为用户id
      */
-    public static final String articleContentDomain="http://webapi.acfun.cn/query/article/latest?uid=252418";
+    public static final String articleContentDomain="http://webapi.acfun.cn/query/article/latest?uid=";
     /**
      * 模糊搜索api，参数:
-     * [id-视频id,pageSize-页面大小,pageNo-页码,type-类型id,cd-类似于类型id,format-格式(system.recomlist),_-时间戳(1521263766293)]
+     * [id-视频id(以ac为前缀),pageSize-页面大小,pageNo-页码,type-类型id,cd-类似于类型id,format-格式(system.recomlist),_-时间戳(1521263766293)]
      * 成功status=200,失败status=400
      */
-    public static final String searchVideoContentDomain="http://search.acfun.cn/like?id=ac41386&pageSize=5&pageNo=1&type=1&cd=1";
+    public static final String searchVideoContentDomain="http://search.acfun.cn/like?";
     /**
      * 用户信息api,参数userId-用户id
      * 返回contributeCount-投稿数量,gender-性别[1-男人,0女人],followedCount-粉丝数量,followingCount-关注数量
      */
-    public static final String upManDetailDomain="http://www.acfun.cn/u/profile.aspx?userId=252418";
+    public static final String upManDetailDomain="http://www.acfun.cn/u/profile.aspx?userId=";
     /**
      * 评论列表,contentId-视频id
      */
-    public static final String commentsDomain="http://www.acfun.cn/comment_list_json.aspx?contentId=413888";
+    public static final String commentsDomain="http://www.acfun.cn/comment_list_json.aspx?contentId=";
     /**
      * 作者空间,rest的URL风格,后面数字代表作者id
      */
