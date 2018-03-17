@@ -70,11 +70,6 @@ public class BiliBiliParams {
      */
     public static final String liveReviewDomain = "https://api.live.bilibili.com/guard/topList?roomid=6&page=3";
     /**
-     * 用户身份卡api
-     * 参数[mid-作者id,photo-是否显示图片]
-     */
-    public static final String authorCardDomain = "https://api.bilibili.com/x/web-interface/card?";
-    /**
      * 用户欢迎信息api
      * 参数[roomid-房间id]
      */

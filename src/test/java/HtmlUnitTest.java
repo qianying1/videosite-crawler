@@ -19,13 +19,13 @@ public class HtmlUnitTest {
     public static void main(String[] args) {
         Document doc = null;
         try {
-            doc = Jsoup.connect("" + "1").userAgent(Constants.userAgentArray[11]).timeout(10000).get();
+            doc = Jsoup.connect("http://www.acfun.cn/v/ac4138851").userAgent(Constants.userAgentArray[11]).timeout(10000).get();
         } catch (Exception e) {
             e.printStackTrace();
         }
         System.out.println(doc);
         System.out.println("jsoup\n\n\n");
-        String url = "" + "1";//想采集的网址
+        String url = "http://www.acfun.cn/v/ac4138851";//想采集的网址
         String refer = "http://baidu.com/";
         URL link = null;
         try {
