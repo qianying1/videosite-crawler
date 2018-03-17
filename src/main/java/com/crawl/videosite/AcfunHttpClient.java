@@ -1,36 +1,29 @@
 package com.crawl.videosite;
 
-import com.crawl.Main;
 import com.crawl.core.htmlunit.AbstractHtmlUnit;
 import com.crawl.core.htmlunit.IHtmlUnit;
-import com.crawl.core.httpclient.AbstractHttpClient;
-import com.crawl.core.httpclient.IHttpClient;
-import com.crawl.core.util.Config;
-import com.crawl.core.util.Constants;
-import com.crawl.core.util.SimpleThreadPoolExecutor;
-import com.crawl.core.util.ThreadPoolMonitor;
+import com.crawl.core.util.*;
 import com.crawl.proxy.AcfunProxyHttpClient;
-import com.crawl.videosite.task.bilibili.BiliBiliDetailListPageTask;
-import com.crawl.videosite.task.bilibili.BiliBiliDetailPageTask;
-import com.crawl.videosite.task.bilibili.BiliBiliGeneralPageTask;
-import org.apache.http.client.methods.HttpGet;
+import com.crawl.videosite.entity.AcfunVideoPersistence;
+import com.crawl.videosite.task.acfun.AcfunDetailListPageTask;
+import com.crawl.videosite.task.acfun.AcfunDetailPageTask;
+import com.crawl.videosite.task.acfun.api.impl.AcfunVideoApiTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by qianhaibin on 2018/2/27.
  */
 public class AcfunHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
-    private static Logger logger = LoggerFactory.getLogger(Main.class);
+    private static Logger logger = LoggerFactory.getLogger(AcfunHttpClient.class);
     private volatile static AcfunHttpClient instance;
     /**
      * 统计用户数量
@@ -62,12 +55,11 @@ public class AcfunHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
      * 详情列表页下载线程池
      */
     private ThreadPoolExecutor detailListPageThreadPool;
+
     /**
      * request　header
      * 获取列表页时，必须带上
      */
-    private static String authorization;
-
     private AcfunHttpClient() {
         initHttpClient();
         intiThreadPool();
@@ -87,28 +79,29 @@ public class AcfunHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
      * 初始化线程池
      */
     private void intiThreadPool() {
-        //详情页线程池
+        //详情页下载线程池
         detailPageThreadPool = new SimpleThreadPoolExecutor(Config.downloadThreadSize,
                 Config.downloadThreadSize,
                 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(),
-                "detailPageThreadPool");
+                "biliBiliDetailPageThreadPool");
 
-        //列表页线程池
+        //列表页下载线程池
         listPageThreadPool = new SimpleThreadPoolExecutor(50, 80,
                 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(5000),
-                new ThreadPoolExecutor.DiscardPolicy(), "listPageThreadPool");
-        new Thread(new ThreadPoolMonitor(detailPageThreadPool, "DetailPageDownloadThreadPool")).start();
-        new Thread(new ThreadPoolMonitor(listPageThreadPool, "ListPageDownloadThreadPool")).start();
+                new ThreadPoolExecutor.DiscardPolicy(), "acfunListPageThreadPool");
+        new Thread(new ThreadPoolMonitor(detailPageThreadPool, "acfunDetailPageDownloadThreadPool")).start();
+        new Thread(new ThreadPoolMonitor(listPageThreadPool, "acfunListPageDownloadThreadPool")).start();
+
         //详情列表页下载线程池
         detailListPageThreadPool = new SimpleThreadPoolExecutor(Config.downloadThreadSize,
                 Config.downloadThreadSize,
                 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(2000),
                 new ThreadPoolExecutor.DiscardPolicy(),
-                "detailListPageThreadPool");
-        new Thread(new ThreadPoolMonitor(detailListPageThreadPool, "DetailListPageThreadPool")).start();
+                "acfunDetailListPageThreadPool");
+        new Thread(new ThreadPoolMonitor(detailListPageThreadPool, "acfunDetailListPageThreadPool")).start();
 
     }
 
@@ -118,67 +111,39 @@ public class AcfunHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
      * @param url
      */
     public void startCrawl(String url) {
-        detailPageThreadPool.execute(new BiliBiliDetailPageTask(url, Config.acfunIsProxy));
+        detailPageThreadPool.execute(new AcfunDetailPageTask(url, Config.acfunIsProxy));
         manageHttpClient();
     }
 
     /**
-     * 开始对链接进行爬取（需要登录的爬取）
+     * 开始对种子链接进行爬取（需要登录的爬取）
      */
     @Override
     public void startCrawl() {
-        authorization = initAuthorization();
-
-        String startToken = Config.startUserToken;
-        String startUrl = String.format(Constants.USER_FOLLOWEES_URL, startToken, 0);
-        HttpGet request = new HttpGet(startUrl);
-        request.setHeader("authorization", "oauth " + AcfunHttpClient.getAuthorization());
-//        detailListPageThreadPool.execute(new BiliBiliDetailListPageTask(request, Config.acfunIsProxy));
-        manageHttpClient();
+        videoContentCrawler();
     }
 
     /**
-     * 初始化authorization
-     *
-     * @return
+     * 爬取活动视频列表api
      */
-    private String initAuthorization() {
-        logger.info("初始化authoriztion中...");
-        String content = null;
-
-        BiliBiliGeneralPageTask generalPageTask = new BiliBiliGeneralPageTask(Config.acfunStartURL, true);
-        generalPageTask.run();
-        content = generalPageTask.getPage().getHtml();
-
-        Pattern pattern = Pattern.compile("https://static\\.zhihu\\.com/heifetz/main\\.app\\.([0-9]|[a-z])*\\.js");
-        Matcher matcher = pattern.matcher(content);
-        String jsSrc = null;
-        if (matcher.find()) {
-            jsSrc = matcher.group(0);
+    private void videoContentCrawler() {
+        AcfunVideoPersistence persistence = null;
+        try {
+            persistence = (AcfunVideoPersistence) HttpClientUtil.deserializeObject(Constants.acfunVideoDataSerialPath);
+        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
+            logger.error("fail to deserialize object from url: " + Constants.acfunVideoDataSerialPath, e);
+        }
+        if (persistence != null) {
+            detailListPageThreadPool.execute(new AcfunVideoApiTask(persistence.getContentId()));
         } else {
-            throw new RuntimeException("not find javascript url");
+            detailListPageThreadPool.execute(new AcfunVideoApiTask(0l));
         }
-        String jsContent = null;
-        BiliBiliGeneralPageTask jsPageTask = new BiliBiliGeneralPageTask(jsSrc, true);
-        jsPageTask.run();
-        jsContent = jsPageTask.getPage().getHtml();
-
-        pattern = Pattern.compile("oauth\\\"\\),h=\\\"(([0-9]|[a-z])*)\"");
-        matcher = pattern.matcher(jsContent);
-        if (matcher.find()) {
-            String authorization = matcher.group(1);
-            logger.info("初始化authoriztion完成");
-            return authorization;
-        }
-        throw new RuntimeException("not get authorization");
     }
 
-    public static String getAuthorization() {
-        return authorization;
-    }
 
     /**
-     * 管理视频网站客户端
+     * 管理b站客户端
      * 关闭整个爬虫
      */
     public void manageHttpClient() {
@@ -196,13 +161,12 @@ public class AcfunHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
             }
             if (detailListPageThreadPool.isTerminated()) {
                 //关闭数据库连接
-                Map<Thread, Connection> map = BiliBiliDetailListPageTask.getConnectionMap();
+                Map<Thread, Connection> map = AcfunDetailListPageTask.getConnectionMap();
                 CommonHttpClient.closeConnections(map);
                 //关闭代理检测线程池
                 AcfunProxyHttpClient.getInstance().getProxyTestThreadExecutor().shutdownNow();
                 //关闭代理下载页线程池
                 AcfunProxyHttpClient.getInstance().getProxyDownloadThreadExecutor().shutdownNow();
-
                 break;
             }
             double costTime = (System.currentTimeMillis() - startTime) / 1000.0;//单位s

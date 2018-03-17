@@ -2,6 +2,14 @@ package com.crawl.videosite.parser.bilibili.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.crawl.core.util.Constants;
+import com.crawl.videosite.dao.AuthorDao;
+import com.crawl.videosite.dao.FictionDao;
+import com.crawl.videosite.dao.VideoDao;
+import com.crawl.videosite.dao.VideoTypeDao;
+import com.crawl.videosite.dao.impl.AuthorDaoImp;
+import com.crawl.videosite.dao.impl.FictionDaoImp;
+import com.crawl.videosite.dao.impl.VideoDaoImp;
+import com.crawl.videosite.dao.impl.VideoTypeDaoImp;
 import com.crawl.videosite.domain.Fiction;
 import com.crawl.videosite.parser.bilibili.api.abstra.AbstractBangumiGuochanParser;
 import org.slf4j.Logger;
@@ -16,7 +24,11 @@ import java.util.Map;
 public class BangumiGuochanParser extends AbstractBangumiGuochanParser {
 
     Logger logger = LoggerFactory.getLogger(BangumiGuochanParser.class);
+    private FictionDao fictionDao;
 
+    public BangumiGuochanParser(){
+        fictionDao=new FictionDaoImp();
+    }
     /**
      * 分析json数据
      *
@@ -64,11 +76,11 @@ public class BangumiGuochanParser extends AbstractBangumiGuochanParser {
 
     private void insertFiction(Fiction fiction) {
         if (Constants.isUpdateFiction_biliBili) {
-            boolean fictionExsist = dao.isExistFiction(fiction.getSeasion_id(), fiction.getNewest_ep_index());
+            boolean fictionExsist = fictionDao.isExistFiction(fiction.getSeasion_id(), fiction.getNewest_ep_index());
             if (fictionExsist)
-                dao.updateFiction(fiction);
+                fictionDao.updateFiction(fiction);
             else {
-                Long id = dao.insertFiction(fiction);
+                Long id = fictionDao.insertFiction(fiction);
                 if (id != -1) {
                     fiction.setId(id);
                 } else {
@@ -76,7 +88,7 @@ public class BangumiGuochanParser extends AbstractBangumiGuochanParser {
                 }
             }
         } else {
-            Long id = dao.insertFiction(fiction);
+            Long id = fictionDao.insertFiction(fiction);
             if (id != -1) {
                 fiction.setId(id);
             } else {

@@ -2,6 +2,14 @@ package com.crawl.videosite.parser.bilibili.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.crawl.core.util.Constants;
+import com.crawl.videosite.dao.AuthorDao;
+import com.crawl.videosite.dao.FictionDao;
+import com.crawl.videosite.dao.VideoDao;
+import com.crawl.videosite.dao.VideoTypeDao;
+import com.crawl.videosite.dao.impl.AuthorDaoImp;
+import com.crawl.videosite.dao.impl.FictionDaoImp;
+import com.crawl.videosite.dao.impl.VideoDaoImp;
+import com.crawl.videosite.dao.impl.VideoTypeDaoImp;
 import com.crawl.videosite.domain.Style;
 import com.crawl.videosite.domain.Video;
 import com.crawl.videosite.domain.VideoAuthor;
@@ -15,7 +23,11 @@ import java.util.Map;
 
 public class AuthorParser extends AbstractAuthorParser {
     private Logger logger = LoggerFactory.getLogger(AuthorParser.class);
+    private AuthorDao authorDao;
 
+    public AuthorParser(){
+        authorDao=new AuthorDaoImp();
+    }
     /**
      * 分析json数据
      *
@@ -46,13 +58,12 @@ public class AuthorParser extends AbstractAuthorParser {
 
     private void insertAuthor(VideoAuthor author) {
         if (Constants.isUpdateVideoAuthor_biliBili) {
-            boolean authorExsist = biliBiliDao.isExistAuthor(author.getBiliBili_mid());
+            boolean authorExsist = authorDao.isExistAuthor(author.getBiliBili_mid());
             if (authorExsist) {
-                Long id = biliBiliDao.updateAuthor(author);
-//                Long id = biliBiliDao.selectAuthorIdByMid(author.getBiliBili_mid());
+                Long id = authorDao.updateAuthor(author);
                 author.setId(id);
             } else {
-                Long id = biliBiliDao.insertAuthor(author);
+                Long id = authorDao.insertAuthor(author);
                 if (id != -1) {
                     logger.info("插入视频作者数据成功: " + author.getName());
                 }else {
@@ -60,7 +71,7 @@ public class AuthorParser extends AbstractAuthorParser {
                 }
             }
         } else {
-            Long id = biliBiliDao.insertAuthor(author);
+            Long id = authorDao.insertAuthor(author);
             if (id != -1) {
                 author.setId(id);
             } else {

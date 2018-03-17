@@ -2,6 +2,14 @@ package com.crawl.videosite.parser.bilibili.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.crawl.core.util.Constants;
+import com.crawl.videosite.dao.AuthorDao;
+import com.crawl.videosite.dao.FictionDao;
+import com.crawl.videosite.dao.VideoDao;
+import com.crawl.videosite.dao.VideoTypeDao;
+import com.crawl.videosite.dao.impl.AuthorDaoImp;
+import com.crawl.videosite.dao.impl.FictionDaoImp;
+import com.crawl.videosite.dao.impl.VideoDaoImp;
+import com.crawl.videosite.dao.impl.VideoTypeDaoImp;
 import com.crawl.videosite.domain.Video;
 import com.crawl.videosite.parser.bilibili.api.abstra.AbstractVideoParser;
 import org.slf4j.Logger;
@@ -16,7 +24,11 @@ import java.util.Map;
 public class VideoJsonParser extends AbstractVideoParser {
 
     Logger logger = LoggerFactory.getLogger(VideoJsonParser.class);
+    private VideoDao videoDao;
 
+    public VideoJsonParser(){
+        videoDao=new VideoDaoImp();
+    }
     /**
      * 分析json数据
      *
@@ -56,19 +68,19 @@ public class VideoJsonParser extends AbstractVideoParser {
 
     private void insertVideo(Video video) {
         if (Constants.isUpdateVideo_biliBili) {
-            boolean videoExsist = dao.isExistVideo(video.getBiliBili_aid());
+            boolean videoExsist = videoDao.isExistVideo(video.getBiliBili_aid());
             if (!videoExsist) {
-                Long id = dao.insertVideo(video);
+                Long id = videoDao.insertVideo(video);
                 if (id != -1l) {
                     video.setId(id);
                 } else {
                     logger.error("插入视频数据失败: " + video.getTitle());
                 }
             } else {
-                dao.updateVideo(video);
+                videoDao.updateVideo(video);
             }
         } else {
-            Long id = dao.insertVideo(video);
+            Long id = videoDao.insertVideo(video);
             if (id != -1l) {
                 video.setId(id);
             } else {

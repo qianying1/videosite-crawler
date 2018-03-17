@@ -2,6 +2,14 @@ package com.crawl.videosite.parser.bilibili.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.crawl.core.util.Constants;
+import com.crawl.videosite.dao.AuthorDao;
+import com.crawl.videosite.dao.FictionDao;
+import com.crawl.videosite.dao.VideoDao;
+import com.crawl.videosite.dao.VideoTypeDao;
+import com.crawl.videosite.dao.impl.AuthorDaoImp;
+import com.crawl.videosite.dao.impl.FictionDaoImp;
+import com.crawl.videosite.dao.impl.VideoDaoImp;
+import com.crawl.videosite.dao.impl.VideoTypeDaoImp;
 import com.crawl.videosite.domain.Style;
 import com.crawl.videosite.domain.Video;
 import com.crawl.videosite.domain.VideoAuthor;
@@ -20,7 +28,15 @@ import java.util.Map;
 public class VideoRankListJsonParser extends AbstractVideoRankListParser {
 
     Logger logger = LoggerFactory.getLogger(VideoRankListJsonParser.class);
+    private VideoDao videoDao;
+    private AuthorDao authorDao;
+    private VideoTypeDao videoTypeDao;
 
+    public VideoRankListJsonParser(){
+        videoDao=new VideoDaoImp();
+        authorDao=new AuthorDaoImp();
+        videoTypeDao=new VideoTypeDaoImp();
+    }
     /**
      * 视频类型id
      */
@@ -94,11 +110,11 @@ public class VideoRankListJsonParser extends AbstractVideoRankListParser {
 
     private void insertVideo(Video video) {
         if (Constants.isUpdateVideo_biliBili) {
-            boolean videoExsist = dao.isExistVideo(video.getBiliBili_aid());
+            boolean videoExsist = videoDao.isExistVideo(video.getBiliBili_aid());
             if (videoExsist)
-                dao.updateVideo(video);
+                videoDao.updateVideo(video);
             else {
-                Long id = dao.insertVideo(video);
+                Long id = videoDao.insertVideo(video);
                 if (id != -1) {
                     video.setId(id);
                 } else {
@@ -106,7 +122,7 @@ public class VideoRankListJsonParser extends AbstractVideoRankListParser {
                 }
             }
         } else {
-            Long id = dao.insertVideo(video);
+            Long id = videoDao.insertVideo(video);
             if (id != -1) {
                 video.setId(id);
             } else {
@@ -117,15 +133,15 @@ public class VideoRankListJsonParser extends AbstractVideoRankListParser {
 
     private void insertType(Style type, Video video,VideoAuthor author) {
         if (Constants.isUpdateVideoType_biliBili) {
-            boolean typeExsist = dao.isExistVideoTypeByName(type.getStyleName());
+            boolean typeExsist = videoTypeDao.isExistVideoTypeByName(type.getStyleName());
             if (typeExsist) {
 //                Long id = dao.updateVideoType(type);
-                Long id = dao.selectVideoTypeIdByName(type.getStyleName());
+                Long id = videoTypeDao.selectVideoTypeIdByName(type.getStyleName());
                 type.setId(id);
                 video.setStyle(type);
                 author.setType_id(id);
             } else {
-                Long id = dao.insertVideoType(type);
+                Long id = videoTypeDao.insertVideoType(type);
                 if (id != -1) {
                     type.setId(id);
                     video.setStyle(type);
@@ -135,7 +151,7 @@ public class VideoRankListJsonParser extends AbstractVideoRankListParser {
                 }
             }
         } else {
-            Long id = dao.insertVideoType(type);
+            Long id = videoTypeDao.insertVideoType(type);
             if (id != -1l) {
                 type.setId(id);
                 video.setStyle(type);
@@ -148,14 +164,14 @@ public class VideoRankListJsonParser extends AbstractVideoRankListParser {
 
     private void insertAuthor(VideoAuthor author, Video video) {
         if (Constants.isUpdateVideoAuthor_biliBili) {
-            boolean authorExsist = dao.isExistAuthor(author.getBiliBili_mid());
+            boolean authorExsist = authorDao.isExistAuthor(author.getBiliBili_mid());
             if (authorExsist) {
 //                Long id = dao.updateAuthor(author);
-                Long id = dao.selectAuthorIdByMid(author.getBiliBili_mid());
+                Long id = authorDao.selectAuthorIdByMid(author.getBiliBili_mid());
                 author.setId(id);
                 video.setAuthor(author);
             } else {
-                Long id = dao.insertAuthor(author);
+                Long id = authorDao.insertAuthor(author);
                 if (id != -1) {
                     author.setId(id);
                     video.setAuthor(author);
@@ -164,7 +180,7 @@ public class VideoRankListJsonParser extends AbstractVideoRankListParser {
                 }
             }
         } else {
-            Long id = dao.insertAuthor(author);
+            Long id = authorDao.insertAuthor(author);
             if (id != -1) {
                 author.setId(id);
                 video.setAuthor(author);

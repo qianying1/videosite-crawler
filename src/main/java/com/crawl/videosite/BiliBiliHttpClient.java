@@ -1,6 +1,5 @@
 package com.crawl.videosite;
 
-import com.crawl.Main;
 import com.crawl.core.htmlunit.AbstractHtmlUnit;
 import com.crawl.core.htmlunit.IHtmlUnit;
 import com.crawl.core.util.*;
@@ -24,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Created by qianhaibin on 2018/2/27.
  */
 public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
-    private static Logger logger = LoggerFactory.getLogger(Main.class);
+    private static Logger logger = LoggerFactory.getLogger(BiliBiliHttpClient.class);
     private volatile static BiliBiliHttpClient instance;
     /**
      * 统计用户数量
@@ -231,7 +230,7 @@ public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
     /**
      * 视频信息直接爬取
      */
-    private void videoDataCrawler(){
+    private void videoDataCrawler() {
         VideoPersistence persistence = null;
         try {
             persistence = (VideoPersistence) HttpClientUtil.deserializeObject(Constants.biliBiliVideoDataSerialPath);

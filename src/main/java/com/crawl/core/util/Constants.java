@@ -69,6 +69,11 @@ public class Constants {
     public static String biliBiliVideoDataSerialPath="src/main/resources/biliBiliVideoDatas";
 
     /**
+     * a站视频信息持久化保存信息
+     */
+    public static String acfunVideoDataSerialPath="src/main/resources/acfunVideoDataSerialPath";
+
+    /**
      * a站名称
      */
     public final static String ACFUN = "acfun";
