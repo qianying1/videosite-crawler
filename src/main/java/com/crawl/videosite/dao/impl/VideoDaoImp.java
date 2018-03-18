@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * 视频持久层
  */
-public class VideoDaoImp extends DaoImp implements VideoDao{
+public class VideoDaoImp extends DaoImp implements VideoDao {
     private static Logger logger = LoggerFactory.getLogger(VideoDaoImp.class);
 
     /**
@@ -27,6 +27,24 @@ public class VideoDaoImp extends DaoImp implements VideoDao{
     @Override
     public boolean isExistVideo(Long aid) {
         return isExistVideo(ConnectionManager.getConnection(), aid);
+    }
+
+    /**
+     * a站中是否存在视频
+     *
+     * @param acfunVid
+     * @return
+     */
+    public boolean isExistVideoInAcfun(Long acfunVid) {
+        Connection conn = ConnectionManager.getConnection();
+        try {
+            if (isExistRecord(conn, "video", "acfun_vid", acfunVid)) {
+                return true;
+            }
+        } catch (SQLException e) {
+            logger.error("通过视频id查询视频数据失败" + acfunVid, e);
+        }
+        return false;
     }
 
     /**
@@ -43,6 +61,24 @@ public class VideoDaoImp extends DaoImp implements VideoDao{
             }
         } catch (SQLException e) {
             logger.error("通过视频id查询视频数据失败" + aid, e);
+        }
+        return false;
+    }
+
+    /**
+     * 是否存在a站的视频数据
+     *
+     * @param acfunVid
+     * @return
+     */
+    public boolean isExistVideoByAcfunVid(Long acfunVid) {
+        Connection conn = ConnectionManager.getConnection();
+        try {
+            if (isExistRecord(conn, "video", "acfun_vid", acfunVid)) {
+                return true;
+            }
+        } catch (SQLException e) {
+            logger.error("通过视频id查询视频数据失败" + acfunVid, e);
         }
         return false;
     }
@@ -73,8 +109,8 @@ public class VideoDaoImp extends DaoImp implements VideoDao{
             }*/
             String column = "bili_aid,biliBili_rid,biliBili_mid,biliBili_videos,biliBili_copyright,state," +
                     "attribute,duration,now_rank,his_rank,rights,description,ctime,pubdate,dynamic,likes,share,coin,favorite," +
-                    "replay,href,title,logo,upMan,views,masks,times,bananas,comments,videoAuthor,location,createDate,type,subtitle,badgepay,pts,review";
-            String values = "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
+                    "replay,href,title,logo,upMan,views,masks,times,bananas,comments,videoAuthor,location,createDate,type,subtitle,badgepay,pts,review,acfun_vid,acfun_uid,acfun_tid";
+            String values = "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
             String sql = "insert into video (" + column + ") values(" + values + ")";
             PreparedStatement pstmt;
             pstmt = conn.prepareStatement(sql);
@@ -116,6 +152,9 @@ public class VideoDaoImp extends DaoImp implements VideoDao{
             pstmt.setInt(35, (video.getBadgepay() != null ? video.getBadgepay() : -1));
             pstmt.setLong(36, (video.getPts() != null ? video.getPts() : -1));
             pstmt.setLong(37, video.getReview() != null ? video.getReview() : -1);
+            pstmt.setLong(38, video.getAcfun_vid() != null ? video.getAcfun_vid() : -1);
+            pstmt.setLong(39, video.getAcfun_uid());
+            pstmt.setLong(40, video.getAcfun_tid());
             pstmt.executeUpdate();
             ResultSet rs = pstmt.getGeneratedKeys();
             Long id = -1l;
@@ -164,6 +203,7 @@ public class VideoDaoImp extends DaoImp implements VideoDao{
                 video.setId(rs.getLong("id"));
                 video.setBiliBili_mid(rs.getLong("biliBili_mid"));
                 video.setBiliBili_aid(rs.getLong("bili_aid"));
+                video.setAcfun_vid(rs.getLong("acfun_vid"));
                 video.setBiliBili_rid(rs.getLong("biliBili_rid"));
                 video.setBiliBili_videos(rs.getInt("biliBili_videos"));
                 video.setBiliBili_copyright(rs.getInt("biliBili_copyright"));
@@ -231,6 +271,7 @@ public class VideoDaoImp extends DaoImp implements VideoDao{
             }
             video.setBiliBili_mid(video.getBiliBili_mid() != 0 ? video.getBiliBili_mid() : origin.getBiliBili_mid());
             video.setBiliBili_aid(video.getBiliBili_aid() != 0 ? video.getBiliBili_aid() : origin.getBiliBili_aid());
+            video.setAcfun_vid(video.getAcfun_vid() != null ? video.getAcfun_vid() : origin.getAcfun_vid());
             video.setBiliBili_rid(video.getBiliBili_rid() != 0 ? video.getBiliBili_rid() : origin.getBiliBili_rid());
             video.setBiliBili_videos(video.getBiliBili_videos() > 0 ? video.getBiliBili_videos() : origin.getBiliBili_videos());
             video.setBiliBili_copyright(video.getBiliBili_copyright() != null ? video.getBiliBili_copyright() : origin.getBiliBili_copyright());
@@ -304,10 +345,10 @@ public class VideoDaoImp extends DaoImp implements VideoDao{
             pstmt.setString(31, video.getLocation());
             pstmt.setDate(32, new Date(video.getCreateDate().getTime()));
             pstmt.setLong(33, video.getStyle() != null ? video.getStyle().getId() : null);
-            pstmt.setLong(34, video.getId() != null ? video.getId() : origin.getId());
-            pstmt.setInt(35, video.getBadgepay());
-            pstmt.setLong(36, video.getReview());
-            pstmt.setLong(37, video.getPts());
+            pstmt.setInt(34, video.getBadgepay());
+            pstmt.setLong(35, video.getReview());
+            pstmt.setLong(36, video.getPts());
+            pstmt.setLong(37, video.getId() != null ? video.getId() : origin.getId());
             int columns = pstmt.executeUpdate();
             if (columns <= 0) {
                 return false;

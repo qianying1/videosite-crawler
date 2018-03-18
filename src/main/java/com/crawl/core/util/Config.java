@@ -1211,7 +1211,7 @@ public class Config {
         dbEnable = Boolean.parseBoolean(p.getProperty("db.enable"));
         verificationCodePath = p.getProperty("verificationCodePath");
         emailOrPhoneNum = p.getProperty("zhiHu.emailOrPhoneNum");
-        password = p.getProperty("zhiHu.password");
+        password = p.getProperty("password");
         startUserToken = p.getProperty("startUserToken");
         downloadPageCount = Integer.valueOf(p.getProperty("downloadPageCount"));
         downloadThreadSize = Integer.valueOf(p.getProperty("downloadThreadSize"));

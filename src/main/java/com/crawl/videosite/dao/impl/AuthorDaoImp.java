@@ -46,6 +46,24 @@ public class AuthorDaoImp extends DaoImp implements AuthorDao {
     }
 
     /**
+     * a站中是否已存在该视频作者
+     *
+     * @param acfunUid
+     * @return
+     */
+    public boolean isExistAuthorInAcfun(Long acfunUid){
+        Connection conn=ConnectionManager.getConnection();
+        try {
+            if (isExistRecord(conn, "video_author", "acfun_uid", acfunUid)) {
+                return true;
+            }
+        } catch (SQLException e) {
+            logger.error("通过视频作者id查询视频作者数据失败" + acfunUid, e);
+        }
+        return false;
+    }
+
+    /**
      * 插入视频作者
      *
      * @param author
@@ -148,8 +166,8 @@ public class AuthorDaoImp extends DaoImp implements AuthorDao {
     @Override
     public Long insertAuthor(Connection conn, VideoAuthor author) {
         try {
-            String column = "biliBili_mid,name,indexHref,signature,videoCount,attentionCount,audienceCount,logo,createDate,sex,location,follower,article,type_id";
-            String values = "?,?,?,?,?,?,?,?,?,?,?,?,?,?";
+            String column = "biliBili_mid,name,indexHref,signature,videoCount,attentionCount,audienceCount,logo,createDate,sex,location,follower,article,type_id,acfun_uid,acfun_tid";
+            String values = "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
             String sql = "insert into video_author (" + column + ") values(" + values + ")";
             PreparedStatement pstmt;
             pstmt = conn.prepareStatement(sql);
@@ -167,6 +185,8 @@ public class AuthorDaoImp extends DaoImp implements AuthorDao {
             pstmt.setLong(12, author.getFollower() != null ? author.getFollower() : 0l);
             pstmt.setLong(13, author.getArticle() != null ? author.getArticle() : 0l);
             pstmt.setLong(14, author.getType_id() != -1l ? author.getType_id() : -1l);
+            pstmt.setLong(15,author.getAcfun_uid()!=-1l?author.getAcfun_uid():-1l);
+            pstmt.setLong(16,author.getAcfun_tid()!=-1l?author.getAcfun_tid():-1l);
             int columns = pstmt.executeUpdate();
             Long id = -1l;
             if (columns > 0) {

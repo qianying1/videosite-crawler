@@ -1,6 +1,5 @@
 package com.crawl.videosite.task.acfun.api;
 
-import com.alibaba.fastjson.JSONObject;
 import com.crawl.core.util.Config;
 import com.crawl.core.util.Constants;
 import com.crawl.core.util.HttpClientUtil;
@@ -9,6 +8,7 @@ import com.crawl.proxy.ProxyPool;
 import com.crawl.proxy.entity.Proxy;
 import com.crawl.videosite.entity.AcfunParams;
 import com.crawl.videosite.entity.AcfunVideoPersistence;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +46,7 @@ public abstract class AbstractAcfunVideoApiTask implements Runnable {
             crawlCount++;
             if (crawlCount >= PERSISTENCEINCOUNT) {
                 persistenceData();
+                crawlCount=0;
             }
             String jsonStr = null;
             try {
@@ -55,7 +56,7 @@ public abstract class AbstractAcfunVideoApiTask implements Runnable {
                 } else {
                     jsonStr = JsoupUtil.getJsonFromApi(getTagetURL(AbstractAcfunVideoApiTask.contentId));
                 }
-                if (jsonStr == null) {
+                if (StringUtils.isBlank(jsonStr)) {
                     jsonStr = JsoupUtil.getJsonFromApi(getTagetURL(AbstractAcfunVideoApiTask.contentId));
                 }
             } catch (IOException e) {
@@ -63,13 +64,24 @@ public abstract class AbstractAcfunVideoApiTask implements Runnable {
             } catch (InterruptedException e) {
                 logger.error("当前线程被中断", e);
             }
-            JSONObject jsonObject = JSONObject.parseObject(jsonStr);
-            if (jsonStr == null || jsonObject.isEmpty()) {
+            if (StringUtils.isBlank(jsonStr)) {
                 AbstractAcfunVideoApiTask.contentId++;
                 continue;
             }
-            handleVideoApi(jsonObject, AbstractAcfunVideoApiTask.contentId);
+            System.out.println(jsonStr + "===============================================");
+            String[] jsonArray = jsonStr.replace("[", "").replace("]", "").split(",");
+            System.out.println(jsonArray + "================================================");
+            if (jsonArray == null || jsonArray.length <= 0) {
+                AbstractAcfunVideoApiTask.contentId++;
+                continue;
+            }
+            handleVideoApi(jsonArray, AbstractAcfunVideoApiTask.contentId);
             AbstractAcfunVideoApiTask.contentId++;
+            try {
+                Thread.sleep(1500);
+            } catch (InterruptedException e) {
+                logger.error("a站视频数据爬取线程被中断", e);
+            }
         }
     }
 
@@ -91,9 +103,9 @@ public abstract class AbstractAcfunVideoApiTask implements Runnable {
     /**
      * 处理json数据
      *
-     * @param jsonObject
+     * @param jsonArray
      */
-    protected abstract void handleVideoApi(JSONObject jsonObject, Long contentId);
+    protected abstract void handleVideoApi(String[] jsonArray, Long contentId);
 
     /**
      * 返回目标链接地址

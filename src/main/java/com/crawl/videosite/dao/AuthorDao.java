@@ -13,6 +13,14 @@ public interface AuthorDao extends Dao {
 
     boolean isExistAuthor(Connection conn, Long mid);
 
+    /**
+     * a站中是否已存在该视频作者
+     *
+     * @param acfunUid
+     * @return
+     */
+    boolean isExistAuthorInAcfun(Long acfunUid);
+
     Long insertAuthor(VideoAuthor author);
 
     /**

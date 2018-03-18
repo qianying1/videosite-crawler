@@ -72,7 +72,7 @@ public class JsoupUtil {
         try {
             Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(ip, port));
             URL url = new URL(href);
-            HttpsURLConnection urlcon = (HttpsURLConnection) url.openConnection(proxy);
+            HttpURLConnection urlcon = (HttpURLConnection) url.openConnection(proxy);
             //获取连接
             urlcon.connect();
             InputStream is = urlcon.getInputStream();

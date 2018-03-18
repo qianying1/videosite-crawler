@@ -2,6 +2,7 @@ package com.crawl;
 
 import com.crawl.core.util.Config;
 import com.crawl.proxy.*;
+import com.crawl.videosite.AcfunHttpClient;
 import com.crawl.videosite.BiliBiliHttpClient;
 import com.crawl.videosite.dao.impl.VideoSiteDao1Imp;
 
@@ -40,10 +41,10 @@ public class Initializer {
      */
     public void startVideoSitesCrawler() {
         //a站
-//        if (Config.acfunIsProxy) {
-//            AcfunProxyHttpClient.getInstance().startCrawl();
-//        }
-//        AcfunHttpClient.getInstance().startCrawl();
+        if (Config.acfunIsProxy) {
+            AcfunProxyHttpClient.getInstance().startCrawl();
+        }
+        AcfunHttpClient.getInstance().startCrawl();
         //b站
         if (Config.bilibiliIsProxy) {
             BiliBiliProxyHttpClient.getInstance().startCrawl();

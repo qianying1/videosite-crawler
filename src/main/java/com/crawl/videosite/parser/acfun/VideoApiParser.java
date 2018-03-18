@@ -1,28 +1,56 @@
 package com.crawl.videosite.parser.acfun;
 
-import java.util.List;
+import com.crawl.videosite.dao.VideoDao;
+import com.crawl.videosite.dao.impl.VideoDaoImp;
+import com.crawl.videosite.domain.Video;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * a站视频api数据分析器
  */
 public class VideoApiParser {
+    private Logger logger = LoggerFactory.getLogger(VideoApiParser.class);
+    private VideoDao videoDao;
+
+    public VideoApiParser() {
+        videoDao = new VideoDaoImp();
+    }
 
     /**
      * 分析视频里的数字
      *
-     * @param counts
+     * @param jsonArray
      * @param contentId
      */
-    public static void parseVideoCounts(List<Long> counts, Long contentId){
-        if (counts==null||counts.isEmpty()||contentId==null)
+    public void parseVideoCounts(String[] jsonArray, Long contentId) {
+        if (jsonArray == null || jsonArray.length <= 0 || contentId == null)
             return;
-        Long views=counts.get(0);
-        Long comments=counts.get(1);
-        Long count1=counts.get(2);
-        Long count2=counts.get(3);
-        Long masks=counts.get(4);
-        Long favorite=counts.get(5);
-        Long banana=counts.get(6);
-        Long count3=counts.get(7);
+        logger.info("开始爬取a站视频数据>>>>>>>>>>>>>>>>" + jsonArray);
+        Long views = Long.valueOf(jsonArray[0]);
+        Long comments = Long.valueOf(jsonArray[1]);
+        Long count1 = Long.valueOf(jsonArray[2]);
+        Long count2 = Long.valueOf(jsonArray[3]);
+        Long masks = Long.valueOf(jsonArray[4]);
+        Long favorite = Long.valueOf(jsonArray[5]);
+        Long banana = Long.valueOf(jsonArray[6]);
+        Long count3 = Long.valueOf(jsonArray[7]);
+        Video video = new Video();
+        video.setAcfun_vid(contentId);
+        video.setViews(views);
+        video.setComments(comments);
+        video.setMasks(masks);
+        video.setFavorite(favorite);
+        video.setBananas(banana);
+        insertVideo(video);
+    }
+
+    private void insertVideo(Video video) {
+        boolean exsist = videoDao.isExistVideoByAcfunVid(video.getAcfun_vid());
+        if (exsist) {
+            videoDao.updateVideo(video);
+        } else {
+            videoDao.insertVideo(video);
+        }
     }
 }

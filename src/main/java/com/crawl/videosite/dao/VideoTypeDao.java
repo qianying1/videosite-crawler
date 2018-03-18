@@ -13,7 +13,17 @@ public interface VideoTypeDao extends Dao {
 
     boolean isExistVideoType(Connection cn, Long rid);
 
+    /**
+     * a站中是否已存在视频类型
+     *
+     * @param acfunTid
+     * @return
+     */
+    boolean isExistVideoTypeInAcfun(Long acfunTid);
+
     Long insertVideoType(Style type);
+
+
 
     Long insertVideoType(Connection cn, Style type);
 

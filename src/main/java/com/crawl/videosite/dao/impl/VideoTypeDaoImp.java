@@ -47,6 +47,24 @@ public class VideoTypeDaoImp extends DaoImp implements VideoTypeDao {
     }
 
     /**
+     * a站中是否已存在视频类型
+     *
+     * @param acfunTid
+     * @return
+     */
+    public boolean isExistVideoTypeInAcfun(Long acfunTid) {
+        Connection conn = ConnectionManager.getConnection();
+        try {
+            if (isExistRecord(conn, "style", "acfun_tid", acfunTid)) {
+                return true;
+            }
+        } catch (SQLException e) {
+            logger.error("通过视频类型id查询视频类型数据失败: " + acfunTid);
+        }
+        return false;
+    }
+
+    /**
      * 通过视屏类型名称判断是否存在视频类型
      *
      * @param typeName
@@ -87,8 +105,8 @@ public class VideoTypeDaoImp extends DaoImp implements VideoTypeDao {
             /*if (isExistVideoType(cn, type.getBiliBili_rid())) {
                 return -1l;
             }*/
-            String column = "biliBili_rid,styleName,parentId,createDate";
-            String values = "?,?,?,?";
+            String column = "biliBili_rid,styleName,parentId,createDate,acfun_tid";
+            String values = "?,?,?,?,?";
             String sql = "insert into style (" + column + ") values(" + values + ")";
             PreparedStatement pstmt;
             pstmt = cn.prepareStatement(sql);
@@ -96,6 +114,7 @@ public class VideoTypeDaoImp extends DaoImp implements VideoTypeDao {
             pstmt.setString(2, type.getStyleName());
             pstmt.setLong(3, type.getParent() != null ? type.getParent().getId() : -1);
             pstmt.setDate(4, new Date(type.getCreateDate().getTime()));
+            pstmt.setLong(5, type.getAcfun_tid());
             pstmt.executeUpdate();
             ResultSet rs = pstmt.getGeneratedKeys();
             Long id = -1l;

@@ -17,6 +17,14 @@ public class VideoAuthor extends BaseEntity implements Serializable {
      */
     private Long type_id = -1l;
     /**
+     * a站视频作者id
+     */
+    private Long acfun_uid = -1l;
+    /**
+     * a站视频类型id
+     */
+    private Long acfun_tid=-1l;
+    /**
      * 作者名称
      */
     private String name;
@@ -179,5 +187,21 @@ public class VideoAuthor extends BaseEntity implements Serializable {
 
     public void setType_id(Long type_id) {
         this.type_id = type_id;
+    }
+
+    public Long getAcfun_uid() {
+        return acfun_uid;
+    }
+
+    public void setAcfun_uid(Long acfun_uid) {
+        this.acfun_uid = acfun_uid;
+    }
+
+    public Long getAcfun_tid() {
+        return acfun_tid;
+    }
+
+    public void setAcfun_tid(Long acfun_tid) {
+        this.acfun_tid = acfun_tid;
     }
 }

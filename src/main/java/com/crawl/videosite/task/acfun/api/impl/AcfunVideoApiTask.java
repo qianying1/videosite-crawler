@@ -1,28 +1,29 @@
 package com.crawl.videosite.task.acfun.api.impl;
 
-import com.alibaba.fastjson.JSONObject;
 import com.crawl.videosite.parser.acfun.VideoApiParser;
 import com.crawl.videosite.task.acfun.api.AbstractAcfunVideoApiTask;
-
-import java.util.List;
 
 /**
  * a站视频api数据爬取任务
  */
 public class AcfunVideoApiTask extends AbstractAcfunVideoApiTask {
+    /**
+     * 视频api数据分析器
+     */
+    private VideoApiParser parser;
 
-    public AcfunVideoApiTask(Long contentId){
+    public AcfunVideoApiTask(Long contentId) {
         super(contentId);
+        parser = new VideoApiParser();
     }
 
     @Override
-    protected void handleVideoApi(JSONObject jsonObject,Long contentId) {
-        if (jsonObject==null||jsonObject.isEmpty()){
+    protected void handleVideoApi(String[] jsonArray, Long contentId) {
+        if (jsonArray == null || jsonArray.length <= 0) {
             return;
         }
-        List<Long> counts=(List<Long>) jsonObject;
-        if (counts.isEmpty()||(counts.get(0)<=0&&counts.get(1)<=0&&counts.get(2)<=0&&counts.get(3)<=0&&counts.get(4)<=0&&counts.get(5)<=0&&counts.get(6)<=0&&counts.get(7)<=0))
-            return;
-        VideoApiParser.parseVideoCounts(counts,contentId);
+        /*if (Integer.valueOf(jsonArray[0])<=0&&Integer.valueOf(jsonArray[1])<=0&&Integer.valueOf(jsonArray[2])<=0&&Integer.valueOf(jsonArray[3])<=0&&Integer.valueOf(jsonArray[4])<=0&&Integer.valueOf(jsonArray[5])<=0&&Integer.valueOf(jsonArray[6])<=0&&Integer.valueOf(jsonArray[7])<=0)
+            return;*/
+        parser.parseVideoCounts(jsonArray, contentId);
     }
 }

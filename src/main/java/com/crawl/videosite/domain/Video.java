@@ -21,6 +21,18 @@ public class Video extends BaseEntity implements Serializable {
      */
     private Long biliBili_rid = -1l;
     /**
+     * a站视频id
+     */
+    private Long acfun_vid=-1l;
+    /**
+     * a站视频作者id
+     */
+    private Long acfun_uid=-1l;
+    /**
+     * a站视频类型id
+     */
+    private Long acfun_tid=-1l;
+    /**
      * b站的videos属性
      */
     private Integer biliBili_videos = 0;
@@ -446,6 +458,30 @@ public class Video extends BaseEntity implements Serializable {
 
     public void setPts(Long pts) {
         this.pts = pts;
+    }
+
+    public Long getAcfun_vid() {
+        return acfun_vid;
+    }
+
+    public void setAcfun_vid(Long acfun_vid) {
+        this.acfun_vid = acfun_vid;
+    }
+
+    public Long getAcfun_uid() {
+        return acfun_uid;
+    }
+
+    public void setAcfun_uid(Long acfun_uid) {
+        this.acfun_uid = acfun_uid;
+    }
+
+    public Long getAcfun_tid() {
+        return acfun_tid;
+    }
+
+    public void setAcfun_tid(Long acfun_tid) {
+        this.acfun_tid = acfun_tid;
     }
 
     @Override

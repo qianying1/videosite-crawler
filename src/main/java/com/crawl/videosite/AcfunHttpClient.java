@@ -4,10 +4,13 @@ import com.crawl.core.htmlunit.AbstractHtmlUnit;
 import com.crawl.core.htmlunit.IHtmlUnit;
 import com.crawl.core.util.*;
 import com.crawl.proxy.AcfunProxyHttpClient;
+import com.crawl.videosite.entity.AcfunVideoListPersistence;
 import com.crawl.videosite.entity.AcfunVideoPersistence;
 import com.crawl.videosite.task.acfun.AcfunDetailListPageTask;
 import com.crawl.videosite.task.acfun.AcfunDetailPageTask;
+import com.crawl.videosite.task.acfun.api.impl.AcfunTypePageTask;
 import com.crawl.videosite.task.acfun.api.impl.AcfunVideoApiTask;
+import com.crawl.videosite.task.acfun.api.impl.AcfunVideoListApiTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -120,7 +123,19 @@ public class AcfunHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
      */
     @Override
     public void startCrawl() {
+        //视频类型
+        typeCrawler();
+        //视频内容
         videoContentCrawler();
+        //视频列表内容
+        videoListCrawler();
+    }
+
+    /**
+     * 视频类型抓取
+     */
+    private void typeCrawler(){
+        detailListPageThreadPool.execute(new AcfunTypePageTask());
     }
 
     /**
@@ -141,9 +156,27 @@ public class AcfunHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
         }
     }
 
+    /**
+     * 爬取视频列表内容
+     */
+    private void videoListCrawler() {
+        AcfunVideoListPersistence persistence = null;
+        try {
+            persistence = (AcfunVideoListPersistence) HttpClientUtil.deserializeObject(Constants.acfunVideoListDataSerialPath);
+        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
+            logger.error("fail to deserialize object from url: " + Constants.acfunVideoListDataSerialPath, e);
+        }
+        if (persistence != null) {
+            detailListPageThreadPool.execute(new AcfunVideoListApiTask(persistence));
+        } else {
+            detailListPageThreadPool.execute(new AcfunVideoListApiTask(new AcfunVideoListPersistence()));
+        }
+    }
+
 
     /**
-     * 管理b站客户端
+     * 管理a站客户端
      * 关闭整个爬虫
      */
     public void manageHttpClient() {
