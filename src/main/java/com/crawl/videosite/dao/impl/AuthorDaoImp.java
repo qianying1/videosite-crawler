@@ -51,8 +51,8 @@ public class AuthorDaoImp extends DaoImp implements AuthorDao {
      * @param acfunUid
      * @return
      */
-    public boolean isExistAuthorInAcfun(Long acfunUid){
-        Connection conn=ConnectionManager.getConnection();
+    public boolean isExistAuthorInAcfun(Long acfunUid) {
+        Connection conn = ConnectionManager.getConnection();
         try {
             if (isExistRecord(conn, "video_author", "acfun_uid", acfunUid)) {
                 return true;
@@ -72,6 +72,111 @@ public class AuthorDaoImp extends DaoImp implements AuthorDao {
     @Override
     public Long insertAuthor(VideoAuthor author) {
         return insertAuthor(ConnectionManager.getConnection(), author);
+    }
+
+    /**
+     * 通过a站用户id查询视频作者信息
+     *
+     * @param conn
+     * @param acfunUid
+     * @return
+     */
+    private synchronized VideoAuthor selectAuthorByAcfunUid(Connection conn,Long acfunUid){
+        String sql = "select * from video_author where acfun_uid= ?";
+        List<VideoAuthor> authors = new ArrayList<>();
+        try {
+            VideoAuthor author;
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, acfunUid);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                author = new VideoAuthor();
+                author.setId(rs.getLong("id"));
+                author.setName(rs.getString("name"));
+                author.setIndexHref(rs.getString("indexHref"));
+                author.setSignature(rs.getString("signature"));
+                author.setVideoCount(rs.getInt("videoCount"));
+                author.setAttentionCount(rs.getInt("attentionCount"));
+                author.setAudienceCount(rs.getInt("audienceCount"));
+                author.setLogo(rs.getString("logo"));
+                author.setCreateDate(rs.getDate("createDate"));
+                author.setAcfun_uid(rs.getLong("acfun_uid"));
+                author.setAcfun_tid(rs.getLong("acfun_tid"));
+                authors.add(author);
+            }
+            rs.close();
+            pstmt.close();
+        } catch (SQLException e) {
+            logger.error("fail to search data from video author table", e);
+        }
+        if (authors.isEmpty())
+            return null;
+        return authors.get(0);
+    }
+    /**
+     * 更新a站视频作者信息
+     *
+     * @param author
+     * @return
+     */
+    public Long updateAcfunAuthor(VideoAuthor author) {
+        Connection conn = ConnectionManager.getConnection();
+        Long uid = author.getAcfun_uid();
+        VideoAuthor origin = selectAuthorByAcfunUid(conn, uid);
+        if (origin == null) {
+            return -1l;
+        }
+        author.setAttentionCount(author.getAttentionCount() != 0 ? author.getAttentionCount() : origin.getAttentionCount());
+        author.setAudienceCount(author.getAudienceCount() != 0 ? author.getAudienceCount() : origin.getAudienceCount());
+        author.setId(origin.getId());
+        author.setIndexHref(author.getIndexHref() != null ? author.getIndexHref() : origin.getIndexHref());
+        author.setLogo(author.getLogo() != null ? author.getLogo() : origin.getLogo());
+        author.setName(author.getName() != null ? author.getName() : origin.getName());
+        author.setSignature(author.getSignature() != null ? author.getSignature() : origin.getSignature());
+        author.setVideoCount(author.getVideoCount() != 0 ? author.getVideoCount() : origin.getVideoCount());
+        author.setCreateDate(author.getCreateDate() != null ? author.getCreateDate() : origin.getCreateDate());
+        author.setLocation(author.getLocation() != null ? author.getLocation() : origin.getLocation());
+        author.setFollower(author.getFollower() != null ? author.getFollower() : origin.getFollower());
+        author.setArticle(author.getArticle() != null ? author.getArticle() : origin.getArticle());
+        author.setAcfun_tid(author.getAcfun_tid() != -1l ? author.getAcfun_tid() : origin.getAcfun_tid());
+        author.setAcfun_uid(author.getAcfun_uid() != -1l ? author.getAcfun_uid() : origin.getAcfun_uid());
+        try {
+            String sql = "update video_author set name=?,indexHref=?,signature=?,videoCount=?,attentionCount=?,audienceCount=?,logo=?,createDate=?,sex=?,location=?,follower=?,article=?,acfun_uid=?,acfun_tid=? WHERE id=?";
+            PreparedStatement pstmt;
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, author.getName());
+            pstmt.setString(2, author.getIndexHref());
+            pstmt.setString(3, author.getSignature());
+            pstmt.setInt(4, author.getVideoCount());
+            pstmt.setInt(5, author.getAttentionCount());
+            pstmt.setInt(6, author.getAudienceCount());
+            pstmt.setString(7, author.getLogo());
+            pstmt.setDate(8, new Date(author.getCreateDate().getTime()));
+            pstmt.setString(9, author.getSex());
+            pstmt.setString(10, author.getLocation());
+            pstmt.setLong(11, author.getFollower());
+            pstmt.setLong(12, author.getArticle());
+            pstmt.setLong(13, author.getAcfun_uid());
+            pstmt.setLong(14, author.getAcfun_tid());
+            pstmt.setLong(15, author.getId());
+
+            int columns = pstmt.executeUpdate();
+            Long id = -1l;
+            if (columns > 0) {
+                id = author.getId();
+                logger.info("更新视频作者数据成功---" + author.getName());
+                pstmt.close();
+            } else {
+                logger.error("更新视频作者数据失败" + author.getName());
+                return -1l;
+            }
+            return id;
+        } catch (SQLException e) {
+            logger.error("更新视频作者数据失败: " + author.getName(), e);
+            return -1l;
+        } finally {
+//            ConnectionManager.close();
+        }
     }
 
     /**
@@ -185,8 +290,8 @@ public class AuthorDaoImp extends DaoImp implements AuthorDao {
             pstmt.setLong(12, author.getFollower() != null ? author.getFollower() : 0l);
             pstmt.setLong(13, author.getArticle() != null ? author.getArticle() : 0l);
             pstmt.setLong(14, author.getType_id() != -1l ? author.getType_id() : -1l);
-            pstmt.setLong(15,author.getAcfun_uid()!=-1l?author.getAcfun_uid():-1l);
-            pstmt.setLong(16,author.getAcfun_tid()!=-1l?author.getAcfun_tid():-1l);
+            pstmt.setLong(15, author.getAcfun_uid() != -1l ? author.getAcfun_uid() : -1l);
+            pstmt.setLong(16, author.getAcfun_tid() != -1l ? author.getAcfun_tid() : -1l);
             int columns = pstmt.executeUpdate();
             Long id = -1l;
             if (columns > 0) {

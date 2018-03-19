@@ -117,8 +117,9 @@ public abstract class AbstractAcfunVideoListApiTask implements Runnable {
                 emptyCount++;
                 continue;
             }
+            jsonStr = jsonStr.replace("system.recomlist=", "");
             JSONObject jsonObject = JSONObject.parseObject(jsonStr);
-            if (jsonObject == null || jsonObject.isEmpty() || jsonObject.get("status") != 200) {
+            if (jsonObject == null || jsonObject.isEmpty() || Integer.valueOf(jsonObject.get("status").toString()) != 200) {
                 emptyCount++;
                 if (emptyCount > MAXEMPTYCOUNT) {
                     if (typeCount % MAXEMPTYCOUNT == 0) {

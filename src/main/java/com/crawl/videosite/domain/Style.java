@@ -18,7 +18,7 @@ public class Style extends BaseEntity implements Serializable {
     /**
      * 分类名称
      */
-    private String styleName;
+    private String styleName="";
     /**
      * 父级分类
      */

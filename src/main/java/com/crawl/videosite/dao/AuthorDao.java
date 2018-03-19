@@ -24,6 +24,14 @@ public interface AuthorDao extends Dao {
     Long insertAuthor(VideoAuthor author);
 
     /**
+     * 更新a站视频作者信息
+     *
+     * @param author
+     * @return
+     */
+    Long updateAcfunAuthor(VideoAuthor author);
+
+    /**
      * 更新视频作者数据
      *
      * @param author

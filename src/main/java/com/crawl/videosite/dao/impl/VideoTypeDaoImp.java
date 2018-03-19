@@ -92,6 +92,88 @@ public class VideoTypeDaoImp extends DaoImp implements VideoTypeDao {
         return insertVideoType(ConnectionManager.getConnection(), type);
     }
 
+    private Style selectVideoTypeByAcfunTid(Connection conn, Long acfunTid) {
+        String sql = "select * from style where acfun_tid= ?";
+        List<Style> types = new ArrayList<>();
+        try {
+            Style type;
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, acfunTid);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                type = new Style();
+                type.setId(rs.getLong("id"));
+                type.setBiliBili_rid(rs.getLong("biliBili_rid"));
+                type.setAcfun_tid(rs.getLong("acfun_tid"));
+                type.setStyleName(rs.getString("styleName"));
+                type.setCreateDate(rs.getDate("createDate"));
+                Long parentId = rs.getLong("parentId");
+                if (parentId != null) {
+                    Style parentType = new Style();
+                    parentType.setAcfun_tid(parentId);
+                    type.setParent(parentType);
+                }
+                types.add(type);
+            }
+            rs.close();
+            pstmt.close();
+        } catch (SQLException e) {
+            logger.error("查询视频类型数据失败", e);
+        }
+        if (types.isEmpty())
+            return null;
+        return types.get(0);
+    }
+
+    /**
+     * 更新a站视频类型
+     *
+     * @param type
+     * @return
+     */
+    public Long updateAcfunVideoType(Style type) {
+        Connection conn = ConnectionManager.getConnection();
+        Long tid = type.getAcfun_tid();
+        Style origin = selectVideoTypeByAcfunTid(conn, tid);
+        if (origin == null) {
+            return -1l;
+        }
+        type.setParent(type.getParent() != null ? type.getParent() : origin.getParent());
+        type.setAcfun_tid(type.getAcfun_tid() != null ? type.getAcfun_tid() : origin.getAcfun_tid());
+        type.setStyleName(type.getStyleName() != null ? type.getStyleName() : origin.getStyleName());
+        type.setCreateDate(type.getCreateDate() != null ? type.getCreateDate() : origin.getCreateDate());
+        try {
+            String sql = "update style set parentId=?,styleName=?,createDate=? where acfun_tid=?";
+            PreparedStatement pstmt;
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, type.getParent() != null ? type.getParent().getAcfun_tid() : -1);
+            pstmt.setString(2, type.getStyleName());
+            pstmt.setDate(3, new Date(type.getCreateDate().getTime()));
+            pstmt.setLong(4, type.getAcfun_tid());
+            int columns = pstmt.executeUpdate();
+            Long id = -1l;
+            if (columns > 0) {
+                ResultSet rs = pstmt.getGeneratedKeys();
+                while (rs.next()) {
+                    id = rs.getLong("id");
+                }
+                rs.close();
+                logger.info("更新视频类型数据库成功---" + type.getStyleName());
+            } else {
+                logger.error("更新视频类型数据失败" + type.getStyleName());
+                return -1l;
+            }
+            pstmt.close();
+            return id;
+        } catch (SQLException e) {
+            logger.error("更新视频数据失败: " + type.getStyleName(), e);
+            return -1l;
+        } finally {
+//            ConnectionManager.close();
+        }
+
+    }
+
     /**
      * 插入视频类型
      *
@@ -112,7 +194,58 @@ public class VideoTypeDaoImp extends DaoImp implements VideoTypeDao {
             pstmt = cn.prepareStatement(sql);
             pstmt.setLong(1, type.getBiliBili_rid());
             pstmt.setString(2, type.getStyleName());
-            pstmt.setLong(3, type.getParent() != null ? type.getParent().getId() : -1);
+            pstmt.setLong(3, type.getParent() != null ? type.getParent().getBiliBili_rid() : -1);
+            pstmt.setDate(4, new Date(type.getCreateDate().getTime()));
+            pstmt.setLong(5, type.getAcfun_tid());
+            pstmt.executeUpdate();
+            ResultSet rs = pstmt.getGeneratedKeys();
+            Long id = -1l;
+            while (rs.next())
+                id = rs.getLong(1);
+            rs.close();
+            pstmt.close();
+            logger.info("插入视频类型数据成功---" + type.getStyleName());
+            return id;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1l;
+        } finally {
+//            ConnectionManager.close();
+        }
+    }
+
+    /**
+     * 插入视频类型
+     *
+     * @param type
+     * @return
+     */
+    @Override
+    public Long insertAcfunVideoType(Style type) {
+        return insertAcfunVideoType(ConnectionManager.getConnection(), type);
+    }
+
+    /**
+     * 插入视频类型
+     *
+     * @param cn
+     * @param type
+     * @return
+     */
+    @Override
+    public Long insertAcfunVideoType(Connection cn, Style type) {
+        try {
+            /*if (isExistVideoType(cn, type.getBiliBili_rid())) {
+                return -1l;
+            }*/
+            String column = "biliBili_rid,styleName,parentId,createDate,acfun_tid";
+            String values = "?,?,?,?,?";
+            String sql = "insert into style (" + column + ") values(" + values + ")";
+            PreparedStatement pstmt;
+            pstmt = cn.prepareStatement(sql);
+            pstmt.setLong(1, type.getBiliBili_rid());
+            pstmt.setString(2, type.getStyleName());
+            pstmt.setLong(3, type.getParent() != null ? type.getParent().getAcfun_tid() : -1);
             pstmt.setDate(4, new Date(type.getCreateDate().getTime()));
             pstmt.setLong(5, type.getAcfun_tid());
             pstmt.executeUpdate();

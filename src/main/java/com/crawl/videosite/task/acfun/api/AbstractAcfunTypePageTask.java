@@ -20,29 +20,32 @@ import java.util.Random;
 public abstract class AbstractAcfunTypePageTask implements Runnable {
     private static Logger logger = LoggerFactory.getLogger(AbstractAcfunTypePageTask.class);
 
+    protected static boolean not_completed=true;
     @Override
     public void run() {
-        WebClientParams params = new WebClientParams();
-        params.setCharset("utf-8");
-        params.setJavaScriptEnabled(false);
-        params.setUserAgent(Constants.userAgentArray[new Random().nextInt(Constants.userAgentArray.length)]);
-        HtmlPage mainPage = null;
-        try {
-            if (Config.acfunIsProxy) {
-                Proxy proxy = ProxyPool.acfunProxyQueue.take();
-                mainPage = HtmlUnitWebClientUtil.getWebPage(Constants.ACFUN_INDEX_URL, params, proxy);
-            } else {
-                mainPage = HtmlUnitWebClientUtil.getWebPage(Constants.ACFUN_INDEX_URL, params, null);
+        while (not_completed) {
+            WebClientParams params = new WebClientParams();
+            params.setCharset("utf-8");
+            params.setJavaScriptEnabled(false);
+            params.setUserAgent(Constants.userAgentArray[new Random().nextInt(Constants.userAgentArray.length)]);
+            HtmlPage mainPage = null;
+            try {
+                if (Config.acfunIsProxy) {
+                    Proxy proxy = ProxyPool.acfunProxyQueue.take();
+                    mainPage = HtmlUnitWebClientUtil.getWebPage(Constants.ACFUN_INDEX_URL, params, proxy);
+                } else {
+                    mainPage = HtmlUnitWebClientUtil.getWebPage(Constants.ACFUN_INDEX_URL, params, null);
+                }
+                if (mainPage == null || StringUtils.isBlank(mainPage.toString())) {
+                    mainPage = HtmlUnitWebClientUtil.getWebPage(Constants.ACFUN_INDEX_URL, params, null);
+                }
+            } catch (IOException e) {
+                logger.error("爬取a站主页发生io读写错误", e);
+            } catch (InterruptedException ie) {
+                logger.error("爬取a站主页发生线程被中断错误", ie);
             }
-            if (mainPage == null || StringUtils.isBlank(mainPage.toString())) {
-                mainPage = HtmlUnitWebClientUtil.getWebPage(Constants.ACFUN_INDEX_URL, params, null);
-            }
-        } catch (IOException e) {
-            logger.error("爬取a站主页发生io读写错误", e);
-        } catch (InterruptedException ie) {
-            logger.error("爬取a站主页发生线程被中断错误", ie);
+            handleMainPage(mainPage);
         }
-        handleMainPage(mainPage);
     }
 
     protected abstract void handleMainPage(HtmlPage page);

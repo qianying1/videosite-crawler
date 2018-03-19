@@ -68,7 +68,7 @@ public abstract class AbstractVideoRankListTask implements Runnable {
                 persistence.setBiliBili_aid(0l);
                 persistence.setBiliBili_day(1);
                 persistence.setBiliBili_mid(0l);
-                HttpClientUtil.serializeObject(persistence, Constants.biliBiliDynamicVideoDataSerialPath);
+                HttpClientUtil.serializeObject(persistence, Constants.biliBiliRankVideoDataSerialPath);
                 crawlerCount = 0;
             }
             /*if (crawlerCountToSleep>=5000){
@@ -147,7 +147,7 @@ public abstract class AbstractVideoRankListTask implements Runnable {
      * @param rid
      * @return
      */
-    protected static String getTargetUrl(String domain,Long rid) {
+    protected static String getTargetUrl(String domain, Long rid) {
         return domain + "&rid=" + rid;
     }
 

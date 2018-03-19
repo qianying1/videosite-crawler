@@ -44,6 +44,14 @@ public interface VideoDao extends Dao {
     Long insertVideo(Video video);
 
     /**
+     * 更新a站视频信息
+     *
+     * @param video
+     * @return
+     */
+    boolean updateAcfunVideo(Video video);
+
+    /**
      * 插入视频数据
      *
      * @param conn
@@ -59,6 +67,15 @@ public interface VideoDao extends Dao {
      * @return
      */
     boolean updateVideo(Video video);
+
+    /**
+     * 通过a站视频id查找视频
+     *
+     * @param conn
+     * @param vid
+     * @return
+     */
+    Video selectVideoByAcfunVid(Connection conn, Long vid);
 
     /**
      * 通过视频id查找视频数据

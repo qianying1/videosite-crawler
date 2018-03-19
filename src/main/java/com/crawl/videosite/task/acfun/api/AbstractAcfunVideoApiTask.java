@@ -46,7 +46,7 @@ public abstract class AbstractAcfunVideoApiTask implements Runnable {
             crawlCount++;
             if (crawlCount >= PERSISTENCEINCOUNT) {
                 persistenceData();
-                crawlCount=0;
+                crawlCount = 0;
             }
             String jsonStr = null;
             try {
@@ -61,6 +61,11 @@ public abstract class AbstractAcfunVideoApiTask implements Runnable {
                 }
             } catch (IOException e) {
                 logger.error("抓取目标链接失败: " + getTagetURL(AbstractAcfunVideoApiTask.contentId), e);
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException interEx) {
+                    logger.error("线程在休眠时被中断", e);
+                }
             } catch (InterruptedException e) {
                 logger.error("当前线程被中断", e);
             }

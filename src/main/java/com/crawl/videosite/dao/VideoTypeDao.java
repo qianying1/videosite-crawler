@@ -21,11 +21,48 @@ public interface VideoTypeDao extends Dao {
      */
     boolean isExistVideoTypeInAcfun(Long acfunTid);
 
+    /**
+     * 插入b站视频类型
+     *
+     * @param type
+     * @return
+     */
     Long insertVideoType(Style type);
 
+    /**
+     * 更新a站视频类型
+     *
+     * @param style
+     * @return
+     */
+    Long updateAcfunVideoType(Style style);
 
 
+    /**
+     * 插入b站视频类型
+     *
+     * @param cn
+     * @param type
+     * @return
+     */
     Long insertVideoType(Connection cn, Style type);
+
+    /**
+     * 插入视频类型
+     *
+     * @param type
+     * @return
+     */
+    Long insertAcfunVideoType(Style type);
+
+    /**
+     * 插入视频类型
+     *
+     * @param cn
+     * @param type
+     * @return
+     */
+    Long insertAcfunVideoType(Connection cn, Style type);
 
     /**
      * 根据视频类型id查询视频类型

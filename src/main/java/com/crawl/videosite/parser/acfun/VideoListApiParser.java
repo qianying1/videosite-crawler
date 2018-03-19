@@ -76,7 +76,7 @@ public class VideoListApiParser {
     private void insertVideo(Video video) {
         boolean videoExsist = videoDao.isExistVideoInAcfun(video.getAcfun_vid());
         if (!videoExsist) {
-            Long id = videoDao.insertAcfunVideo(video);
+            Long id = videoDao.insertVideo(video);
             if (id != -1l) {
                 video.setId(id);
             } else {
@@ -90,7 +90,7 @@ public class VideoListApiParser {
     private void insertType(Style type, Video video, VideoAuthor author) {
         boolean isExsit = typeDao.isExistVideoTypeInAcfun(type.getAcfun_tid());
         if (!isExsit) {
-            Long id = typeDao.insertVideoType(type);
+            Long id = typeDao.insertAcfunVideoType(type);
             if (id != -1) {
                 type.setId(id);
                 video.setStyle(type);
