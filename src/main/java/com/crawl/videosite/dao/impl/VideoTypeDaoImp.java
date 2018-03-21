@@ -3,6 +3,7 @@ package com.crawl.videosite.dao.impl;
 import com.crawl.core.dao.ConnectionManager;
 import com.crawl.videosite.dao.VideoTypeDao;
 import com.crawl.videosite.domain.Style;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -139,8 +140,8 @@ public class VideoTypeDaoImp extends DaoImp implements VideoTypeDao {
             return -1l;
         }
         type.setParent(type.getParent() != null ? type.getParent() : origin.getParent());
-        type.setAcfun_tid(type.getAcfun_tid() != null ? type.getAcfun_tid() : origin.getAcfun_tid());
-        type.setStyleName(type.getStyleName() != null ? type.getStyleName() : origin.getStyleName());
+        type.setAcfun_tid(type.getAcfun_tid() != -1l ? type.getAcfun_tid() : origin.getAcfun_tid());
+        type.setStyleName(StringUtils.isNotBlank(type.getStyleName()) ? type.getStyleName() : origin.getStyleName());
         type.setCreateDate(type.getCreateDate() != null ? type.getCreateDate() : origin.getCreateDate());
         try {
             String sql = "update style set parentId=?,styleName=?,createDate=? where acfun_tid=?";

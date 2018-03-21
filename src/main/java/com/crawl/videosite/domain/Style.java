@@ -14,7 +14,7 @@ public class Style extends BaseEntity implements Serializable {
     /**
      * a站视频分类id
      */
-    private Long acfun_tid = 0l;
+    private Long acfun_tid = -1l;
     /**
      * 分类名称
      */
