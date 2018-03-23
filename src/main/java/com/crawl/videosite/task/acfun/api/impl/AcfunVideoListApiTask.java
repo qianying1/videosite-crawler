@@ -24,6 +24,6 @@ public class AcfunVideoListApiTask extends AbstractAcfunVideoListApiTask {
             return;
         Map<String,Object> dataMap=(Map<String, Object>) jsonObject.get("data");
         Map<String,Object> pageMap=(Map)dataMap.get("page");
-        parser.parseJsonMap(pageMap);
+        parser.parseJsonMap(pageMap,getConnection());
     }
 }

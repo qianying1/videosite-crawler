@@ -1,6 +1,7 @@
 package com.crawl.videosite.task.bilibili.api;
 
 import com.alibaba.fastjson.JSONObject;
+import com.crawl.core.dao.ConnectionManager;
 import com.crawl.videosite.entity.BiliBiliParams;
 import com.crawl.videosite.parser.bilibili.api.abstra.AbstractVideoDynamicListParser;
 import com.crawl.videosite.parser.bilibili.api.VideoDynamicListJsonParser;
@@ -8,7 +9,9 @@ import com.crawl.videosite.task.bilibili.api.abstra.AbstractVideoDynamicListTask
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Connection;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 活动视频列表Json数据抓取任务
@@ -80,7 +83,7 @@ public class VideoDynamicListJsonTask extends AbstractVideoDynamicListTask {
             setTargetUrl(getTargetUrl(targetDomain, rid, original, getPs(), getPn()));
             return;
         } else {
-            videoListParser.parseJson(jsonObject, rid, original);
+            videoListParser.parseJson(jsonObject, rid, original,getConnection());
         }
         Map<String, Object> page = (Map<String, Object>) ((Map<String, Object>) jsonObject.get("data")).get("page");
         setPn(Integer.valueOf(page.get("num").toString()));

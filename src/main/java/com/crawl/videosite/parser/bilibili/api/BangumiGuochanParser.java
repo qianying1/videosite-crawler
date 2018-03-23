@@ -15,6 +15,7 @@ import com.crawl.videosite.parser.bilibili.api.abstra.AbstractBangumiGuochanPars
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +36,7 @@ public class BangumiGuochanParser extends AbstractBangumiGuochanParser {
      * @param jsonObject
      */
     @Override
-    public void parseJson(JSONObject jsonObject) {
+    public void parseJson(JSONObject jsonObject, Connection conn) {
         if (jsonObject == null || jsonObject.isEmpty())
             return;
         logger.info("开始分析小说视频列表数据>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
@@ -45,7 +46,7 @@ public class BangumiGuochanParser extends AbstractBangumiGuochanParser {
         for (Map<String, Object> data : datas) {
             if (data == null || data.isEmpty())
                 continue;
-            parseDataToPersistence(data);
+            parseDataToPersistence(data,conn);
         }
     }
 
@@ -54,7 +55,7 @@ public class BangumiGuochanParser extends AbstractBangumiGuochanParser {
      *
      * @param fiction
      */
-    private void parseDataToPersistence(Map<String, Object> fiction) {
+    private void parseDataToPersistence(Map<String, Object> fiction, Connection conn) {
         if (fiction == null || fiction.isEmpty())
             return;
         Fiction tp = new Fiction();
@@ -71,12 +72,12 @@ public class BangumiGuochanParser extends AbstractBangumiGuochanParser {
         tp.setSquare_cover(fiction.get("square_cover").toString());
         tp.setTitle(fiction.get("title").toString());
         tp.setTotal_count(Long.valueOf(fiction.get("total_count").toString()));
-        insertFiction(tp);
+        insertFiction(tp,conn);
     }
 
-    private void insertFiction(Fiction fiction) {
+    private void insertFiction(Fiction fiction, Connection conn) {
         if (Constants.isUpdateFiction_biliBili) {
-            boolean fictionExsist = fictionDao.isExistFiction(fiction.getSeasion_id(), fiction.getNewest_ep_index());
+            boolean fictionExsist = fictionDao.isExistFiction(conn,fiction.getSeasion_id(), fiction.getNewest_ep_index());
             if (fictionExsist)
                 fictionDao.updateFiction(fiction);
             else {

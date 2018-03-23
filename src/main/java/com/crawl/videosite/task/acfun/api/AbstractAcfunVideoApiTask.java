@@ -8,6 +8,7 @@ import com.crawl.proxy.ProxyPool;
 import com.crawl.proxy.entity.Proxy;
 import com.crawl.videosite.entity.AcfunParams;
 import com.crawl.videosite.entity.AcfunVideoPersistence;
+import com.crawl.videosite.task.CommonTask;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +18,7 @@ import java.io.IOException;
 /**
  * a站视频json数据爬取任务
  */
-public abstract class AbstractAcfunVideoApiTask implements Runnable {
+public abstract class AbstractAcfunVideoApiTask extends CommonTask implements Runnable {
     private Logger logger = LoggerFactory.getLogger(AbstractAcfunVideoApiTask.class);
     /**
      * 当前正在爬取数据的视频id

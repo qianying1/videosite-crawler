@@ -110,7 +110,7 @@ public class FictionDaoImp extends DaoImp implements FictionDao{
      * @param newestIndex
      * @return
      */
-    private Fiction selectFictionBySIdAndNewestIndex(Connection conn, Long seasonId, String newestIndex) {
+    public Fiction selectFictionBySIdAndNewestIndex(Connection conn, Long seasonId, String newestIndex) {
         String sql = "select * from fiction where season_id=? and newest_ep_index=?";
         PreparedStatement pstmt;
         List<Fiction> fictions = new ArrayList<>();
@@ -147,7 +147,7 @@ public class FictionDaoImp extends DaoImp implements FictionDao{
         }
     }
 
-    private Long updateFiction(Connection conn, Fiction fiction) {
+    public Long updateFiction(Connection conn, Fiction fiction) {
         Fiction origin = selectFictionBySIdAndNewestIndex(conn, fiction.getSeasion_id(), fiction.getNewest_ep_index());
         if (fiction == null) {
             return -1l;
@@ -206,7 +206,8 @@ public class FictionDaoImp extends DaoImp implements FictionDao{
      * @param newestIndex
      * @return
      */
-    private boolean isExistFiction(Connection conn, Long seasonId, String newestIndex) {
+    @Override
+    public boolean isExistFiction(Connection conn, Long seasonId, String newestIndex) {
         String sql = "select count(*) from fiction where season_id=? and newest_ep_index=?";
         int num = 0;
         PreparedStatement pstmt;

@@ -12,6 +12,7 @@ import com.crawl.videosite.domain.VideoAuthor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Connection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,7 @@ public class VideoListApiParser {
      *
      * @param jsonMap
      */
-    public void parseJsonMap(Map<String, Object> jsonMap) {
+    public void parseJsonMap(Map<String, Object> jsonMap, Connection conn) {
         List<Map<String, Object>> mapList = (List<Map<String, Object>>) jsonMap.get("list");
         if (mapList == null || mapList.isEmpty()) {
             return;
@@ -66,31 +67,31 @@ public class VideoListApiParser {
             video.setAcfun_tid(vid.get("channelId") != null ? Long.valueOf(vid.get("channelId").toString()) : -1);
             type.setAcfun_tid(vid.get("channelId") != null ? Long.valueOf(vid.get("channelId").toString()) : -1);
             author.setAcfun_tid(vid.get("channelId") != null ? Long.valueOf(vid.get("channelId").toString()) : -1);
-            insertType(type, video, author);
-            insertAuthor(author, video);
-            insertVideo(video);
+            insertType(type, video, author,conn);
+            insertAuthor(author, video,conn);
+            insertVideo(video,conn);
         }
 
     }
 
-    private void insertVideo(Video video) {
-        boolean videoExsist = videoDao.isExistVideoInAcfun(video.getAcfun_vid());
+    private void insertVideo(Video video, Connection conn) {
+        boolean videoExsist = videoDao.isExistVideoInAcfun(conn,video.getAcfun_vid());
         if (!videoExsist) {
-            Long id = videoDao.insertVideo(video);
+            Long id = videoDao.insertVideo(conn,video);
             if (id != -1l) {
                 video.setId(id);
             } else {
                 logger.error("插入视频数据失败: " + video.getTitle());
             }
         } else {
-            videoDao.updateAcfunVideo(video);
+            videoDao.updateAcfunVideo(conn,video);
         }
     }
 
-    private void insertType(Style type, Video video, VideoAuthor author) {
-        boolean isExsit = typeDao.isExistVideoTypeInAcfun(type.getAcfun_tid());
+    private void insertType(Style type, Video video, VideoAuthor author, Connection conn) {
+        boolean isExsit = typeDao.isExistVideoTypeInAcfun(conn,type.getAcfun_tid());
         if (!isExsit) {
-            Long id = typeDao.insertAcfunVideoType(type);
+            Long id = typeDao.insertAcfunVideoType(conn,type);
             if (id != -1) {
                 type.setId(id);
                 video.setStyle(type);
@@ -99,17 +100,17 @@ public class VideoListApiParser {
                 logger.error("插入视频类型数据失败================: " + type.getStyleName());
             }
         } else {
-            Long id = typeDao.updateAcfunVideoType(type);
+            Long id = typeDao.updateAcfunVideoType(conn,type);
             type.setId(id);
             video.setStyle(type);
             author.setAcfun_tid(type.getAcfun_tid());
         }
     }
 
-    private void insertAuthor(VideoAuthor author, Video video) {
-        boolean authorExsist = authorDao.isExistAuthorInAcfun(author.getAcfun_uid());
+    private void insertAuthor(VideoAuthor author, Video video, Connection conn) {
+        boolean authorExsist = authorDao.isExistAuthorInAcfun(conn,author.getAcfun_uid());
         if (!authorExsist) {
-            Long id = authorDao.insertAuthor(author);
+            Long id = authorDao.insertAuthor(conn,author);
             if (id != -1l) {
                 author.setId(id);
                 video.setAuthor(author);
@@ -117,7 +118,7 @@ public class VideoListApiParser {
                 logger.error("插入视频作者数据失败: " + author.getName());
             }
         } else {
-            Long id = authorDao.updateAcfunAuthor(author);
+            Long id = authorDao.updateAcfunAuthor(conn,author);
             if (id != -1l) {
                 author.setId(id);
             }

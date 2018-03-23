@@ -50,32 +50,34 @@ public class Constants {
     /**
      * b站序列化动态视频数据保存路径
      */
-    public static String biliBiliDynamicVideoDataSerialPath = "src/main/resources/biliBiliDynamicDatas";
+    public static final String biliBiliDynamicVideoDataSerialPath = "src/main/resources/biliBiliDynamicDatas";
     /**
      * b站序列化等级视频数据保存路径
      */
-    public static String biliBiliRankVideoDataSerialPath = "src/main/resources/biliBiliRankDatas";
+    public static final String biliBiliRankVideoDataSerialPath = "src/main/resources/biliBiliRankDatas";
     /**
      * b站新视频列表数据保存路径
      */
-    public static String biliBiliNewVideoDataSerialPath = "src/main/resources/biliBiliNewDatas";
+    public static final String biliBiliNewVideoDataSerialPath = "src/main/resources/biliBiliNewDatas";
     /**
      * b站视频作者信息数据保存路径
      */
-    public static String biliBiliVideoAuthorDataSerialPath = "src/main/resources/biliBiliAuthorDatas";
+    public static final String biliBiliVideoAuthorDataSerialPath = "src/main/resources/biliBiliAuthorDatas";
     /**
      * b站视频信息保存路径
      */
-    public static String biliBiliVideoDataSerialPath = "src/main/resources/biliBiliVideoDatas";
+    public static final String biliBiliVideoDataSerialPath = "src/main/resources/biliBiliVideoDatas";
 
     /**
      * a站视频信息持久化保存信息
      */
-    public static String acfunVideoDataSerialPath = "src/main/resources/acfunVideoDataSerial";
+    public static final String acfunVideoDataSerialPath = "src/main/resources/acfunVideoDataSerial";
+
+    public static final String acfunAuthorDataSerialPath="src/main/resources/acfunAuthorDataSerial";
     /**
      * a站视频列表保存信息
      */
-    public static String acfunVideoListDataSerialPath = "src/main/resources/acfunVideoListDataSerial";
+    public static final String acfunVideoListDataSerialPath = "src/main/resources/acfunVideoListDataSerial";
 
     /**
      * a站名称

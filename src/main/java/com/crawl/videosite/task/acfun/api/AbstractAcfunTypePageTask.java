@@ -6,6 +6,7 @@ import com.crawl.core.util.HtmlUnitWebClientUtil;
 import com.crawl.core.util.WebClientParams;
 import com.crawl.proxy.ProxyPool;
 import com.crawl.proxy.entity.Proxy;
+import com.crawl.videosite.task.CommonTask;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -17,7 +18,7 @@ import java.util.Random;
 /**
  * 视频类型抓取任务
  */
-public abstract class AbstractAcfunTypePageTask implements Runnable {
+public abstract class AbstractAcfunTypePageTask extends CommonTask implements Runnable {
     private static Logger logger = LoggerFactory.getLogger(AbstractAcfunTypePageTask.class);
 
     protected static boolean not_completed=true;

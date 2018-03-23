@@ -82,7 +82,7 @@ public class NewVideoListJsonTask extends AbstractNewVideoListJsonTask {
             setTargetUrl(getTargetUrl(targetDomain, rid, original, getPs(), getPn()));
             return;
         } else {
-            videoListParser.parseJson(jsonObject, rid, original);
+            videoListParser.parseJson(jsonObject, rid, original,getConnection());
         }
         Map<String, Object> page = (Map<String, Object>) ((Map<String, Object>) jsonObject.get("data")).get("page");
         setPn(Integer.valueOf(page.get("num").toString()));

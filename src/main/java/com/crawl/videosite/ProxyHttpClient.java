@@ -1,35 +1,26 @@
 package com.crawl.videosite;
 
 import com.crawl.Main;
-import com.crawl.core.htmlunit.AbstractHtmlUnit;
-import com.crawl.core.htmlunit.IHtmlUnit;
+import com.crawl.core.httpclient.AbstractHttpClient;
+import com.crawl.core.httpclient.IHttpClient;
 import com.crawl.core.util.Config;
-import com.crawl.core.util.Constants;
 import com.crawl.core.util.SimpleThreadPoolExecutor;
 import com.crawl.core.util.ThreadPoolMonitor;
-import com.crawl.proxy.PptvProxyHttpClient;
-import com.crawl.videosite.task.bilibili.BiliBiliDetailListPageTask;
-import com.crawl.videosite.task.bilibili.BiliBiliDetailPageTask;
-import com.crawl.videosite.task.bilibili.BiliBiliGeneralPageTask;
-import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-/**
- * Created by qianhaibin on 2018/2/27.
- */
-public class PptvHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
+
+public class ProxyHttpClient extends AbstractHttpClient implements IHttpClient {
     private static Logger logger = LoggerFactory.getLogger(Main.class);
-    private volatile static PptvHttpClient instance;
+    private volatile static ProxyHttpClient instance;
     /**
      * 统计用户数量
      */
@@ -37,11 +28,11 @@ public class PptvHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
     private static long startTime = System.currentTimeMillis();
     public static volatile boolean isStop = false;
 
-    public static PptvHttpClient getInstance() {
+    public static ProxyHttpClient getInstance() {
         if (instance == null) {
-            synchronized (PptvHttpClient.class) {
+            synchronized (ProxyHttpClient.class) {
                 if (instance == null) {
-                    instance = new PptvHttpClient();
+                    instance = new ProxyHttpClient();
                 }
             }
         }
@@ -66,7 +57,7 @@ public class PptvHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
      */
     private static String authorization;
 
-    private PptvHttpClient() {
+    private ProxyHttpClient() {
         initHttpClient();
         intiThreadPool();
     }
@@ -90,22 +81,22 @@ public class PptvHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
                 Config.downloadThreadSize,
                 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(),
-                "pptvDetailPageThreadPool");
+                "detailPageThreadPool");
 
         //列表页线程池
         listPageThreadPool = new SimpleThreadPoolExecutor(50, 80,
                 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(5000),
-                new ThreadPoolExecutor.DiscardPolicy(), "pptvListPageThreadPool");
-        new Thread(new ThreadPoolMonitor(detailPageThreadPool, "PptvDetailPageDownloadThreadPool")).start();
-        new Thread(new ThreadPoolMonitor(listPageThreadPool, "PptvListPageDownloadThreadPool")).start();
+                new ThreadPoolExecutor.DiscardPolicy(), "listPageThreadPool");
+        new Thread(new ThreadPoolMonitor(detailPageThreadPool, "DetailPageDownloadThreadPool")).start();
+        new Thread(new ThreadPoolMonitor(listPageThreadPool, "ListPageDownloadThreadPool")).start();
         detailListPageThreadPool = new SimpleThreadPoolExecutor(Config.downloadThreadSize,
                 Config.downloadThreadSize,
                 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(2000),
                 new ThreadPoolExecutor.DiscardPolicy(),
-                "pptvDetailListPageThreadPool");
-        new Thread(new ThreadPoolMonitor(detailListPageThreadPool, "PptvDetailListPageThreadPool")).start();
+                "detailListPageThreadPool");
+        new Thread(new ThreadPoolMonitor(detailListPageThreadPool, "DetailListPageThreadPool")).start();
 
     }
 
@@ -115,8 +106,8 @@ public class PptvHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
      * @param url
      */
     public void startCrawl(String url) {
-        detailPageThreadPool.execute(new BiliBiliDetailPageTask(url, Config.isProxy));
-        manageHttpClient();
+        /*detailPageThreadPool.execute(new BiliBiliDetailPageTask(url, Config.isProxy));
+        manageHttpClient();*/
     }
 
     /**
@@ -124,14 +115,14 @@ public class PptvHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
      */
     @Override
     public void startCrawl() {
-        authorization = initAuthorization();
+        /*authorization = initAuthorization();
 
         String startToken = Config.startUserToken;
         String startUrl = String.format(Constants.USER_FOLLOWEES_URL, startToken, 0);
         HttpGet request = new HttpGet(startUrl);
-        request.setHeader("authorization", "oauth " + PptvHttpClient.getAuthorization());
-//        detailListPageThreadPool.execute(new BiliBiliDetailListPageTask(request, Config.isProxy));
-        manageHttpClient();
+        request.setHeader("authorization", "oauth " + ProxyHttpClient.getAuthorization());
+        detailListPageThreadPool.execute(new DetailListPageTaskCommon(request, Config.isProxy));
+        manageHttpClient();*/
     }
 
     /**
@@ -139,11 +130,11 @@ public class PptvHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
      *
      * @return
      */
-    private String initAuthorization() {
+   /* private String initAuthorization() {
         logger.info("初始化authoriztion中...");
         String content = null;
 
-        BiliBiliGeneralPageTask generalPageTask = new BiliBiliGeneralPageTask(Config.pptvStartURL, true);
+        BiliBiliGeneralPageTask generalPageTask = new BiliBiliGeneralPageTask(Config.biliBiliStartURL, true);
         generalPageTask.run();
         content = generalPageTask.getPage().getHtml();
 
@@ -168,21 +159,21 @@ public class PptvHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
             return authorization;
         }
         throw new RuntimeException("not get authorization");
-    }
+    }*/
 
-    public static String getAuthorization() {
-        return authorization;
-    }
+//    public static String getAuthorization() {
+//        return authorization;
+//    }
 
     /**
      * 管理视频网站客户端
      * 关闭整个爬虫
      */
-    public void manageHttpClient() {
+    /*public void manageHttpClient() {
         while (true) {
-            /**
+            *//**
              * 获取下载网页数
-             */
+             *//*
             long downloadPageCount = detailListPageThreadPool.getTaskCount();
 
             if (downloadPageCount >= Config.downloadPageCount &&
@@ -194,20 +185,32 @@ public class PptvHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
             if (detailListPageThreadPool.isTerminated()) {
                 //关闭数据库连接
                 Map<Thread, Connection> map = BiliBiliDetailListPageTask.getConnectionMap();
-                CommonHttpClient.closeConnections(map);
+                closeConnections(map);
                 //关闭代理检测线程池
-                PptvProxyHttpClient.getInstance().getProxyTestThreadExecutor().shutdownNow();
+                CommonProxyHttpClient.getInstance().getProxyTestThreadExecutor().shutdownNow();
                 //关闭代理下载页线程池
-                PptvProxyHttpClient.getInstance().getProxyDownloadThreadExecutor().shutdownNow();
+                CommonProxyHttpClient.getInstance().getProxyDownloadThreadExecutor().shutdownNow();
 
                 break;
             }
             double costTime = (System.currentTimeMillis() - startTime) / 1000.0;//单位s
-            logger.debug("皮皮电影抓取速率：" + parseUserCount.get() / costTime + "个/s");
+            logger.debug("抓取速率：" + parseUserCount.get() / costTime + "个/s");
 //            logger.info("downloadFailureProxyPageSet size:" + ProxyHttpClient.downloadFailureProxyPageSet.size());
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }*/
+
+    public static void closeConnections(Map<Thread, Connection> map) {
+        for (Connection cn : map.values()) {
+            try {
+                if (cn != null && !cn.isClosed()) {
+                    cn.close();
+                }
+            } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
@@ -224,4 +227,5 @@ public class PptvHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
     public ThreadPoolExecutor getDetailListPageThreadPool() {
         return detailListPageThreadPool;
     }
+
 }

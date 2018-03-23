@@ -11,6 +11,7 @@ import com.crawl.proxy.entity.Direct;
 import com.crawl.proxy.entity.Proxy;
 import com.crawl.videosite.BiliBiliHttpClient;
 import com.crawl.videosite.entity.VideoSiteDynamicPersistence;
+import com.crawl.videosite.task.CommonTask;
 import com.crawl.videosite.task.bilibili.api.VideoDynamicListJsonTask;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -22,7 +23,7 @@ import java.util.Map;
 /**
  * 活动视频列表json数据任务
  */
-public abstract class AbstractVideoDynamicListTask implements Runnable {
+public abstract class AbstractVideoDynamicListTask extends CommonTask implements Runnable {
     private static Logger logger = LoggerFactory.getLogger(AbstractVideoDynamicListTask.class);
     protected static BiliBiliHttpClient httpClient = BiliBiliHttpClient.getInstance();
     /**

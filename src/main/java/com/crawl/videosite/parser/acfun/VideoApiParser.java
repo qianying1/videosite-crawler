@@ -6,6 +6,8 @@ import com.crawl.videosite.domain.Video;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Connection;
+
 /**
  * a站视频api数据分析器
  */
@@ -23,7 +25,7 @@ public class VideoApiParser {
      * @param jsonArray
      * @param contentId
      */
-    public void parseVideoCounts(String[] jsonArray, Long contentId) {
+    public void parseVideoCounts(String[] jsonArray, Long contentId, Connection conn) {
         if (jsonArray == null || jsonArray.length <= 0 || contentId == null)
             return;
         logger.info("开始爬取a站视频数据>>>>>>>>>>>>>>>>" + jsonArray);
@@ -42,15 +44,15 @@ public class VideoApiParser {
         video.setMasks(masks);
         video.setFavorite(favorite);
         video.setBananas(banana);
-        insertVideo(video);
+        insertVideo(video,conn);
     }
 
-    private void insertVideo(Video video) {
-        boolean exsist = videoDao.isExistVideoByAcfunVid(video.getAcfun_vid());
+    private void insertVideo(Video video,Connection conn) {
+        boolean exsist = videoDao.isExistVideoByAcfunVid(conn,video.getAcfun_vid());
         if (exsist) {
-            videoDao.updateVideo(video);
+            videoDao.updateVideo(conn,video);
         } else {
-            videoDao.insertVideo(video);
+            videoDao.insertVideo(conn,video);
         }
     }
 }

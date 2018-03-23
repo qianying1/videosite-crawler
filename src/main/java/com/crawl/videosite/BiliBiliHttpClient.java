@@ -5,8 +5,6 @@ import com.crawl.core.htmlunit.IHtmlUnit;
 import com.crawl.core.util.*;
 import com.crawl.proxy.BiliBiliProxyHttpClient;
 import com.crawl.videosite.entity.*;
-import com.crawl.videosite.task.bilibili.BiliBiliDetailListPageTask;
-import com.crawl.videosite.task.bilibili.BiliBiliDetailPageTask;
 import com.crawl.videosite.task.bilibili.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +29,30 @@ public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
     public static AtomicInteger parseUserCount = new AtomicInteger(0);
     private static long startTime = System.currentTimeMillis();
     public static volatile boolean isStop = false;
+    /**
+     * 动态视频列表
+     */
+    private VideoDynamicListJsonTask videoDynamicListJsonTask;
+    /**
+     * 等级视频列表
+     */
+    private VideoRankListJsonTask videoRankListJsonTask;
+    /**
+     * 新视频列表
+     */
+    private NewVideoListJsonTask newVideoListJsonTask;
+    /**
+     * 国产小说连载
+     */
+    private BangumiGuochanTask bangumiGuochanTask;
+    /**
+     * 视频作者
+     */
+    private AuthorTask authorTask;
+    /**
+     * 视频信息直接获取
+     */
+    private VideoJsonTask videoJsonTask;
 
     public static BiliBiliHttpClient getInstance() {
         if (instance == null) {
@@ -81,7 +103,7 @@ public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
      */
     private void intiThreadPool() {
         //详情页下载线程池
-        detailPageThreadPool = new SimpleThreadPoolExecutor(Config.downloadThreadSize,
+        /*detailPageThreadPool = new SimpleThreadPoolExecutor(Config.downloadThreadSize,
                 Config.downloadThreadSize,
                 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(),
@@ -93,7 +115,7 @@ public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
                 new LinkedBlockingQueue<Runnable>(5000),
                 new ThreadPoolExecutor.DiscardPolicy(), "biliBiliListPageThreadPool");
         new Thread(new ThreadPoolMonitor(detailPageThreadPool, "biliBiliDetailPageDownloadThreadPool")).start();
-        new Thread(new ThreadPoolMonitor(listPageThreadPool, "biliBiliListPageDownloadThreadPool")).start();
+        new Thread(new ThreadPoolMonitor(listPageThreadPool, "biliBiliListPageDownloadThreadPool")).start();*/
 
         //详情列表页下载线程池
         detailListPageThreadPool = new SimpleThreadPoolExecutor(Config.downloadThreadSize,
@@ -112,8 +134,8 @@ public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
      * @param url
      */
     public void startCrawl(String url) {
-        detailPageThreadPool.execute(new BiliBiliDetailPageTask(url, Config.bilibiliIsProxy));
-        manageHttpClient();
+        /*detailPageThreadPool.execute(new BiliBiliDetailPageTask(url, Config.bilibiliIsProxy));
+        manageHttpClient();*/
     }
 
     /**
@@ -160,10 +182,11 @@ public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
             logger.error("fail to deserialize object from url: " + Constants.biliBiliDynamicVideoDataSerialPath, e);
         }
         if (persistence != null) {
-            detailListPageThreadPool.execute(new VideoDynamicListJsonTask(persistence.getBiliBili_rid(), persistence.getBiliBili_original(), persistence.getBiliBili_pn()));
+            videoDynamicListJsonTask = new VideoDynamicListJsonTask(persistence.getBiliBili_rid(), persistence.getBiliBili_original(), persistence.getBiliBili_pn());
         } else {
-            detailListPageThreadPool.execute(new VideoDynamicListJsonTask(1l, 0l, 1));
+            videoDynamicListJsonTask = new VideoDynamicListJsonTask(1l, 0l, 1);
         }
+        detailListPageThreadPool.execute(videoDynamicListJsonTask);
     }
 
     /**
@@ -178,10 +201,11 @@ public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
             logger.error("fail to deserialize object from url: " + Constants.biliBiliRankVideoDataSerialPath, e);
         }
         if (persistence != null) {
-            detailListPageThreadPool.execute(new VideoRankListJsonTask(persistence.getBiliBili_rid()));
+            videoRankListJsonTask = new VideoRankListJsonTask(persistence.getBiliBili_rid());
         } else {
-            detailListPageThreadPool.execute(new VideoRankListJsonTask(1l));
+            videoRankListJsonTask = new VideoRankListJsonTask(1l);
         }
+        detailListPageThreadPool.execute(videoRankListJsonTask);
     }
 
     /**
@@ -196,17 +220,20 @@ public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
             logger.error("fail to deserialize object from url: " + Constants.biliBiliNewVideoDataSerialPath, e);
         }
         if (persistence != null) {
-            detailListPageThreadPool.execute(new NewVideoListJsonTask(persistence.getBiliBili_rid(), persistence.getBiliBili_original(), persistence.getBiliBili_pn()));
+            newVideoListJsonTask =
+                    new NewVideoListJsonTask(persistence.getBiliBili_rid(), persistence.getBiliBili_original(), persistence.getBiliBili_pn());
         } else {
-            detailListPageThreadPool.execute(new NewVideoListJsonTask(0l, 0l, 1));
+            newVideoListJsonTask = new NewVideoListJsonTask(0l, 0l, 1);
         }
+        detailListPageThreadPool.execute(newVideoListJsonTask);
     }
 
     /**
      * 国产连载api（获取到的是每天更新的数据）
      */
     private void bangumiGuochangCrawler() {
-        detailListPageThreadPool.execute(new BangumiGuochanTask());
+        bangumiGuochanTask=new BangumiGuochanTask();
+        detailListPageThreadPool.execute(bangumiGuochanTask);
     }
 
     /**
@@ -221,10 +248,11 @@ public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
             logger.error("fail to deserialize object from url: " + Constants.biliBiliVideoAuthorDataSerialPath, e);
         }
         if (persistence != null) {
-            detailListPageThreadPool.execute(new AuthorTask(persistence.getMid()));
+            authorTask= new AuthorTask(persistence.getMid());
         } else {
-            detailListPageThreadPool.execute(new AuthorTask(301316642l));
+            authorTask=new AuthorTask(301316642l);
         }
+        detailListPageThreadPool.execute(authorTask);
     }
 
     /**
@@ -239,10 +267,11 @@ public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
             logger.error("fail to deserialize object from url: " + Constants.biliBiliVideoDataSerialPath, e);
         }
         if (persistence != null) {
-            detailListPageThreadPool.execute(new VideoJsonTask(persistence.getBiliBili_aid()));
+            videoJsonTask=new VideoJsonTask(persistence.getBiliBili_aid());
         } else {
-            detailListPageThreadPool.execute(new VideoJsonTask(1l));
+            videoJsonTask=new VideoJsonTask(1l);
         }
+        detailListPageThreadPool.execute(videoJsonTask);
     }
 
     /**
@@ -290,18 +319,33 @@ public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
             /**
              * 获取下载网页数
              */
-            long downloadPageCount = detailListPageThreadPool.getTaskCount();
+            /*long downloadPageCount = detailListPageThreadPool.getTaskCount();
 
             if (downloadPageCount >= Config.downloadPageCount &&
                     !detailListPageThreadPool.isShutdown()) {
                 isStop = true;
                 ThreadPoolMonitor.isStopMonitor = true;
                 detailListPageThreadPool.shutdown();
-            }
+            }*/
             if (detailListPageThreadPool.isTerminated()) {
-                //关闭数据库连接
-                Map<Thread, Connection> map = BiliBiliDetailListPageTask.getConnectionMap();
-                CommonHttpClient.closeConnections(map);
+                //关闭动态视频列表线程数据库连接
+                Map<Thread, Connection> dynamicMap = videoDynamicListJsonTask.getConnectionMap();
+                ProxyHttpClient.closeConnections(dynamicMap);
+                //关闭等级视频列表任务数据库连接
+                Map<Thread,Connection> rankMap=videoRankListJsonTask.getConnectionMap();
+                ProxyHttpClient.closeConnections(rankMap);
+                //关闭新视频列表任务数据库连接
+                Map<Thread,Connection> newVideoMap=newVideoListJsonTask.getConnectionMap();
+                ProxyHttpClient.closeConnections(newVideoMap);
+                //关闭bangumi国产小说任务数据库连接
+                Map<Thread,Connection> bangumiMap=bangumiGuochanTask.getConnectionMap();
+                ProxyHttpClient.closeConnections(bangumiMap);
+                //关闭视频作者任务数据库连接
+                Map<Thread,Connection> authorMap=authorTask.getConnectionMap();
+                ProxyHttpClient.closeConnections(authorMap);
+                //关闭视频任务数据库连接
+                Map<Thread,Connection> videoMap=videoJsonTask.getConnectionMap();
+                ProxyHttpClient.closeConnections(videoMap);
                 //关闭代理检测线程池
                 BiliBiliProxyHttpClient.getInstance().getProxyTestThreadExecutor().shutdownNow();
                 //关闭代理下载页线程池

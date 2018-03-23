@@ -9,8 +9,7 @@ import com.crawl.proxy.ProxyPool;
 import com.crawl.proxy.entity.Direct;
 import com.crawl.proxy.entity.Proxy;
 import com.crawl.proxy.site.ProxyListPageParserFactory;
-import com.crawl.videosite.CommonHttpClient;
-import com.crawl.videosite.entity.Page;
+import com.crawl.videosite.ProxyHttpClient;
 import com.crawl.videosite.entity.Page;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
@@ -104,7 +103,7 @@ public class BiliBiliProxyPageTask implements Runnable {
                 getProxyListPageParser(ProxyPool.proxyMap.get(url));
         List<Proxy> proxyList = parser.parse(page.getHtml());
         for (Proxy p : proxyList) {
-            if (!CommonHttpClient.getInstance().getDetailListPageThreadPool().isTerminated()) {
+            if (!ProxyHttpClient.getInstance().getDetailListPageThreadPool().isTerminated()) {
                 ProxyPool.lock.readLock().lock();
                 boolean containFlag = ProxyPool.biliBiliProxySet.contains(p);
                 ProxyPool.lock.readLock().unlock();

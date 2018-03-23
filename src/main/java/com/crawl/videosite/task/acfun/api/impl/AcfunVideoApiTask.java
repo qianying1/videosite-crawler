@@ -24,6 +24,6 @@ public class AcfunVideoApiTask extends AbstractAcfunVideoApiTask {
         }
         /*if (Integer.valueOf(jsonArray[0])<=0&&Integer.valueOf(jsonArray[1])<=0&&Integer.valueOf(jsonArray[2])<=0&&Integer.valueOf(jsonArray[3])<=0&&Integer.valueOf(jsonArray[4])<=0&&Integer.valueOf(jsonArray[5])<=0&&Integer.valueOf(jsonArray[6])<=0&&Integer.valueOf(jsonArray[7])<=0)
             return;*/
-        parser.parseVideoCounts(jsonArray, contentId);
+        parser.parseVideoCounts(jsonArray, contentId,getConnection());
     }
 }

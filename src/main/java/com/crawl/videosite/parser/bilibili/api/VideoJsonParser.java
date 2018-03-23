@@ -15,6 +15,7 @@ import com.crawl.videosite.parser.bilibili.api.abstra.AbstractVideoParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Connection;
 import java.util.Date;
 import java.util.Map;
 
@@ -35,13 +36,13 @@ public class VideoJsonParser extends AbstractVideoParser {
      * @param jsonObject
      */
     @Override
-    public void parseJson(JSONObject jsonObject) {
+    public void parseJson(JSONObject jsonObject, Connection conn) {
         if (jsonObject == null || jsonObject.isEmpty())
             return;
         logger.info("开始分析视频数据>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         System.out.println(jsonObject);
         Map<String, Object> data = (Map<String, Object>) jsonObject.get("data");
-        parseDataToPersistence(data);
+        parseDataToPersistence(data,conn);
     }
 
     /**
@@ -49,7 +50,7 @@ public class VideoJsonParser extends AbstractVideoParser {
      *
      * @param archive
      */
-    private void parseDataToPersistence(Map<String, Object> archive) {
+    private void parseDataToPersistence(Map<String, Object> archive, Connection conn) {
         if (archive == null || archive.isEmpty())
             return;
         Video video = new Video();
@@ -63,24 +64,24 @@ public class VideoJsonParser extends AbstractVideoParser {
         video.setShare(Long.valueOf(archive.get("share").toString()));
         video.setNow_rank(Integer.valueOf(archive.get("now_rank").toString()));
         video.setHis_rank(Integer.valueOf(archive.get("his_rank").toString()));
-        insertVideo(video);
+        insertVideo(video,conn);
     }
 
-    private void insertVideo(Video video) {
+    private void insertVideo(Video video, Connection conn) {
         if (Constants.isUpdateVideo_biliBili) {
-            boolean videoExsist = videoDao.isExistVideo(video.getBiliBili_aid());
+            boolean videoExsist = videoDao.isExistVideo(conn,video.getBiliBili_aid());
             if (!videoExsist) {
-                Long id = videoDao.insertVideo(video);
+                Long id = videoDao.insertVideo(conn,video);
                 if (id != -1l) {
                     video.setId(id);
                 } else {
                     logger.error("插入视频数据失败: " + video.getTitle());
                 }
             } else {
-                videoDao.updateVideo(video);
+                videoDao.updateVideo(conn,video);
             }
         } else {
-            Long id = videoDao.insertVideo(video);
+            Long id = videoDao.insertVideo(conn,video);
             if (id != -1l) {
                 video.setId(id);
             } else {

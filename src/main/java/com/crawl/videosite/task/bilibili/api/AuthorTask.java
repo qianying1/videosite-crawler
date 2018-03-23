@@ -65,7 +65,7 @@ public class AuthorTask extends AbstractAuthorTask {
             setTargetUrl(getTargetUrl(targetDomain, mid));
             return;
         } else {
-            videoListParser.parseJson(jsonObject, mid);
+            videoListParser.parseJson(jsonObject, mid,getConnection());
         }
         mid--;
         if (getEmptyCount() > MAXEMPTYCOUNT) {

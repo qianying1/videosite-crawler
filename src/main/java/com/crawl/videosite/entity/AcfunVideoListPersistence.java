@@ -1,11 +1,13 @@
 package com.crawl.videosite.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * a站视频列表内容
  */
-public class AcfunVideoListPersistence {
+public class AcfunVideoListPersistence implements Serializable{
+    private static final long serialVersionUID = 6836446947871751990L;
     /**
      * 视频id
      */

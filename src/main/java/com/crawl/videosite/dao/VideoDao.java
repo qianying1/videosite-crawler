@@ -20,6 +20,14 @@ public interface VideoDao extends Dao {
     boolean isExistVideoInAcfun(Long acfunVid);
 
     /**
+     * a站中是否存在视频
+     *
+     * @param acfunVid
+     * @return
+     */
+    boolean isExistVideoInAcfun(Connection conn,Long acfunVid);
+
+    /**
      * 是否存在视频
      *
      * @param aid
@@ -36,6 +44,14 @@ public interface VideoDao extends Dao {
     boolean isExistVideoByAcfunVid(Long acfunVid);
 
     /**
+     * 是否存在a站的视频数据
+     *
+     * @param acfunVid
+     * @return
+     */
+    boolean isExistVideoByAcfunVid(Connection conn,Long acfunVid);
+
+    /**
      * 插入视频数据
      *
      * @param video
@@ -50,6 +66,14 @@ public interface VideoDao extends Dao {
      * @return
      */
     boolean updateAcfunVideo(Video video);
+
+    /**
+     * 更新a站视频信息
+     *
+     * @param video
+     * @return
+     */
+    boolean updateAcfunVideo(Connection conn,Video video);
 
     /**
      * 插入视频数据

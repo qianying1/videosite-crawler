@@ -2,6 +2,8 @@ package com.crawl.videosite.parser.bilibili.api.abstra;
 
 import com.alibaba.fastjson.JSONObject;
 
+import java.sql.Connection;
+
 /**
  * 视频列表json数据任务
  */
@@ -31,6 +33,7 @@ public abstract class AbstractNewVideoListParser {
      *
      * @param jsonObject
      * @param rid
+     * @param conn
      */
-    public abstract void parseJson(JSONObject jsonObject, Long rid, Long original);
+    public abstract void parseJson(JSONObject jsonObject, Long rid, Long original, Connection conn);
 }

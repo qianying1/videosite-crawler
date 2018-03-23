@@ -66,14 +66,31 @@ public class VideoTypeDaoImp extends DaoImp implements VideoTypeDao {
     }
 
     /**
+     * a站中是否已存在视频类型
+     *
+     * @param acfunTid
+     * @return
+     */
+    public boolean isExistVideoTypeInAcfun(Connection conn,Long acfunTid){
+        try {
+            if (isExistRecord(conn, "style", "acfun_tid", acfunTid)) {
+                return true;
+            }
+        } catch (SQLException e) {
+            logger.error("通过视频类型id查询视频类型数据失败: " + acfunTid);
+        }
+        return false;
+    }
+
+    /**
      * 通过视屏类型名称判断是否存在视频类型
      *
      * @param typeName
      * @return
      */
-    public synchronized boolean isExistVideoTypeByName(String typeName) {
+    public synchronized boolean isExistVideoTypeByName(Connection conn, String typeName) {
         try {
-            if (isExistRecord(ConnectionManager.getConnection(), "style", "styleName", typeName)) {
+            if (isExistRecord(conn, "style", "styleName", typeName)) {
                 return true;
             }
         } catch (SQLException e) {
@@ -132,8 +149,8 @@ public class VideoTypeDaoImp extends DaoImp implements VideoTypeDao {
      * @param type
      * @return
      */
-    public Long updateAcfunVideoType(Style type) {
-        Connection conn = ConnectionManager.getConnection();
+    @Override
+    public Long updateAcfunVideoType(Connection conn,Style type){
         Long tid = type.getAcfun_tid();
         Style origin = selectVideoTypeByAcfunTid(conn, tid);
         if (origin == null) {
@@ -172,7 +189,16 @@ public class VideoTypeDaoImp extends DaoImp implements VideoTypeDao {
         } finally {
 //            ConnectionManager.close();
         }
-
+    }
+    /**
+     * 更新a站视频类型
+     *
+     * @param type
+     * @return
+     */
+    public Long updateAcfunVideoType(Style type) {
+        Connection conn = ConnectionManager.getConnection();
+        return updateAcfunVideoType(conn,type);
     }
 
     /**
@@ -272,8 +298,19 @@ public class VideoTypeDaoImp extends DaoImp implements VideoTypeDao {
      * @param typeName
      * @return
      */
+    @Override
     public Long selectVideoTypeIdByName(String typeName) {
-        Connection conn = ConnectionManager.getConnection();
+        return selectVideoTypeIdByName(ConnectionManager.getConnection(), typeName);
+    }
+
+    /**
+     * 通过视频类型名称获取视频类型的id
+     *
+     * @param typeName
+     * @return
+     */
+    @Override
+    public Long selectVideoTypeIdByName(Connection conn, String typeName) {
         String sql = "select id from style where styleName=?";
         PreparedStatement pstmt;
         try {

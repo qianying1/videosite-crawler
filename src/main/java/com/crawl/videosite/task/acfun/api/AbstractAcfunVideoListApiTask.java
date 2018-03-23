@@ -9,6 +9,7 @@ import com.crawl.proxy.ProxyPool;
 import com.crawl.proxy.entity.Proxy;
 import com.crawl.videosite.entity.AcfunParams;
 import com.crawl.videosite.entity.AcfunVideoListPersistence;
+import com.crawl.videosite.task.CommonTask;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +20,7 @@ import java.util.Date;
 /**
  * 视频列表数据爬取任务
  */
-public abstract class AbstractAcfunVideoListApiTask implements Runnable {
+public abstract class AbstractAcfunVideoListApiTask extends CommonTask implements Runnable {
     private static Logger logger = LoggerFactory.getLogger(AbstractAcfunVideoListApiTask.class);
     /**
      * 目标主地址

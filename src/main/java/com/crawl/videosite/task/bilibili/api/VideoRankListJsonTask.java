@@ -56,7 +56,7 @@ public class VideoRankListJsonTask extends AbstractVideoRankListTask {
             setTargetUrl(getTargetUrl(targetDomain, rid));
             return;
         } else {
-            videoListParser.parseJson(jsonObject, rid);
+            videoListParser.parseJson(jsonObject, rid,getConnection());
         }
         if (getEmptyCount() > MAXEMPTYCOUNT) {
             setEmptyCount(0);

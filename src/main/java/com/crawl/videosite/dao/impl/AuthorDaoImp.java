@@ -49,10 +49,10 @@ public class AuthorDaoImp extends DaoImp implements AuthorDao {
      * a站中是否已存在该视频作者
      *
      * @param acfunUid
+     * @param conn
      * @return
      */
-    public boolean isExistAuthorInAcfun(Long acfunUid) {
-        Connection conn = ConnectionManager.getConnection();
+    public boolean isExistAuthorInAcfun(Connection conn,Long acfunUid){
         try {
             if (isExistRecord(conn, "video_author", "acfun_uid", acfunUid)) {
                 return true;
@@ -61,6 +61,16 @@ public class AuthorDaoImp extends DaoImp implements AuthorDao {
             logger.error("通过视频作者id查询视频作者数据失败" + acfunUid, e);
         }
         return false;
+    }
+    /**
+     * a站中是否已存在该视频作者
+     *
+     * @param acfunUid
+     * @return
+     */
+    public boolean isExistAuthorInAcfun(Long acfunUid) {
+        Connection conn = ConnectionManager.getConnection();
+        return isExistAuthorInAcfun(conn,acfunUid);
     }
 
     /**
@@ -113,14 +123,15 @@ public class AuthorDaoImp extends DaoImp implements AuthorDao {
             return null;
         return authors.get(0);
     }
+
     /**
      * 更新a站视频作者信息
      *
      * @param author
+     * @param conn
      * @return
      */
-    public Long updateAcfunAuthor(VideoAuthor author) {
-        Connection conn = ConnectionManager.getConnection();
+    public Long updateAcfunAuthor(Connection conn,VideoAuthor author){
         Long uid = author.getAcfun_uid();
         VideoAuthor origin = selectAuthorByAcfunUid(conn, uid);
         if (origin == null) {
@@ -177,6 +188,16 @@ public class AuthorDaoImp extends DaoImp implements AuthorDao {
         } finally {
 //            ConnectionManager.close();
         }
+    }
+    /**
+     * 更新a站视频作者信息
+     *
+     * @param author
+     * @return
+     */
+    public Long updateAcfunAuthor(VideoAuthor author) {
+        Connection conn = ConnectionManager.getConnection();
+        return updateAcfunAuthor(conn,author);
     }
 
     /**

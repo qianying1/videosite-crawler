@@ -23,7 +23,7 @@ public class AcfunTypePageTask extends AbstractAcfunTypePageTask {
         if (page == null)
             return;
         try {
-            pageParser.parseMainPage(page);
+            pageParser.parseMainPage(page,getConnection());
         } catch (Exception e) {
             logger.error("分析主页时产生异常",e);
             return;

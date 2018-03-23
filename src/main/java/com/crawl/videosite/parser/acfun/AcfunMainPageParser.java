@@ -14,6 +14,8 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Connection;
+
 /**
  * a站主页分析器
  */
@@ -31,7 +33,7 @@ public class AcfunMainPageParser {
      *
      * @param page
      */
-    public void parseMainPage(HtmlPage page) throws Exception {
+    public void parseMainPage(HtmlPage page, Connection conn) throws Exception {
         logger.info("开始分析a站主页>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.");
         DomElement navDomEl = page.getElementById("nav");
         Document doc = Jsoup.parse(navDomEl.asXml());
@@ -50,7 +52,7 @@ public class AcfunMainPageParser {
             String ahref = aEl.attr("abs:href");
             logger.info("type url>>>>> " + ahref);
             type.setStyleName(aEl.text());
-            insertType(type);
+            insertType(type, conn);
         }
         //子类型
         Elements sEls = subNav.getElementsByTag("ul");
@@ -73,7 +75,7 @@ public class AcfunMainPageParser {
                 logger.info("type url>>>>> " + ahref);
                 type.setStyleName(aEl.text());
                 type.setParent(pType);
-                insertType(type);
+                insertType(type, conn);
             }
         }
     }
@@ -83,17 +85,17 @@ public class AcfunMainPageParser {
      *
      * @param type
      */
-    private void insertType(Style type) {
-        boolean isExsit = typeDao.isExistVideoTypeInAcfun(type.getAcfun_tid());
+    private void insertType(Style type, Connection conn) {
+        boolean isExsit = typeDao.isExistVideoTypeInAcfun(conn, type.getAcfun_tid());
         if (!isExsit) {
-            Long id = typeDao.insertAcfunVideoType(type);
+            Long id = typeDao.insertAcfunVideoType(conn, type);
             if (id != -1) {
                 type.setId(id);
             } else {
                 logger.error("插入视频类型数据失败================: " + type.getStyleName());
             }
         } else {
-            Long id = typeDao.updateAcfunVideoType(type);
+            Long id = typeDao.updateAcfunVideoType(conn, type);
             type.setId(id);
         }
     }

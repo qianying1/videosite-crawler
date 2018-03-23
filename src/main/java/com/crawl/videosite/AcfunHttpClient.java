@@ -4,10 +4,10 @@ import com.crawl.core.htmlunit.AbstractHtmlUnit;
 import com.crawl.core.htmlunit.IHtmlUnit;
 import com.crawl.core.util.*;
 import com.crawl.proxy.AcfunProxyHttpClient;
+import com.crawl.videosite.entity.AcfunAuthorPersistence;
 import com.crawl.videosite.entity.AcfunVideoListPersistence;
 import com.crawl.videosite.entity.AcfunVideoPersistence;
-import com.crawl.videosite.task.acfun.AcfunDetailListPageTask;
-import com.crawl.videosite.task.acfun.AcfunDetailPageTask;
+import com.crawl.videosite.task.acfun.api.impl.AcfunAuthorApiTask;
 import com.crawl.videosite.task.acfun.api.impl.AcfunTypePageTask;
 import com.crawl.videosite.task.acfun.api.impl.AcfunVideoApiTask;
 import com.crawl.videosite.task.acfun.api.impl.AcfunVideoListApiTask;
@@ -58,6 +58,22 @@ public class AcfunHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
      * 详情列表页下载线程池
      */
     private ThreadPoolExecutor detailListPageThreadPool;
+    /**
+     * 作者信息
+     */
+    private AcfunAuthorApiTask acfunAuthorApiTask;
+    /**
+     * 视频类型
+     */
+    private AcfunTypePageTask acfunTypePageTask;
+    /**
+     * 视频
+     */
+    private AcfunVideoApiTask acfunVideoApiTask;
+    /**
+     * 视频列表
+     */
+    private AcfunVideoListApiTask acfunVideoListApiTask;
 
     /**
      * request　header
@@ -83,19 +99,19 @@ public class AcfunHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
      */
     private void intiThreadPool() {
         //详情页下载线程池
-        detailPageThreadPool = new SimpleThreadPoolExecutor(Config.downloadThreadSize,
+        /*detailPageThreadPool = new SimpleThreadPoolExecutor(Config.downloadThreadSize,
                 Config.downloadThreadSize,
                 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(),
-                "biliBiliDetailPageThreadPool");
+                "biliBiliDetailPageThreadPool");*/
 
         //列表页下载线程池
-        listPageThreadPool = new SimpleThreadPoolExecutor(50, 80,
+        /*listPageThreadPool = new SimpleThreadPoolExecutor(50, 80,
                 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(5000),
                 new ThreadPoolExecutor.DiscardPolicy(), "acfunListPageThreadPool");
         new Thread(new ThreadPoolMonitor(detailPageThreadPool, "acfunDetailPageDownloadThreadPool")).start();
-        new Thread(new ThreadPoolMonitor(listPageThreadPool, "acfunListPageDownloadThreadPool")).start();
+        new Thread(new ThreadPoolMonitor(listPageThreadPool, "acfunListPageDownloadThreadPool")).start();*/
 
         //详情列表页下载线程池
         detailListPageThreadPool = new SimpleThreadPoolExecutor(Config.downloadThreadSize,
@@ -114,8 +130,8 @@ public class AcfunHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
      * @param url
      */
     public void startCrawl(String url) {
-        detailPageThreadPool.execute(new AcfunDetailPageTask(url, Config.acfunIsProxy));
-        manageHttpClient();
+        /*detailPageThreadPool.execute(new AcfunDetailPageTask(url, Config.acfunIsProxy));
+        manageHttpClient();*/
     }
 
     /**
@@ -129,13 +145,35 @@ public class AcfunHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
         videoContentCrawler();
         //视频列表内容
         videoListCrawler();
+        //视频作者信息
+        authorDetail();
+    }
+
+    /**
+     * 作者信息爬取
+     */
+    private void authorDetail(){
+        AcfunAuthorPersistence persistence = null;
+        try {
+            persistence = (AcfunAuthorPersistence) HttpClientUtil.deserializeObject(Constants.acfunAuthorDataSerialPath);
+        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
+            logger.error("fail to deserialize object from url: " + Constants.acfunAuthorDataSerialPath, e);
+        }
+        if (persistence != null) {
+            acfunAuthorApiTask= new AcfunAuthorApiTask(persistence.getUserId());
+        } else {
+            acfunAuthorApiTask= new AcfunAuthorApiTask(0l);
+        }
+        detailListPageThreadPool.execute(acfunAuthorApiTask);
     }
 
     /**
      * 视频类型抓取
      */
     private void typeCrawler(){
-        detailListPageThreadPool.execute(new AcfunTypePageTask());
+        acfunTypePageTask=new AcfunTypePageTask();
+        detailListPageThreadPool.execute(acfunTypePageTask);
     }
 
     /**
@@ -150,10 +188,11 @@ public class AcfunHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
             logger.error("fail to deserialize object from url: " + Constants.acfunVideoDataSerialPath, e);
         }
         if (persistence != null) {
-            detailListPageThreadPool.execute(new AcfunVideoApiTask(persistence.getContentId()));
+            acfunVideoApiTask=new AcfunVideoApiTask(persistence.getContentId());
         } else {
-            detailListPageThreadPool.execute(new AcfunVideoApiTask(0l));
+            acfunVideoApiTask=new AcfunVideoApiTask(0l);
         }
+        detailListPageThreadPool.execute(acfunVideoApiTask);
     }
 
     /**
@@ -168,10 +207,11 @@ public class AcfunHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
             logger.error("fail to deserialize object from url: " + Constants.acfunVideoListDataSerialPath, e);
         }
         if (persistence != null) {
-            detailListPageThreadPool.execute(new AcfunVideoListApiTask(persistence));
+            acfunVideoListApiTask= new AcfunVideoListApiTask(persistence);
         } else {
-            detailListPageThreadPool.execute(new AcfunVideoListApiTask(new AcfunVideoListPersistence()));
+            acfunVideoListApiTask= new AcfunVideoListApiTask(new AcfunVideoListPersistence());
         }
+        detailListPageThreadPool.execute(acfunVideoListApiTask);
     }
 
 
@@ -194,8 +234,17 @@ public class AcfunHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
             }
             if (detailListPageThreadPool.isTerminated()) {
                 //关闭数据库连接
-                Map<Thread, Connection> map = AcfunDetailListPageTask.getConnectionMap();
-                CommonHttpClient.closeConnections(map);
+                Map<Thread, Connection> authorMap = acfunAuthorApiTask.getConnectionMap();
+                ProxyHttpClient.closeConnections(authorMap);
+                //关闭数据库连接
+                Map<Thread, Connection> typeMap = acfunTypePageTask.getConnectionMap();
+                ProxyHttpClient.closeConnections(typeMap);
+                //关闭数据库连接
+                Map<Thread, Connection> videoMap = acfunVideoApiTask.getConnectionMap();
+                ProxyHttpClient.closeConnections(videoMap);
+                //关闭数据库连接
+                Map<Thread, Connection> videoListMap = acfunVideoListApiTask.getConnectionMap();
+                ProxyHttpClient.closeConnections(videoListMap);
                 //关闭代理检测线程池
                 AcfunProxyHttpClient.getInstance().getProxyTestThreadExecutor().shutdownNow();
                 //关闭代理下载页线程池

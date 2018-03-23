@@ -11,9 +11,8 @@ import com.crawl.proxy.entity.Direct;
 import com.crawl.proxy.entity.Proxy;
 import com.crawl.videosite.BiliBiliHttpClient;
 import com.crawl.videosite.entity.VideoAuthorPersistence;
-import com.crawl.videosite.entity.VideoSiteDynamicPersistence;
+import com.crawl.videosite.task.CommonTask;
 import com.crawl.videosite.task.bilibili.api.AuthorTask;
-import com.crawl.videosite.task.bilibili.api.VideoDynamicListJsonTask;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +23,7 @@ import java.util.Map;
 /**
  * 爬取视频作者任务
  */
-public abstract class AbstractAuthorTask implements Runnable {
+public abstract class AbstractAuthorTask  extends CommonTask implements Runnable {
 
     private static Logger logger = LoggerFactory.getLogger(AbstractAuthorTask.class);
     protected static BiliBiliHttpClient httpClient = BiliBiliHttpClient.getInstance();

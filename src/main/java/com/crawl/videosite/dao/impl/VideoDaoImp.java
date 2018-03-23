@@ -35,8 +35,7 @@ public class VideoDaoImp extends DaoImp implements VideoDao {
      * @param acfunVid
      * @return
      */
-    public boolean isExistVideoInAcfun(Long acfunVid) {
-        Connection conn = ConnectionManager.getConnection();
+    public boolean isExistVideoInAcfun(Connection conn, Long acfunVid) {
         try {
             if (isExistRecord(conn, "video", "acfun_vid", acfunVid)) {
                 return true;
@@ -45,6 +44,17 @@ public class VideoDaoImp extends DaoImp implements VideoDao {
             logger.error("通过视频id查询视频数据失败" + acfunVid, e);
         }
         return false;
+    }
+
+    /**
+     * a站中是否存在视频
+     *
+     * @param acfunVid
+     * @return
+     */
+    public boolean isExistVideoInAcfun(Long acfunVid) {
+        Connection conn = ConnectionManager.getConnection();
+        return isExistVideoInAcfun(conn, acfunVid);
     }
 
     /**
@@ -69,10 +79,10 @@ public class VideoDaoImp extends DaoImp implements VideoDao {
      * 是否存在a站的视频数据
      *
      * @param acfunVid
+     * @param conn
      * @return
      */
-    public boolean isExistVideoByAcfunVid(Long acfunVid) {
-        Connection conn = ConnectionManager.getConnection();
+    public boolean isExistVideoByAcfunVid(Connection conn, Long acfunVid) {
         try {
             if (isExistRecord(conn, "video", "acfun_vid", acfunVid)) {
                 return true;
@@ -81,6 +91,17 @@ public class VideoDaoImp extends DaoImp implements VideoDao {
             logger.error("通过视频id查询视频数据失败" + acfunVid, e);
         }
         return false;
+    }
+
+    /**
+     * 是否存在a站的视频数据
+     *
+     * @param acfunVid
+     * @return
+     */
+    public boolean isExistVideoByAcfunVid(Long acfunVid) {
+        Connection conn = ConnectionManager.getConnection();
+        return isExistVideoByAcfunVid(conn, acfunVid);
     }
 
     /**
@@ -100,8 +121,7 @@ public class VideoDaoImp extends DaoImp implements VideoDao {
      * @param video
      * @return
      */
-    public boolean updateAcfunVideo(Video video) {
-        Connection conn = ConnectionManager.getConnection();
+    public boolean updateAcfunVideo(Connection conn,Video video){
         try {
             Long vid = video.getAcfun_vid();
             Video origin = selectVideoByAcfunVid(conn, vid);
@@ -207,6 +227,16 @@ public class VideoDaoImp extends DaoImp implements VideoDao {
         } finally {
 //            ConnectionManager.close();
         }
+    }
+    /**
+     * 更新a站视频信息
+     *
+     * @param video
+     * @return
+     */
+    public boolean updateAcfunVideo(Video video) {
+        Connection conn = ConnectionManager.getConnection();
+        return updateAcfunVideo(conn,video);
     }
 
     /**

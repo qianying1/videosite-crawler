@@ -22,6 +22,14 @@ public interface VideoTypeDao extends Dao {
     boolean isExistVideoTypeInAcfun(Long acfunTid);
 
     /**
+     * a站中是否已存在视频类型
+     *
+     * @param acfunTid
+     * @return
+     */
+    boolean isExistVideoTypeInAcfun(Connection conn,Long acfunTid);
+
+    /**
      * 插入b站视频类型
      *
      * @param type
@@ -37,6 +45,13 @@ public interface VideoTypeDao extends Dao {
      */
     Long updateAcfunVideoType(Style style);
 
+    /**
+     * 更新a站视频类型
+     *
+     * @param type
+     * @return
+     */
+    Long updateAcfunVideoType(Connection conn,Style type);
 
     /**
      * 插入b站视频类型
@@ -65,6 +80,14 @@ public interface VideoTypeDao extends Dao {
     Long insertAcfunVideoType(Connection cn, Style type);
 
     /**
+     * 通过视频类型名称获取视频类型的id
+     *
+     * @param typeName
+     * @return
+     */
+    Long selectVideoTypeIdByName(Connection conn,String typeName);
+
+    /**
      * 根据视频类型id查询视频类型
      *
      * @param conn
@@ -87,7 +110,7 @@ public interface VideoTypeDao extends Dao {
      * @param typeName
      * @return
      */
-    boolean isExistVideoTypeByName(String typeName);
+    boolean isExistVideoTypeByName(Connection conn,String typeName);
 
     /**
      * 通过视频类型名称获取视频类型的id

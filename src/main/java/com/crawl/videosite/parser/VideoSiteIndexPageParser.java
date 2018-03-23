@@ -2,7 +2,7 @@ package com.crawl.videosite.parser;
 
 
 import com.crawl.core.parser.ListPageParser;
-import com.crawl.videosite.CommonHttpClient;
+import com.crawl.videosite.ProxyHttpClient;
 import com.crawl.videosite.entity.Page;
 import com.crawl.videosite.domain.User;
 import com.jayway.jsonpath.DocumentContext;
@@ -20,7 +20,7 @@ public class VideoSiteIndexPageParser implements ListPageParser{
     private static VideoSiteIndexPageParser instance;
     public static VideoSiteIndexPageParser getInstance(){
         if (instance == null){
-            synchronized (CommonHttpClient.class){
+            synchronized (ProxyHttpClient.class){
                 if (instance == null){
                     instance = new VideoSiteIndexPageParser();
                 }

@@ -5,7 +5,7 @@ import com.crawl.core.util.HttpClientUtil;
 import com.crawl.proxy.ProxyPool;
 import com.crawl.proxy.entity.Proxy;
 import com.crawl.proxy.util.ProxyUtil;
-import com.crawl.videosite.CommonHttpClient;
+import com.crawl.videosite.ProxyHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +16,7 @@ public class YoukuProxySerializeTask implements Runnable{
     private static Logger logger = LoggerFactory.getLogger(YoukuProxyPageTask.class);
     @Override
     public void run() {
-        while (!CommonHttpClient.isStop){
+        while (!ProxyHttpClient.isStop){
             try {
                 Thread.sleep(1000 * 60 * 1);
             } catch (InterruptedException e) {

@@ -2,7 +2,7 @@ package com.crawl.videosite.parser.bilibili;
 
 
 import com.crawl.core.parser.ListPageParser;
-import com.crawl.videosite.CommonHttpClient;
+import com.crawl.videosite.ProxyHttpClient;
 import com.crawl.videosite.entity.Page;
 import com.crawl.videosite.domain.User;
 import com.crawl.videosite.domain.Video;
@@ -21,7 +21,7 @@ public class BiliBiliVideoSiteIndexPageParser implements ListPageParser {
 
     public static BiliBiliVideoSiteIndexPageParser getInstance() {
         if (instance == null) {
-            synchronized (CommonHttpClient.class) {
+            synchronized (ProxyHttpClient.class) {
                 if (instance == null) {
                     instance = new BiliBiliVideoSiteIndexPageParser();
                 }

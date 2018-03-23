@@ -18,6 +18,7 @@ import org.apache.http.client.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Connection;
 import java.util.Date;
 import java.util.Map;
 
@@ -34,7 +35,7 @@ public class AuthorParser extends AbstractAuthorParser {
      * @param jsonObject
      */
     @Override
-    public void parseJson(JSONObject jsonObject, Long mid) {
+    public void parseJson(JSONObject jsonObject, Long mid, Connection conn) {
         if (jsonObject == null || jsonObject.isEmpty())
             return;
         logger.info("开始分析视频作者数据>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
@@ -53,17 +54,17 @@ public class AuthorParser extends AbstractAuthorParser {
         author.setVideoCount(authorData.get("archive_count")!=null?Integer.valueOf(authorData.get("archive_count").toString()):0);
         author.setArticle(authorData.get("article_count")!=null?Long.valueOf(authorData.get("article_count").toString()):0);
         author.setFollower(authorData.get("follower")!=null?Long.valueOf(authorData.get("follower").toString()):0l);
-        insertAuthor(author);
+        insertAuthor(author,conn);
     }
 
-    private void insertAuthor(VideoAuthor author) {
+    private void insertAuthor(VideoAuthor author, Connection conn) {
         if (Constants.isUpdateVideoAuthor_biliBili) {
-            boolean authorExsist = authorDao.isExistAuthor(author.getBiliBili_mid());
+            boolean authorExsist = authorDao.isExistAuthor(conn,author.getBiliBili_mid());
             if (authorExsist) {
-                Long id = authorDao.updateAuthor(author);
+                Long id = authorDao.updateAuthor(conn,author);
                 author.setId(id);
             } else {
-                Long id = authorDao.insertAuthor(author);
+                Long id = authorDao.insertAuthor(conn,author);
                 if (id != -1) {
                     logger.info("插入视频作者数据成功: " + author.getName());
                 }else {
@@ -71,7 +72,7 @@ public class AuthorParser extends AbstractAuthorParser {
                 }
             }
         } else {
-            Long id = authorDao.insertAuthor(author);
+            Long id = authorDao.insertAuthor(conn,author);
             if (id != -1) {
                 author.setId(id);
             } else {

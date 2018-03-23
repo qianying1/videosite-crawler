@@ -21,6 +21,15 @@ public interface AuthorDao extends Dao {
      */
     boolean isExistAuthorInAcfun(Long acfunUid);
 
+    /**
+     * a站中是否已存在该视频作者
+     *
+     * @param acfunUid
+     * @param conn
+     * @return
+     */
+    boolean isExistAuthorInAcfun(Connection conn,Long acfunUid);
+
     Long insertAuthor(VideoAuthor author);
 
     /**
@@ -30,6 +39,15 @@ public interface AuthorDao extends Dao {
      * @return
      */
     Long updateAcfunAuthor(VideoAuthor author);
+
+    /**
+     * 更新a站视频作者信息
+     *
+     * @param author
+     * @param conn
+     * @return
+     */
+    Long updateAcfunAuthor(Connection conn,VideoAuthor author);
 
     /**
      * 更新视频作者数据

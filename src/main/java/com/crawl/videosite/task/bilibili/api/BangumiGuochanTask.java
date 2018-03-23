@@ -52,7 +52,7 @@ public class BangumiGuochanTask extends AbstractBangumiGuochanTask {
             logger.warn("fail to catch json data from url: " + this.target);
             return;
         }
-        parser.parseJson(jsonObject);
+        parser.parseJson(jsonObject,getConnection());
         if (getEmptyCount() > MAXEMPTYCOUNT) {
             setEmptyCount(0);
         }

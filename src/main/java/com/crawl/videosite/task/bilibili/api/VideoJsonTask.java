@@ -61,7 +61,7 @@ public class VideoJsonTask extends AbstractVideoTask {
             setTargetUrl(getTargetUrl(targetDomain, aid));
             return;
         } else {
-            videoListParser.parseJson(jsonObject);
+            videoListParser.parseJson(jsonObject,getConnection());
         }
         if (getEmptyCount() > MAXEMPTYCOUNT) {
             setEmptyCount(0);

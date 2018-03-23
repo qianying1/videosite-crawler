@@ -3,7 +3,7 @@ package com.crawl.proxy.task.letv;
 import com.crawl.core.util.Constants;
 import com.crawl.proxy.ProxyPool;
 import com.crawl.proxy.entity.Proxy;
-import com.crawl.videosite.CommonHttpClient;
+import com.crawl.videosite.ProxyHttpClient;
 import com.crawl.videosite.entity.Page;
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.CookieSpecs;
@@ -37,7 +37,7 @@ public class LetvProxyTestTask implements Runnable{
                     setCookieSpec(CookieSpecs.STANDARD).
                     build();
             request.setConfig(requestConfig);
-            Page page = CommonHttpClient.getInstance().getWebPage(request);
+            Page page = ProxyHttpClient.getInstance().getWebPage(request);
             long endTime = System.currentTimeMillis();
             String logStr = Thread.currentThread().getName() + " " + proxy.getProxyStr() +
                     "  executing request " + page.getUrl()  + " response statusCode:" + page.getStatusCode() +
