@@ -29,6 +29,7 @@ public class AuthorApiParser {
     public void parseAuthorJson(Map<String, Object> jsonMap, Connection conn) {
         if (jsonMap.isEmpty() || conn == null)
             return;
+        logger.info("开始分析a站视频作者信息>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         VideoAuthor author = new VideoAuthor();
         author.setLogo(jsonMap.get("userImg") != null ? jsonMap.get("userImg").toString() : null);
         author.setVideoCount(jsonMap.get("contributeCount") != null ? Integer.valueOf(jsonMap.get("contributeCount").toString()) : 0);
