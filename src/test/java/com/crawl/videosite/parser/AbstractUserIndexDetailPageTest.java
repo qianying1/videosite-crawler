@@ -12,6 +12,6 @@ public abstract class AbstractUserIndexDetailPageTest {
     public void testParse(String url, DetailPageParser parser) throws IOException {
         Page page = ProxyHttpClient.getInstance().getWebPage(url);
         User user = parser.parseDetailPage(page);
-        System.out.println(user);
+//        System.out.println(user);
     }
 }

@@ -61,7 +61,7 @@ public class VideoDynamicListJsonParser extends AbstractVideoDynamicListParser {
         if (jsonObject == null || jsonObject.isEmpty())
             return;
         logger.info("开始分析动态视频列表数据>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        System.out.println(jsonObject);
+//        System.out.println(jsonObject);
         Map<String, Object> data = (Map<String, Object>) jsonObject.get("data");
         List<Map<String, Object>> archives = (List<Map<String, Object>>) data.get("archives");
         for (Map<String, Object> archive : archives) {

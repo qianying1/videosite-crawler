@@ -40,7 +40,7 @@ public class BangumiGuochanParser extends AbstractBangumiGuochanParser {
         if (jsonObject == null || jsonObject.isEmpty())
             return;
         logger.info("开始分析小说视频列表数据>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        System.out.println(jsonObject);
+//        System.out.println(jsonObject);
         Map<String, Object> result = (Map<String, Object>) jsonObject.get("result");
         List<Map<String, Object>> datas = (List<Map<String, Object>>) result.get("list");
         for (Map<String, Object> data : datas) {

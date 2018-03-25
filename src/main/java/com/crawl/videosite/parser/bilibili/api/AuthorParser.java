@@ -39,7 +39,7 @@ public class AuthorParser extends AbstractAuthorParser {
         if (jsonObject == null || jsonObject.isEmpty())
             return;
         logger.info("开始分析视频作者数据>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        System.out.println(jsonObject);
+//        System.out.println(jsonObject);
         Map<String, Object> authorData = (Map<String, Object>) jsonObject.get("data");
         Map<String, Object> card = (Map<String, Object>) authorData.get("card");
         VideoAuthor author = new VideoAuthor();

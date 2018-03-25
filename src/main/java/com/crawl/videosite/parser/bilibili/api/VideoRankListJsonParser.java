@@ -61,7 +61,7 @@ public class VideoRankListJsonParser extends AbstractVideoRankListParser {
         if (jsonObject == null || jsonObject.isEmpty())
             return;
         logger.info("开始分析等级视频列表数据>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        System.out.println(jsonObject);
+//        System.out.println(jsonObject);
         List<Map<String, Object>> archives = (List) jsonObject.get("data");
         for (Map<String, Object> archive : archives) {
             if (archive == null || archive.isEmpty())

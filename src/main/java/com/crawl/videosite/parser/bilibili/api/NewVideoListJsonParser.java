@@ -52,7 +52,7 @@ public class NewVideoListJsonParser extends AbstractNewVideoListParser {
         if (jsonObject == null || jsonObject.isEmpty())
             return;
         logger.info("开始分析新视频列表数据>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        System.out.println(jsonObject);
+//        System.out.println(jsonObject);
         Map<String, Object> data = (Map<String, Object>) jsonObject.get("data");
         if (data.isEmpty())
             return;

@@ -33,7 +33,7 @@ public class BiliBiliVideoSiteIndexPageParser implements ListPageParser {
     @Override
     public List<Video> parseListPage(Page page) {
         List<Video> userList = new ArrayList<>();
-        System.out.println(page.getHtml());
+//        System.out.println(page.getHtml());
         return userList;
     }
 

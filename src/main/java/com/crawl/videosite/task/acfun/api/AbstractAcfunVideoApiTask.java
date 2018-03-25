@@ -74,9 +74,9 @@ public abstract class AbstractAcfunVideoApiTask extends CommonTask implements Ru
                 AbstractAcfunVideoApiTask.contentId++;
                 continue;
             }
-            System.out.println(jsonStr + "===============================================");
+//            System.out.println(jsonStr + "===============================================");
             String[] jsonArray = jsonStr.replace("[", "").replace("]", "").split(",");
-            System.out.println(jsonArray + "================================================");
+//            System.out.println(jsonArray + "================================================");
             if (jsonArray == null || jsonArray.length <= 0) {
                 AbstractAcfunVideoApiTask.contentId++;
                 continue;

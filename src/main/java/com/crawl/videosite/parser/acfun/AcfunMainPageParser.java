@@ -48,7 +48,7 @@ public class AcfunMainPageParser {
             Style type = new Style();
             type.setAcfun_tid(Long.valueOf(cid));
             Element aEl = el.getElementsByTag("a").get(0);
-            System.out.println("aEl: " + aEl);
+//            System.out.println("aEl: " + aEl);
             String ahref = aEl.attr("abs:href");
             logger.info("type url>>>>> " + ahref);
             type.setStyleName(aEl.text());

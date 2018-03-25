@@ -40,7 +40,7 @@ public class VideoJsonParser extends AbstractVideoParser {
         if (jsonObject == null || jsonObject.isEmpty())
             return;
         logger.info("开始分析视频数据>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        System.out.println(jsonObject);
+//        System.out.println(jsonObject);
         Map<String, Object> data = (Map<String, Object>) jsonObject.get("data");
         parseDataToPersistence(data,conn);
     }
