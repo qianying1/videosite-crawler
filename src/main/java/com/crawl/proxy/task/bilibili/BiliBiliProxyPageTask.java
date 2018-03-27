@@ -11,6 +11,7 @@ import com.crawl.proxy.entity.Proxy;
 import com.crawl.proxy.site.ProxyListPageParserFactory;
 import com.crawl.videosite.ProxyHttpClient;
 import com.crawl.videosite.entity.Page;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
@@ -65,7 +66,7 @@ public class BiliBiliProxyPageTask implements Runnable {
             String logStr = Thread.currentThread().getName() + " " + getProxyStr(currentProxy) +
                     "  executing request " + page.getUrl() + " response statusCode:" + status +
                     "  request cost time:" + (requestEndTime - requestStartTime) + "ms";
-            if (status == HttpStatus.SC_OK) {
+            if (status == HttpStatus.SC_OK && page != null && StringUtils.isNotBlank(page.getHtml()) && !page.getHtml().contains("<title>出错啦! - bilibili.com</title>")) {
                 logger.debug(logStr);
                 handle(page);
             } else {

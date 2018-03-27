@@ -28,7 +28,7 @@ public class VideoApiParser {
     public void parseVideoCounts(String[] jsonArray, Long contentId, Connection conn) {
         if (jsonArray == null || jsonArray.length <= 0 || contentId == null)
             return;
-        logger.info("开始爬取a站视频数据>>>>>>>>>>>>>>>>" + jsonArray);
+        logger.info("开始爬取a站视频数据>>>>>>>>>>>>>>>>");
         Long views = Long.valueOf(jsonArray[0]);
         Long comments = Long.valueOf(jsonArray[1]);
         Long count1 = Long.valueOf(jsonArray[2]);

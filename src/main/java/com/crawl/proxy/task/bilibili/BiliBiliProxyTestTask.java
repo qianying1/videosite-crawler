@@ -5,6 +5,7 @@ import com.crawl.proxy.ProxyPool;
 import com.crawl.proxy.entity.Proxy;
 import com.crawl.videosite.ProxyHttpClient;
 import com.crawl.videosite.entity.Page;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
@@ -19,12 +20,14 @@ import java.io.IOException;
  * 通过访问b站首页，能否正确响应
  * 将可用代理添加到DelayQueue延时队列中
  */
-public class BiliBiliProxyTestTask implements Runnable{
+public class BiliBiliProxyTestTask implements Runnable {
     private final static Logger logger = LoggerFactory.getLogger(BiliBiliProxyTestTask.class);
     private Proxy proxy;
-    public BiliBiliProxyTestTask(Proxy proxy){
+
+    public BiliBiliProxyTestTask(Proxy proxy) {
         this.proxy = proxy;
     }
+
     @Override
     public void run() {
         long startTime = System.currentTimeMillis();
@@ -40,9 +43,9 @@ public class BiliBiliProxyTestTask implements Runnable{
             Page page = ProxyHttpClient.getInstance().getWebPage(request);
             long endTime = System.currentTimeMillis();
             String logStr = Thread.currentThread().getName() + " " + proxy.getProxyStr() +
-                    "  executing request " + page.getUrl()  + " response statusCode:" + page.getStatusCode() +
+                    "  executing request " + page.getUrl() + " response statusCode:" + page.getStatusCode() +
                     "  request cost time:" + (endTime - startTime) + "ms";
-            if (page == null || page.getStatusCode() != 200){
+            if (page == null || page.getStatusCode() != 200 || StringUtils.isBlank(page.getHtml()) || page.getHtml().contains("<title>出错啦! - bilibili.com</title>")) {
                 logger.warn(logStr);
                 return;
             }
@@ -53,12 +56,13 @@ public class BiliBiliProxyTestTask implements Runnable{
         } catch (IOException e) {
             logger.debug("IOException:", e);
         } finally {
-            if (request != null){
+            if (request != null) {
                 request.releaseConnection();
             }
         }
     }
-    private String getProxyStr(){
+
+    private String getProxyStr() {
         return proxy.getIp() + ":" + proxy.getPort();
     }
 }

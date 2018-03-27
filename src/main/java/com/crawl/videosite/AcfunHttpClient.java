@@ -47,14 +47,6 @@ public class AcfunHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
     }
 
     /**
-     * 详情页下载线程池
-     */
-    private ThreadPoolExecutor detailPageThreadPool;
-    /**
-     * 列表页下载线程池
-     */
-    private ThreadPoolExecutor listPageThreadPool;
-    /**
      * 详情列表页下载线程池
      */
     private ThreadPoolExecutor detailListPageThreadPool;
@@ -147,6 +139,7 @@ public class AcfunHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
         videoListCrawler();
         //视频作者信息
         authorDetail();
+        manageHttpClient();
     }
 
     /**
@@ -262,15 +255,4 @@ public class AcfunHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
         }
     }
 
-    public ThreadPoolExecutor getDetailPageThreadPool() {
-        return detailPageThreadPool;
-    }
-
-    public ThreadPoolExecutor getListPageThreadPool() {
-        return listPageThreadPool;
-    }
-
-    public ThreadPoolExecutor getDetailListPageThreadPool() {
-        return detailListPageThreadPool;
-    }
 }
