@@ -155,14 +155,14 @@ public class BiliBiliHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
         }*/
 //        detailListPageThreadPool.execute(new BiliBiliDetailListPageTask(request, Config.bilibiliIsProxy));
         //活动视频列表
-        dynamicVideoCrawler();
+        /*dynamicVideoCrawler();
         //等级视频列表
         rankVideoCrawler();
         //新视频列表
-        newVideoListCrawler();
+        newVideoListCrawler();*/
         //视频作者信息
         videoAuthorCrawler();
-        videoDataCrawler();
+//        videoDataCrawler();
         //---------------------------------------bangumi begin------------------------------------------------------------------//
         //国产连载小说
         bangumiGuochangCrawler();

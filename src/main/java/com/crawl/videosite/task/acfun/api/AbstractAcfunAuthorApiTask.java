@@ -2,9 +2,12 @@ package com.crawl.videosite.task.acfun.api;
 
 import com.alibaba.fastjson.JSONObject;
 import com.crawl.core.util.Config;
+import com.crawl.core.util.Constants;
+import com.crawl.core.util.HttpClientUtil;
 import com.crawl.core.util.JsoupUtil;
 import com.crawl.proxy.ProxyPool;
 import com.crawl.proxy.entity.Proxy;
+import com.crawl.videosite.entity.AcfunAuthorPersistence;
 import com.crawl.videosite.entity.AcfunParams;
 import com.crawl.videosite.task.CommonTask;
 import org.apache.commons.lang3.ObjectUtils;
@@ -28,6 +31,14 @@ public abstract class AbstractAcfunAuthorApiTask extends CommonTask implements R
      * 目标地址userId参数值
      */
     private static Long userId = 0l;
+    /**
+     * 爬取的次数
+     */
+    private static int crawlCount = 0;
+    /**
+     * 最大爬取次数
+     */
+    private final int _MAXCRAWL_COUNT = 1200;
 
     protected AbstractAcfunAuthorApiTask(Long userId) {
         AbstractAcfunAuthorApiTask.userId = userId;
@@ -36,6 +47,11 @@ public abstract class AbstractAcfunAuthorApiTask extends CommonTask implements R
     @Override
     public void run() {
         while (true) {
+            if (crawlCount >= _MAXCRAWL_COUNT) {
+                persistenceData();
+                crawlCount = 0;
+            }
+            crawlCount++;
             String jsonStr;
             try {
                 if (Config.acfunIsProxy) {
@@ -85,5 +101,14 @@ public abstract class AbstractAcfunAuthorApiTask extends CommonTask implements R
      */
     private String getTargetUrl() {
         return targetDomain + userId;
+    }
+
+    /**
+     * 将数据进行持久化
+     */
+    private void persistenceData() {
+        AcfunAuthorPersistence persistence = new AcfunAuthorPersistence();
+        persistence.setUserId(AbstractAcfunAuthorApiTask.userId);
+        HttpClientUtil.serializeObject(persistence, Constants.acfunAuthorDataSerialPath);
     }
 }

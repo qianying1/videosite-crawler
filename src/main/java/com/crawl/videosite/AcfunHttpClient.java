@@ -132,11 +132,11 @@ public class AcfunHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
     @Override
     public void startCrawl() {
         //视频类型
-        typeCrawler();
+        /*typeCrawler();
         //视频内容
         videoContentCrawler();
         //视频列表内容
-        videoListCrawler();
+        videoListCrawler();*/
         //视频作者信息
         authorDetail();
         manageHttpClient();
@@ -170,7 +170,7 @@ public class AcfunHttpClient extends AbstractHtmlUnit implements IHtmlUnit {
     }
 
     /**
-     * 爬取活动视频列表api
+     * 爬取视频列表api
      */
     private void videoContentCrawler() {
         AcfunVideoPersistence persistence = null;
