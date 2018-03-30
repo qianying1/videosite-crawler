@@ -1,5 +1,6 @@
 package com.crawl.videosite.task.acfun.api;
 
+import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.crawl.core.util.Config;
 import com.crawl.core.util.Constants;
@@ -64,13 +65,22 @@ public abstract class AbstractAcfunAuthorApiTask extends CommonTask implements R
                     jsonStr = JsoupUtil.getJsonFromApi(getTargetUrl());
                 }
             } catch (IOException e) {
-                logger.error("在获取a站视频作者api数据时遇到io读写错误!", e);
+                logger.warn("在获取a站视频作者api数据时遇到io读写错误!" + getTargetUrl());
+                AbstractAcfunAuthorApiTask.userId++;
                 continue;
             } catch (InterruptedException interuptE) {
-                logger.error("在使用代理获取a站视频作者api数据时遇到线程中断错误!", interuptE);
+                logger.warn("在使用代理获取a站视频作者api数据时遇到线程中断错误!", interuptE);
+                AbstractAcfunAuthorApiTask.userId++;
                 continue;
             }
-            JSONObject jsonObject = JSONObject.parseObject(jsonStr);
+            JSONObject jsonObject = null;
+            try {
+                jsonObject = JSONObject.parseObject(jsonStr);
+            } catch (JSONException e) {
+                logger.warn("数据转换为json对象时出现错误! " + getTargetUrl());
+                AbstractAcfunAuthorApiTask.userId++;
+                continue;
+            }
             if (!ObjectUtils.notEqual(jsonObject, null)
                     || jsonObject.isEmpty()
                     || Integer.valueOf(jsonObject.get("code").toString()) != 200) {
